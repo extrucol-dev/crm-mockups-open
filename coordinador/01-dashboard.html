@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Coordinador · Dashboard</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .alert-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border: 1px solid var(--error-border);
+    background: var(--error-bg); border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .alert-row.is-warning { background: #FFF8E5; border-color: #F5E0B0; }
+  .alert-row.is-info { background: var(--primary-bg); border-color: #c5cfed; }
+
+  .ejecutivo-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto auto;
+    gap: 14px; align-items: center;
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    transition: background 180ms;
+  }
+  .ejecutivo-row:hover { background: var(--page-bg); }
+  .ejecutivo-row:last-child { border-bottom: none; }
+
+  .kpi-mini {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+  }
+  .kpi-mini__label { font-size: 10.5px; color: var(--text-disabled); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .kpi-mini__value { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .kpi-mini__value--warning { color: var(--accent); }
+  .kpi-mini__value--error { color: var(--error); }
+  .kpi-mini__value--success { color: var(--success); }
+
+  .compliance-badge {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+    background: conic-gradient(var(--success) 85%, var(--border) 85%);
+    position: relative;
+  }
+  .compliance-badge::before {
+    content: ''; position: absolute; inset: 4px;
+    background: #fff; border-radius: 50%;
+  }
+  .compliance-badge > span { position: relative; z-index: 1; color: var(--success); }
+
+  .compliance-badge--warn { background: conic-gradient(var(--accent) 60%, var(--border) 60%); }
+  .compliance-badge--warn > span { color: var(--accent); }
+  .compliance-badge--low { background: conic-gradient(var(--error) 42%, var(--border) 42%); }
+  .compliance-badge--low > span { color: var(--error); }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+function content() {
+  const statCardsHTML = `
+    <div class="stat-card">
+      <div class="stat-card__icon" style="background: #FDECEA; color: var(--error);">${Icons.warning}</div>
+      <div class="stat-card__label">Alertas activas</div>
+      <div class="stat-card__value" style="color: var(--error);">5</div>
+      <div class="stat-card__subtext">2 críticas · 3 advertencias</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--accent">${Icons.clock}</div>
+      <div class="stat-card__label">Leads estancados</div>
+      <div class="stat-card__value stat-card__value--accent">8</div>
+      <div class="stat-card__subtext">+3 días sin actividad</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon">${Icons.users}</div>
+      <div class="stat-card__label">Ejecutivos monitoreados</div>
+      <div class="stat-card__value">6</div>
+      <div class="stat-card__subtext">4 con cumplimiento ≥ 80%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--success">${Icons.clipboardCheck}</div>
+      <div class="stat-card__label">Cumplimiento promedio</div>
+      <div class="stat-card__value stat-card__value--success">78%</div>
+      <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+4%</span> vs mes anterior</div>
+    </div>
+  `;
+
+  const alertsHTML = `
+    <div class="alert-row">
+      ${Icons.warning}
+      <div style="flex:1;">
+        <div style="font-weight:600; color: var(--error); font-size: 13.5px;">Lead estancado 5 días</div>
+        <div style="font-size: 12px; color: #8a2a1d;">"Proyecto acueducto rural EMPAS" — asignado a Juan Pérez · Estado: Contactado</div>
+      </div>
+      <a href="05-estancados.html" style="text-decoration: none;"><button class="btn btn--sm" style="background: var(--error); color: #fff;">Revisar</button></a>
+    </div>
+
+    <div class="alert-row">
+      ${Icons.warning}
+      <div style="flex:1;">
+        <div style="font-weight:600; color: var(--error); font-size: 13.5px;">Oportunidad sin actividad 7 días</div>
+        <div style="font-size: 12px; color: #8a2a1d;">"Suministro anual Constructora Andina" — María G. · Estado: Negociación</div>
+      </div>
+      <button class="btn btn--sm" style="background: var(--error); color: #fff;">Revisar</button>
+    </div>
+    <div class="alert-row is-warning">
+      ${Icons.clock}
+      <div style="flex:1;">
+        <div style="font-weight:600; color: #B87E15; font-size: 13.5px;">3 leads sin contactar hace 2 días</div>
+        <div style="font-size: 12px; color: #8a5c0e;">Ejecutivos: Carlos R. (2), Ana M. (1)</div>
+      </div>
+      <button class="btn btn--sm btn--secondary">Ver detalle</button>
+    </div>
+    <div class="alert-row is-info">
+      ${Icons.bell}
+      <div style="flex:1;">
+        <div style="font-weight:600; color: var(--primary); font-size: 13.5px;">12 oportunidades próximas a cerrar</div>
+        <div style="font-size: 12px; color: #1B2C6B;">Fecha estimada de cierre en los próximos 7 días</div>
+      </div>
+      <button class="btn btn--sm btn--ghost">Ver lista</button>
+    </div>
+  `;
+
+  const ejecutivos = [
+    { nombre: 'Juan Pérez', depto: 'Santander', leads: 8, opps: 12, act: 18, compliance: 85, cls: '' },
+    { nombre: 'María García', depto: 'Antioquia', leads: 5, opps: 9, act: 22, compliance: 92, cls: '' },
+    { nombre: 'Carlos Rodríguez', depto: 'Cundinamarca', leads: 10, opps: 6, act: 11, compliance: 62, cls: 'warn' },
+    { nombre: 'Ana Martínez', depto: 'Valle del Cauca', leads: 7, opps: 11, act: 16, compliance: 78, cls: '' },
+    { nombre: 'Pedro Salazar', depto: 'Atlántico', leads: 4, opps: 5, act: 8, compliance: 48, cls: 'low' },
+    { nombre: 'Laura Jiménez', depto: 'Santander', leads: 6, opps: 8, act: 14, compliance: 80, cls: '' },
+  ];
+
+  const ejecutivosHTML = ejecutivos.map(e => `
+    <div class="ejecutivo-row">
+      <div class="avatar avatar--sm avatar--color-${Math.floor(Math.random()*6)+1}">${e.nombre.split(' ').map(x=>x[0]).join('')}</div>
+      <div>
+        <div style="font-weight: 600; font-size: 13.5px; color: var(--text-primary);">${e.nombre}</div>
+        <div style="font-size: 11.5px; color: var(--text-muted);">${e.depto}</div>
+      </div>
+      <div class="kpi-mini">
+        <span class="kpi-mini__label">Leads</span>
+        <span class="kpi-mini__value">${e.leads}</span>
+      </div>
+      <div class="kpi-mini">
+        <span class="kpi-mini__label">Opp</span>
+        <span class="kpi-mini__value">${e.opps}</span>
+      </div>
+      <div class="kpi-mini">
+        <span class="kpi-mini__label">Act.</span>
+        <span class="kpi-mini__value">${e.act}</span>
+      </div>
+      <div class="compliance-badge ${e.cls === 'warn' ? 'compliance-badge--warn' : e.cls === 'low' ? 'compliance-badge--low' : ''}"
+           style="background: conic-gradient(${e.cls === 'warn' ? 'var(--accent)' : e.cls === 'low' ? 'var(--error)' : 'var(--success)'} ${e.compliance}%, var(--border) ${e.compliance}%);">
+        <span style="color: ${e.cls === 'warn' ? 'var(--accent)' : e.cls === 'low' ? 'var(--error)' : 'var(--success)'};">${e.compliance}</span>
+      </div>
+    </div>
+  `).join('');
+
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Panel de seguimiento</div>
+          <div class="page-head__subtitle">Monitoreo operacional de la fuerza comercial · Datos en tiempo real</div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary btn--sm">${ Icons.calendar} Abril 2026</button>
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+          <a href="02-variables-sistema.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+            <button class="  btn btn--primary btn--sm">${ Icons.adjustments} Variables</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+        ${statCardsHTML}
+      </div>
+
+      <!-- 2 columnas: Alertas + Tabla ejecutivos -->
+      <div style="display: grid; gap: 16px; grid-template-columns: 1.2fr 1fr;">
+        <!-- Ejecutivos monitoreados -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Equipo comercial</div>
+              <div class="card__subtitle">Cumplimiento y actividad por ejecutivo</div>
+            </div>
+            <a href="04-cumplimiento.html" style="text-decoration: none;"><button class="btn btn--ghost btn--sm">Ver todos ${Icons.arrowRight}</button></a>
+          </div>
+          <div style="padding: 4px 0;">
+            ${ejecutivosHTML}
+          </div>
+        </div>
+
+        <!-- Alertas -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Alertas activas</div>
+              <div class="card__subtitle">5 requieren atención</div>
+            </div>
+            <span class="badge badge--perdida">${Icons.warning.replace('class="icon"', 'class="icon icon--xs"')} 2 críticas</span>
+          </div>
+          <div class="card__body">
+            ${alertsHTML}
+            <a href="08-alertas.html" style="text-decoration: none;"><button class="btn btn--secondary btn--block" style="margin-top: 12px;">Ver todas las alertas</button></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Segunda fila: Pipeline comparado + variables rápidas -->
+      <div style="display: grid; gap: 16px; margin-top: 16px; grid-template-columns: 1fr 1fr;">
+        <!-- Funnel general -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Funnel general del equipo</div>
+              <div class="card__subtitle">Distribución actual del pipeline</div>
+            </div>
+          </div>
+          <div class="card__body">
+            ${[
+              { label: 'Leads Nuevos', count: 40, pct: 100, badge: 'prospecto' },
+              { label: 'Contactados', count: 28, pct: 70, badge: 'propuesta' },
+              { label: 'Interesados', count: 18, pct: 45, badge: 'calificacion' },
+              { label: 'Calificados', count: 12, pct: 30, badge: 'ganada' },
+              { label: 'Oportunidades activas', count: 51, pct: 85, badge: 'info' },
+              { label: 'Ganadas mes', count: 9, pct: 15, badge: 'ganada' },
+            ].map(f => `
+              <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0;">
+                <span class="badge badge--${f.badge}" style="min-width: 180px;"><span class="dot"></span> ${f.label}</span>
+                <div class="progress" style="flex: 1;"><div class="progress__bar"><div class="progress__fill" style="width: ${f.pct}%"></div></div></div>
+                <span style="font-weight: 700; color: var(--text-primary); min-width: 30px; text-align: right;">${f.count}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Variables del sistema cuick view -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Variables del sistema</div>
+              <div class="card__subtitle">Configuración actual de alertas y reglas</div>
+            </div>
+            <a href="02-variables-sistema.html" style="text-decoration: none;"><button class="btn btn--ghost btn--sm">${Icons.pencil} Editar</button></a>
+          </div>
+          <div class="card__body">
+            <dl class="detail-info-list" style="grid-template-columns: 1fr auto; gap: 10px 16px;">
+              <dt>Monto mínimo cliente nuevo</dt>
+              <dd style="font-weight: 700; color: var(--accent);">$ 50.000.000</dd>
+              <dt>Días alerta lead sin contactar</dt>
+              <dd style="font-weight: 700;">3 días</dd>
+              <dt>Días alerta oportunidad estancada</dt>
+              <dd style="font-weight: 700;">7 días</dd>
+              <dt>Días crítico sin actividad</dt>
+              <dd style="font-weight: 700; color: var(--error);">14 días</dd>
+              <dt>Probabilidad mín. para forecast</dt>
+              <dd style="font-weight: 700;">50%</dd>
+              <dt>Meta actividades/semana</dt>
+              <dd style="font-weight: 700;">20</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('dashboard', 'coordinador')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Panel de seguimiento' })}
+    ${content()}
+  </div>
+`;
+</script>
+</body>
+</html>

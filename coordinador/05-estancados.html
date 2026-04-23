@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Coordinador · Estancados</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .estancado-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 180px 140px 120px 120px;
+    gap: 14px; align-items: center;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    transition: background 180ms;
+  }
+  .estancado-row:hover { background: var(--page-bg); }
+  .estancado-row:last-child { border-bottom: none; }
+
+  .dias-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 6px;
+    font-weight: 700; font-size: 12px;
+  }
+  .dias-badge--danger { background: var(--error-bg); color: var(--error); }
+  .dias-badge--warning { background: #FFF8E5; color: #B87E15; }
+
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 60px 24px;
+    z-index: 100;
+  }
+  .modal-content {
+    background: var(--surface);
+    border-radius: 12px;
+    max-width: 520px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-header__icon {
+    width: 40px; height: 40px;
+    background: var(--error-bg); color: var(--error);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    margin-right: 12px;
+  }
+  .modal-header__icon--accent { background: var(--accent-bg); color: #C7770D; }
+  .modal-header__icon--success { background: var(--success-bg); color: var(--success); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px;
+    background: var(--page-bg);
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+  </div>
+</div>
+
+<script src="../shared/components.js"></script>
+<script>
+function notificarModal(registro) {
+  return `
+    <div class="modal-overlay" id="modal-notificar">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center;">
+            <div class="modal-header__icon">${Icons.bell}</div>
+            <div>
+              <div style="font-weight: 700; font-size: 16px;">Notificar ejecutivo</div>
+              <div style="font-size: 12.5px; color: var(--text-muted);">Enviar alerta inmediata por email y push</div>
+            </div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="background: var(--page-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <div style="font-weight: 700; color: var(--text-primary);">${registro.title}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">${registro.empresa} · Asignado a: ${registro.ejec}</div>
+            <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+              <span class="badge badge--${registro.badge}"><span class="dot"></span>${registro.estado}</span>
+              <span class="dias-badge dias-badge--${registro.priority}">${Icons.clock.replace('class="icon"','class="icon icon--xs"')} ${registro.dias} días sin actividad</span>
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom: 12px;">
+            <label class="form-field__label">Tipo de alerta</label>
+            <select class="select">
+              <option>Alerta estándar</option>
+              <option>Recordatorio urgente</option>
+              <option>Escalamiento al director</option>
+            </select>
+          </div>
+          <div class="form-field" style="margin-bottom: 12px;">
+            <label class="form-field__label">Mensaje personalizado</label>
+            <textarea class="textarea" style="min-height: 80px;" placeholder="Agrega un mensaje adicional para el ejecutivo..."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Canales</label>
+            <div style="display: flex; gap: 12px; margin-top: 4px;">
+              <label class="checkbox"><input type="checkbox" checked disabled /> <span style="color: var(--text-disabled);">Email</span></label>
+              <label class="checkbox"><input type="checkbox" checked /> Push</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary">${Icons.send} Enviar notificación</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function reasignarModal(registro) {
+  return `
+    <div class="modal-overlay" id="modal-reasignar">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center;">
+            <div class="modal-header__icon modal-header__icon--accent">${Icons.users}</div>
+            <div>
+              <div style="font-weight: 700; font-size: 16px;">Reasignar registro</div>
+              <div style="font-size: 12.5px; color: var(--text-muted);">Cambiar ejecutivo asignado</div>
+            </div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="background: var(--page-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <div style="font-weight: 700; color: var(--text-primary);">${registro.title}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">${registro.empresa}</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="form-field">
+              <label class="form-field__label">Ejecutivo actual</label>
+              <div style="display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: var(--page-bg); border: 1px solid var(--border); border-radius: 6px;">
+                <div class="avatar avatar--xs avatar--color-${registro.color}">${registro.ejec.split(' ').map(x=>x[0]).join('').slice(0,2)}</div>
+                <span style="font-weight: 600; color: var(--text-secondary);">${registro.ejec}</span>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Nuevo ejecutivo <span class="req">*</span></label>
+              <select class="select">
+                <option value="">Seleccionar...</option>
+                <option>Juan Pérez (JP)</option>
+                <option>María García (MG)</option>
+                <option>Carlos Rodríguez (CR)</option>
+                <option>Ana Martínez (AM)</option>
+                <option>Laura Jiménez (LJ)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Motivo de reasignación</label>
+            <select class="select">
+              <option> Redistribución de cartera</option>
+              <option> Ejecutivo en periodo de ausencia</option>
+              <option> Bajo rendimiento del ejecutivo</option>
+              <option> Solicitud del ejecutivo</option>
+              <option> Otro</option>
+            </select>
+          </div>
+          <div class="alert alert--warning" style="margin-top: 12px;">
+            ${Icons.warning}
+            <div>Se notificará al nuevo ejecutivo y se dejará registro del cambio en el historial.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary">${Icons.check} Confirmar reasignación</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.openNotificar = function(registro) {
+  document.getElementById('modal-root').innerHTML = notificarModal(registro);
+};
+window.openReasignar = function(registro) {
+  document.getElementById('modal-root').innerHTML = reasignarModal(registro);
+};
+window.closeModal = function() {
+  document.getElementById('modal-root').innerHTML = '';
+};
+
+function content() {
+  const leadsEstancados = [
+    { type: 'LEAD', id: 'LEAD-234', title: 'Consulta portafolio riego', empresa: 'Agroindustria Llanera', ejec: 'Juan Pérez', color: 1, estado: 'Contactado', badge: 'propuesta', dias: 5, umbral: 3, priority: 'danger' },
+    { type: 'LEAD', id: 'LEAD-231', title: 'Cotización tubería PE', empresa: 'Constructora XYZ', ejec: 'Carlos R.', color: 3, estado: 'Nuevo', badge: 'prospecto', dias: 4, umbral: 3, priority: 'warning' },
+    { type: 'LEAD', id: 'LEAD-228', title: 'Interesado en accesorios', empresa: 'Distribuidora del Sur', ejec: 'Pedro S.', color: 5, estado: 'Nuevo', badge: 'prospecto', dias: 6, umbral: 3, priority: 'danger' },
+    { type: 'LEAD', id: 'LEAD-225', title: 'Red residencial sector 12', empresa: 'Ferretería Central', ejec: 'Carlos R.', color: 3, estado: 'Contactado', badge: 'propuesta', dias: 4, umbral: 3, priority: 'warning' },
+  ];
+
+  const oppEstancadas = [
+    { type: 'OPP', id: 'OPP-0038', title: 'Suministro anual tubería', empresa: 'Constructora Andina', ejec: 'María G.', color: 2, estado: 'Negociación', badge: 'negociacion', dias: 14, umbral: 7, priority: 'danger', valor: '$ 560 M' },
+    { type: 'OPP', id: 'OPP-0024', title: 'Riego Palmales Fase 2', empresa: 'Palmares del Sur', ejec: 'Juan P.', color: 1, estado: 'Propuesta', badge: 'propuesta', dias: 9, umbral: 7, priority: 'warning', valor: '$ 125 M' },
+    { type: 'OPP', id: 'OPP-0021', title: 'Ampliación red gas', empresa: 'Hidgas Oriente', ejec: 'Pedro S.', color: 5, estado: 'Calificación', badge: 'calificacion', dias: 11, umbral: 7, priority: 'danger', valor: '$ 95 M' },
+  ];
+
+  const allStancados = [...leadsEstancados, ...oppEstancadas].sort((a,b) => b.dias - a.dias);
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Leads y Oportunidades estancadas</div>
+          <div class="page-head__subtitle">${allStancados.length} registros sin actividad · Umbrales configurados: Leads &gt; 3 días · Opp &gt; 7 días</div>
+        </div>
+        <div class="page-head__actions">
+
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+          <a href="02-variables-sistema.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+            <button class="btn btn--primary btn--sm">${Icons.adjustments} Configurar umbrales</button>
+          </a>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div class="stat-card">
+          <div class="stat-card__icon" style="background: var(--error-bg); color: var(--error);">${Icons.warning}</div>
+          <div class="stat-card__label">Críticos</div>
+          <div class="stat-card__value" style="color: var(--error);">${allStancados.filter(r=>r.priority==='danger').length}</div>
+          <div class="stat-card__subtext">Requieren acción inmediata</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--accent">${Icons.clock}</div>
+          <div class="stat-card__label">Advertencias</div>
+          <div class="stat-card__value stat-card__value--accent">${allStancados.filter(r=>r.priority==='warning').length}</div>
+          <div class="stat-card__subtext">Cerca del umbral</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">${Icons.funnel}</div>
+          <div class="stat-card__label">Leads estancados</div>
+          <div class="stat-card__value">${leadsEstancados.length}</div>
+          <div class="stat-card__subtext">Sin contactar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--accent">${Icons.briefcase}</div>
+          <div class="stat-card__label">Valor en riesgo</div>
+          <div class="stat-card__value stat-card__value--accent" style="font-size: 20px;">$ 780 M</div>
+          <div class="stat-card__subtext">Opp. estancadas</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a class="tab is-active">Todos <span class="tab__count">${allStancados.length}</span></a>
+        <a class="tab">Leads <span class="tab__count">${leadsEstancados.length}</span></a>
+        <a class="tab">Oportunidades <span class="tab__count">${oppEstancadas.length}</span></a>
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 320px;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar por título, empresa, ejecutivo..."></div>
+        <select class="select" style="max-width: 160px;"><option>Todos los ejecutivos</option></select>
+        <select class="select" style="max-width: 160px;"><option>Todos los estados</option></select>
+        <select class="select" style="max-width: 160px;"><option>Orden: más antiguo</option><option>Por valor (Opp)</option></select>
+      </div>
+
+      <div class="card" style="padding: 0;">
+        <div class="estancado-row" style="background: var(--page-bg); font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em; padding: 10px 20px;">
+          <div>Tipo</div>
+          <div>Registro</div>
+          <div>Ejecutivo</div>
+          <div>Estado actual</div>
+          <div>Sin actividad</div>
+          <div style="text-align: right;">Acciones</div>
+        </div>
+
+        ${allStancados.map(r => `
+          <div class="estancado-row">
+            <div>
+              <span class="badge ${r.type === 'LEAD' ? 'badge--info' : 'badge--accent'}" style="font-size: 10.5px;">${r.type}</span>
+              ${r.valor ? `<div style="font-size: 11px; font-weight: 700; color: var(--accent); margin-top: 4px;">${r.valor}</div>` : ''}
+            </div>
+            <div>
+              <div style="font-weight: 600; color: var(--text-primary);">${r.title}</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">${r.empresa}</div>
+              <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 10.5px; color: var(--text-disabled); margin-top: 2px;">${r.id}</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="avatar avatar--xs avatar--color-${r.color}">${r.ejec.split(' ').map(x=>x[0]).join('').slice(0,2)}</div>
+              <span style="font-size: 12.5px;">${r.ejec}</span>
+            </div>
+            <div><span class="badge badge--${r.badge}"><span class="dot"></span> ${r.estado}</span></div>
+            <div>
+              <span class="dias-badge dias-badge--${r.priority}">${Icons.clock.replace('class="icon"','class="icon icon--xs"')} ${r.dias} días</span>
+              <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 3px;">Umbral: ${r.umbral}d</div>
+            </div>
+            <div style="text-align: right; display: flex; gap: 4px; justify-content: flex-end;">
+              <button class="btn btn--ghost btn--sm" title="Notificar" onclick='openNotificar(${JSON.stringify(r).replace(/'/g, "\\'")})'>${Icons.bell}</button>
+              <button class="btn btn--ghost btn--sm" title="Reasignar" onclick='openReasignar(${JSON.stringify(r).replace(/'/g, "\\'")})'>${Icons.users}</button>
+              <a href="../ejecutivo/04-oportunidad-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+                <button class="btn btn--ghost btn--sm" title="Ver">${Icons.chevronRight}</button>
+              </a>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('estancados', 'coordinador')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Registros estancados' })}
+    ${content()}
+  </div>
+`;
+</script>
+</body>
+</html>

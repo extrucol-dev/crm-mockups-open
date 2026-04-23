@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Coordinador · Variables del Sistema</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .variables-group {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .variables-group__header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    background: linear-gradient(180deg, #fff 0%, #fafafa 100%);
+  }
+  .variables-group__icon {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: var(--primary-bg);
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .variables-group__icon--error { background: #FDECEA; color: var(--error); }
+  .variables-group__icon--accent { background: var(--accent-bg); color: var(--accent); }
+  .variables-group__icon--success { background: #E8F5EE; color: var(--success); }
+  .variable-row {
+    display: grid;
+    grid-template-columns: 1fr 180px 100px 44px;
+    gap: 16px; align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .variable-row:last-child { border-bottom: none; }
+  .variable-row:hover { background: var(--page-bg); }
+  .variable-name {
+    font-weight: 600; font-size: 13.5px; color: var(--text-primary);
+  }
+  .variable-desc {
+    font-size: 12px; color: var(--text-muted); margin-top: 2px;
+  }
+  .variable-key {
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 11px;
+    background: var(--page-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--text-muted);
+    display: inline-block;
+    margin-top: 4px;
+  }
+  .variable-value-input {
+     text-align: right;
+     font-weight: 700 !important;
+     color: var(--primary) !important;
+   }
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 60px 24px;
+    z-index: 100;
+  }
+  .modal-content {
+    background: var(--surface);
+    border-radius: 12px;
+    max-width: 520px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px;
+    background: var(--page-bg);
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+  </div>
+</div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('modal-root');
+
+function guardarModal() {
+  modalRoot.innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center;">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--success-bg);color:var(--success);display:flex;align-items:center;justify-content:center;margin-right:12px;">${Icons.check}</div>
+            <div>
+              <div style="font-weight:700;font-size:16px;">Guardar cambios</div>
+              <div style="font-size:12.5px;color:var(--text-muted);">Confirmar modificaciones al sistema</div>
+            </div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:16px;">Se han modificado <strong>4 variables</strong>. Estos cambios afectarán el comportamiento del sistema en tiempo real:</p>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+            ${['dias_alerta_lead_sin_contactar: 3 → 2 días','dias_alerta_opp_estancada: 7 → 5 días','dias_critico_sin_actividad: 14 → 10 días','meta_actividades_semana: 20 → 15'].map(v=>`
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--page-bg);border-radius:6px;font-size:12.5px;">
+                <span style="color:var(--success);">${Icons.check}</span>
+                <span style="font-family:'SF Mono',monospace;color:var(--text-primary);">${v}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="alert alert--warning">
+            ${Icons.warning}
+            <div>Las alertas existentes se recalcularán automáticamente al guardar.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary">${Icons.check} Confirmar y guardar</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function historialModal(varName) {
+  modalRoot.innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div style="display:flex;align-items:center;">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-bg);color:var(--primary);display:flex;align-items:center;justify-content:center;margin-right:12px;">${Icons.clock}</div>
+            <div>
+              <div style="font-weight:700;font-size:16px;">Historial de cambios</div>
+              <div style="font-size:12.5px;color:var(--text-muted);">${varName}</div>
+            </div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body" style="max-height:360px;overflow-y:auto;">
+          ${[
+            {date:'22 Abr 2026 · 14:30',user:'Diana Ruiz',old:'5',new:'3'},
+            {date:'15 Mar 2026 · 09:15',user:'Carlos Muñoz',old:'7',new:'5'},
+            {date:'28 Ene 2026 · 11:00',user:'Diana Ruiz',old:'—',new:'7'},
+          ].map(h=>`
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+              <div class="avatar avatar--xs avatar--accent">${h.user.split(' ').map(x=>x[0]).join('')}</div>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:12.5px;">${h.user}</div>
+                <div style="font-size:11.5px;color:var(--text-muted);">${h.date}</div>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);font-family:monospace;">${h.old} → <strong style="color:var(--success);">${h.new}</strong></div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function closeModal() {
+  modalRoot.innerHTML = '';
+}
+
+const grupos = [
+  {
+    title: 'Alertas y notificaciones',
+    desc: 'Configura los umbrales de tiempo para generar alertas automáticas',
+    icon: 'bell', iconClass: 'error',
+    vars: [
+      { name: 'Días alerta lead sin contactar', desc: 'Tiempo máximo antes de notificar al coordinador', key: 'dias_alerta_lead_sin_contactar', value: '3', unit: 'días' },
+      { name: 'Días alerta oportunidad estancada', desc: 'Sin actividad en el estado actual', key: 'dias_alerta_opp_estancada', value: '7', unit: 'días' },
+      { name: 'Días crítico sin actividad', desc: 'Escalamiento automático al director', key: 'dias_critico_sin_actividad', value: '14', unit: 'días' },
+      { name: 'Hora de envío de reportes diarios', desc: 'Resumen diario enviado a ejecutivos', key: 'hora_reporte_diario', value: '18:00', unit: 'hh:mm' },
+    ]
+  },
+  {
+    title: 'Reglas comerciales',
+    desc: 'Parámetros de clasificación y cálculo del pipeline',
+    icon: 'currency', iconClass: 'accent',
+    vars: [
+      { name: 'Monto mínimo cliente nuevo', desc: 'Valor mínimo para marcar empresa como "nuevo"', key: 'monto_minimo_cliente_nuevo', value: '50.000.000', unit: 'COP' },
+      { name: 'Probabilidad mínima forecast', desc: 'Umbral para incluir en proyección de ventas', key: 'probabilidad_minima_forecast', value: '50', unit: '%' },
+      { name: 'Meta actividades por semana', desc: 'Objetivo de actividades por ejecutivo', key: 'meta_actividades_semana', value: '20', unit: 'actividades' },
+      { name: 'Meta oportunidades abiertas', desc: 'Cantidad mínima por ejecutivo', key: 'meta_opp_abiertas', value: '10', unit: 'opp' },
+    ]
+  }
+];
+
+function renderVarRow(v) {
+  const isToggle = v.unit === 'toggle';
+  return `
+    <div class="variable-row">
+      <div>
+        <div class="variable-name">${v.name}</div>
+        <div class="variable-desc">${v.desc}</div>
+        <span class="variable-key">${v.key}</span>
+      </div>
+      ${isToggle ? `
+        <div style="display: flex; justify-content: center;">
+          <label class="switch"><input type="checkbox" ${v.value === 'true' ? 'checked' : ''}><span class="switch__slider"></span></label>
+        </div>
+      ` : `
+        <input class="input variable-value-input" value="${v.value}" />
+      `}
+      <span style="font-size: 11.5px; color: var(--text-muted); text-align: center;">${v.unit}</span>
+      <button class="topbar__icon-btn" title="Historial" onclick="historialModal('${v.name}')">${Icons.clock}</button>
+    </div>
+  `;
+}
+
+function renderGrupo(g) {
+  return `
+    <div class="variables-group">
+      <div class="variables-group__header">
+        <div class="variables-group__icon variables-group__icon--${g.iconClass}">${Icons[g.icon]}</div>
+        <div style="flex:1;">
+          <div style="font-weight:700; font-size: 14.5px; color: var(--text-primary);">${g.title}</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${g.desc}</div>
+        </div>
+        <span class="badge badge--neutral">${g.vars.length} variables</span>
+      </div>
+      ${g.vars.map(v => renderVarRow(v)).join('')}
+    </div>
+  `;
+}
+
+function content() {
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Variables del sistema</div>
+          <div class="page-head__subtitle">14 variables organizadas en 4 categorías · Última actualización: hace 2 días</div>
+        </div>
+        
+      </div>
+
+      <!-- Alerta de advertencia -->
+      <div class="alert alert--warning" style="margin-bottom: 20px;">
+        ${Icons.warning}
+        <div>
+          <strong>Cambios con impacto operacional.</strong> Las variables afectan el funcionamiento del sistema en tiempo real.
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 340px;">
+          ${Icons.search}
+          <input class="input input--with-icon" placeholder="Buscar variable por nombre o clave...">
+        </div>
+        <select class="select" style="max-width: 220px;">
+          <option>Todas las categorías</option>
+          <option>Alertas y notificaciones</option>
+          <option>Reglas comerciales</option>
+        </select>
+        <div style="margin-left: auto; display: flex; gap: 8px;">
+          <button class="btn btn--primary btn--sm" onclick="guardarModal()">${Icons.check} Guardar cambios</button>
+        </div>
+      </div>
+
+      ${grupos.map(g => renderGrupo(g)).join('')}
+
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('variables', 'coordinador')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Variables del sistema' })}
+    ${content()}
+  </div>
+`;
+</script>
+</body>
+</html>

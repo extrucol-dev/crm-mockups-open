@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Clientes</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 24px; }
+  .canvas-section-title { font: 700 15px 'Roboto'; color: #24388C; margin: 40px 0 20px; padding: 8px 14px; background: #fff; border: 1px solid #E5E5E5; border-radius: 6px; display: inline-block; }
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 60px 24px; z-index: 100;
+  }
+  .modal-content {
+    background: var(--surface); border-radius: 12px;
+    max-width: 580px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .modal-header > :first-child { flex-shrink: 0; }
+  .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('shell');
+function openModal(html) { modalRoot.innerHTML += html; }
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
+
+function nuevoClienteModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content" style="max-width: 580px;">
+        <div class="modal-header">
+          <div class="modal-header__icon" style="background: var(--primary-bg); color: var(--primary);">${Icons.user}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Nuevo cliente</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Registra un nuevo cliente en el sistema</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Tipo de documento <span class="req">*</span></label>
+              <select class="select">
+                <option selected>NIT</option>
+                <option>Cédula de ciudadanía</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Número de documento <span class="req">*</span></label>
+              <input class="input" placeholder="Ej: 890.200.341-2" />
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Nombre / Razón social <span class="req">*</span></label>
+            <input class="input" placeholder="Nombre de la empresa o persona" />
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Nombre comercial</label>
+            <input class="input" placeholder="Nombre comercial (opcional)" />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Sector <span class="req">*</span></label>
+              <select class="select">
+                <option>Agua Potable</option>
+                <option>Gas Natural</option>
+                <option>Agro / Riego</option>
+                <option>Construcción</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">País</label>
+              <select class="select"><option selected>Colombia</option><option>Otro</option></select>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Departamento</label>
+              <input class="input" placeholder="Ej: Santander" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Municipio</label>
+              <input class="input" placeholder="Ej: Bucaramanga" />
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Dirección</label>
+            <input class="input" placeholder="Dirección comercial" />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-field">
+              <label class="form-field__label">Teléfono</label>
+              <input class="input" placeholder="+57 XXX XXX XXXX" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Email</label>
+              <input class="input" type="email" placeholder="contacto@empresa.com" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Crear cliente</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function agregarContactoModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content" style="max-width: 520px;">
+        <div class="modal-header">
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Agregar contacto</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Nuevo contacto para la empresa</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Empresa <span class="req">*</span></label>
+            <select class="select">
+              <option>EMPAS S.A.</option>
+              <option>Tecnoagua SAS</option>
+              <option>Aguas del Valle</option>
+              <option>Ingenio del Cauca</option>
+              <option>Hidrogas del Oriente</option>
+              <option>Constructora Andina</option>
+            </select>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Nombre completo <span class="req">*</span></label>
+              <input class="input" placeholder="Nombre del contacto" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Cargo</label>
+              <input class="input" placeholder="Ej: Gerente de Compras" />
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Teléfono</label>
+              <input class="input" placeholder="+57 XXX XXX XXXX" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Email</label>
+              <input class="input" type="email" placeholder="contacto@empresa.com" />
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Área / Departamento</label>
+            <input class="input" placeholder="Ej: Compras, Proyectos, Dirección" />
+          </div>
+          <div class="form-field" style="margin-bottom: 6px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+              <input type="checkbox" style="width: 15px; height: 15px;" />
+              <span>Marcar como contacto principal del cliente</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" onclick="closeModal()">Agregar contacto</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+const clientes = [
+  { name: 'EMPAS S.A.', company: 'Empresa Pública de Alcantarillado', sector: 'Agua Potable', badge: 'info', city: 'Piedecuesta', phone: '+57 607 655 8842', email: 'contacto@empas.gov.co', registered: '12 Ene 2024', avatar: 'ES', color: 1, recurrente: true },
+  { name: 'Tecnoagua SAS', company: 'Tecnologías del Agua SAS', sector: 'Agua Potable', badge: 'info', city: 'Bucaramanga', phone: '+57 310 555 2201', email: 'ventas@tecnoagua.co', registered: '05 Feb 2024', avatar: 'TA', color: 2, recurrente: false },
+  { name: 'Aguas del Valle', company: 'Aguas del Valle SA', sector: 'Agua Potable', badge: 'info', city: 'Cali', phone: '+57 602 422 7788', email: 'compras@aguasdelvalle.co', registered: '20 Feb 2024', avatar: 'AV', color: 3, recurrente: true },
+  { name: 'Ingenio del Cauca', company: 'Ingenio del Cauca SA', sector: 'Agro/Riego', badge: 'accent', city: 'Candelaria', phone: '+57 602 841 0023', email: 'logistica@ingeniocauca.co', registered: '10 Mar 2024', avatar: 'IC', color: 4, recurrente: false },
+  { name: 'Hidrogas del Oriente', company: 'Hidrogas SA ESP', sector: 'Gas', badge: 'ganada', city: 'Bucaramanga', phone: '+57 607 612 3345', email: 'proyectos@hidrogas.co', registered: '18 Mar 2024', avatar: 'HO', color: 5, recurrente: true },
+  { name: 'Constructora Andina', company: 'Constructora Andina Ltda', sector: 'Construcción', badge: 'propuesta', city: 'Bogotá', phone: '+57 601 623 4456', email: 'info@canda.co', registered: '22 Mar 2024', avatar: 'CA', color: 6, recurrente: false },
+];
+
+function clienteCard(c) {
+  return `
+    <a href="14-cliente-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+      <div class="cliente-card">
+        <div class="cliente-card__header">
+          <div class="avatar avatar--color-${c.color}">${c.avatar}</div>
+          <div style="flex:1; min-width: 0;">
+            <div class="cliente-card__name">${c.name}</div>
+            <div class="cliente-card__company">${c.company}</div>
+          </div>
+          <span class="badge badge--${c.badge}">${c.sector}</span>
+        </div>
+        <div class="cliente-card__info">
+          <div class="cliente-card__info-row">${Icons.mapPin}<span>${c.city}</span></div>
+          <div class="cliente-card__info-row">${Icons.phone}<span>${c.phone}</span></div>
+          <div class="cliente-card__info-row">${Icons.envelope}<span style="overflow: hidden; text-overflow: ellipsis;">${c.email}</span></div>
+        </div>
+        <div class="cliente-card__footer">
+          <span>${Icons.calendar} Desde ${c.registered}</span>
+          <div style="display:flex; align-items:center; gap: 6px;">
+            ${c.recurrente ? '<span class="badge badge--ganada" style="font-size: 10px;">Recurrente</span>' : '<span class="badge badge--info" style="font-size: 10px;">Nuevo</span>'}
+            ${Icons.chevronRight}
+          </div>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function gridContent() {
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Mis Clientes</div>
+          <div class="page-head__subtitle">${clientes.length} empresas en tu cartera · 3 clientes recurrentes</div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+          <button class="btn btn--ghost btn--sm" onclick="openModal(agregarContactoModal())">${Icons.user} Agregar contacto</button>
+          <button class="btn btn--primary btn--sm" onclick="openModal(nuevoClienteModal())">${Icons.plus} Nuevo cliente</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 340px;">
+          ${Icons.search}
+          <input class="input input--with-icon" placeholder="Buscar empresa, NIT, contacto...">
+        </div>
+        <select class="select" style="max-width: 180px;">
+          <option>Todos los sectores</option>
+          <option>Agua Potable</option>
+          <option>Gas</option>
+          <option>Agro/Riego</option>
+        </select>
+        <select class="select" style="max-width: 180px;">
+          <option>Todas las ciudades</option>
+          <option>Bucaramanga</option>
+          <option>Cali</option>
+          <option>Bogotá</option>
+        </select>
+        <button class="btn btn--secondary btn--sm" style="margin-left:auto;">${Icons.filter} Más filtros</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        ${clientes.map(clienteCard).join('')}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('clientes', 'ejecutivo')}
+  <div class="main-area">${renderTopbar({ title: 'Mis Clientes' })}${gridContent()}</div>
+`;
+</script>
+</body>
+</html>

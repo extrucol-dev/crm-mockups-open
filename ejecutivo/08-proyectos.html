@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Proyectos</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 24px; }
+  .canvas-section-title { font: 700 15px 'Roboto'; color: #24388C; margin: 40px 0 20px; padding: 8px 14px; background: #fff; border: 1px solid #E5E5E5; border-radius: 6px; display: inline-block; }
+
+  .proyecto-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px; display: flex; flex-direction: column;
+    gap: 12px; cursor: pointer; transition: all 180ms;
+  }
+  .proyecto-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
+  .proyecto-card__header { display: flex; align-items: flex-start; gap: 12px; }
+  .proyecto-card__icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--primary-bg); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .proyecto-card__icon--success { background: #dcfce7; color: var(--green-bright); }
+  .proyecto-card__icon--warning { background: var(--accent-bg); color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+const proyectos = [
+  { nombre: 'Acueducto rural Piedecuesta Fase 1', empresa: 'EMPAS S.A.', estado: 'En ejecución', badge: 'propuesta', progress: 45, inicio: '01 Mar 2026', fin: '30 Ago 2026', valor: '$ 485 M', icon: 'warning' },
+  { nombre: 'Suministro tubería anual 2025', empresa: 'Tecnoagua SAS', estado: 'Planificación', badge: 'prospecto', progress: 15, inicio: '15 Mar 2026', fin: '30 Dic 2026', valor: '$ 215 M', icon: 'default' },
+  { nombre: 'Ampliación red gas sector 8', empresa: 'Hidrogas SA', estado: 'Entregado', badge: 'ganada', progress: 100, inicio: '10 Ene 2026', fin: '28 Feb 2026', valor: '$ 180 M', icon: 'success' },
+  { nombre: 'Riego Palmales Fase 2', empresa: 'Palmares del Sur', estado: 'En ejecución', badge: 'propuesta', progress: 68, inicio: '01 Feb 2026', fin: '15 May 2026', valor: '$ 125 M', icon: 'warning' },
+];
+
+function proyectoCard(p) {
+  const iconClass = p.icon === 'success' ? 'proyecto-card__icon--success'
+                  : p.icon === 'warning' ? 'proyecto-card__icon--warning' : '';
+  return `
+    <a href="15-proyecto-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">           
+      <div class="proyecto-card">
+        <div class="proyecto-card__header">
+          <div class="proyecto-card__icon ${iconClass}">${Icons.folder}</div>
+          <div style="flex:1; min-width: 0;">
+            <div style="font-weight:700; color: var(--text-primary); font-size: 14px; line-height: 1.3;">${p.nombre}</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${p.empresa}</div>
+          </div>
+          <span class="badge badge--${p.badge}"><span class="dot"></span> ${p.estado}</span>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
+            <span>Progreso</span>
+            <span style="font-weight: 700; color: var(--text-primary);">${p.progress}%</span>
+          </div>
+          <div class="progress__bar"><div class="progress__fill ${p.progress === 100 ? 'progress__fill--success' : ''}" style="width: ${p.progress}%"></div></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
+          <div>
+            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-disabled); font-weight: 600; letter-spacing: 0.04em;">Inicio</div>
+            <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-top: 2px;">${p.inicio}</div>
+          </div>
+          <div>
+            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-disabled); font-weight: 600; letter-spacing: 0.04em;">Fin</div>
+            <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-top: 2px;">${p.fin}</div>
+          </div>
+          <div>
+            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-disabled); font-weight: 600; letter-spacing: 0.04em;">Valor</div>
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--accent); margin-top: 2px;">${p.valor}</div>
+          </div>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function listContent() {
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Mis proyectos</div>
+          <div class="page-head__subtitle">4 proyectos activos generados desde oportunidades ganadas</div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div class="stat-card">
+          <div class="stat-card__label">En ejecución</div>
+          <div class="stat-card__value" style="font-size: 22px;">2</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Planificación</div>
+          <div class="stat-card__value stat-card__value--accent" style="font-size: 22px;">1</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Entregados</div>
+          <div class="stat-card__value stat-card__value--success" style="font-size: 22px;">1</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Valor total</div>
+          <div class="stat-card__value stat-card__value--accent" style="font-size: 18px;">$ 1.005 M</div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 320px;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar proyecto, empresa..."></div>
+        <select class="select" style="max-width: 180px;">
+          <option>Todos los estados</option>
+          <option>Planificación</option>
+          <option>En ejecución</option>
+          <option>Entregados</option>
+        </select>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+        ${proyectos.map(proyectoCard).join('')}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `${renderSidebar('proyectos','ejecutivo')}<div class="main-area">${renderTopbar({title:'Mis Proyectos'})}${listContent()}</div>`;
+</script>
+</body>
+</html>

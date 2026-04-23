@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Detalle Oportunidad</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .detail-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .detail-header__row {
+    display: flex; align-items: flex-start; gap: 16px; justify-content: space-between;
+  }
+  .detail-title {
+    font-size: 22px; font-weight: 800; color: var(--text-primary);
+    letter-spacing: -0.02em; line-height: 1.2;
+  }
+  .detail-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .detail-meta {
+    display: flex; gap: 24px; margin-top: 16px;
+    padding-top: 16px; border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .detail-meta__item { display: flex; flex-direction: column; gap: 2px; }
+  .detail-meta__label {
+    font-size: 10.5px; font-weight: 600; color: var(--text-disabled);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .detail-meta__value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .detail-meta__value--accent { color: var(--accent); font-size: 17px; font-weight: 700; }
+
+  .producto-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .producto-row:last-child { border-bottom: none; }
+  .producto-icon {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: var(--primary-bg); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 60px 24px; z-index: 100;
+  }
+  .modal-content {
+    background: var(--surface); border-radius: 12px;
+    max-width: 580px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    gap: 12px;
+  }
+  .modal-header > :first-child { flex-shrink: 0; }
+  .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
+  .modal-header__icon--success { background: var(--success-bg); color: var(--success); }
+  .modal-header__icon--error { background: var(--error-bg); color: var(--error); }
+  .modal-header__icon--primary { background: var(--primary-bg); color: var(--primary); }
+  .modal-header__icon--accent { background: var(--accent-bg); color: var(--accent); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
+  }
+
+  .confetti {
+    position: absolute; inset: 0; pointer-events: none;
+    overflow: hidden; z-index: 99;
+  }
+  .confetti::before, .confetti::after {
+    content: '🎉'; position: absolute; font-size: 32px;
+    animation: float 3s ease-in-out infinite;
+  }
+  .confetti::before { top: 40px; left: 30%; }
+  .confetti::after { top: 100px; right: 28%; animation-delay: 0.5s; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-15px) rotate(10deg); }
+  }
+
+  .motivo-option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: all 180ms; margin-bottom: 8px;
+  }
+  .motivo-option:hover { border-color: var(--primary); background: var(--primary-bg); }
+  .motivo-option.is-selected--success { border-color: var(--success); background: var(--success-bg); }
+  .motivo-option.is-selected--error { border-color: var(--error); background: var(--error-bg); }
+  .motivo-option__radio {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid var(--border-input); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .motivo-option.is-selected--success .motivo-option__radio { border-color: var(--success); }
+  .motivo-option.is-selected--success .motivo-option__radio::after {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--success);
+  }
+  .motivo-option.is-selected--error .motivo-option__radio { border-color: var(--error); }
+  .motivo-option.is-selected--error .motivo-option__radio::after {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--error);
+  }
+
+  .activity-type-selector {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .activity-type-card {
+    padding: 16px 8px; border: 1px solid var(--border);
+    border-radius: 8px; text-align: center; cursor: pointer;
+    transition: all 180ms; display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+    background: var(--surface);
+  }
+  .activity-type-card:hover { border-color: var(--primary); }
+  .activity-type-card.is-active {
+    border-color: var(--primary); background: var(--primary-bg);
+  }
+  .activity-type-card__icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--page-bg);
+  }
+  .activity-type-card.is-active .activity-type-card__icon {
+    background: var(--primary); color: #fff;
+  }
+  .activity-type-card__label {
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  }
+  .activity-type-card.is-active .activity-type-card__label {
+    color: var(--primary);
+  }
+
+  .big-map {
+    height: 280px;
+    border-radius: 8px;
+    background-color: #E8EEF5;
+    background-image:
+      linear-gradient(rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      radial-gradient(circle at 30% 40%, rgba(243, 150, 16, 0.1), transparent 50%);
+    background-size: 24px 24px, 24px 24px, auto;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .map-main-pin {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 36px; height: 36px;
+    background: var(--primary);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(36, 56, 140, 0.4);
+    z-index: 2;
+  }
+  .map-main-pin::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: -10px;
+    transform: translateX(-50%);
+    width: 2px; height: 10px;
+    background: var(--primary);
+  }
+  .map-main-pin::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .pulse-ring {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    opacity: 0.3;
+    animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: translate(-50%, -100%) scale(0.5); opacity: 0.6; }
+    100% { transform: translate(-50%, -100%) scale(2); opacity: 0; }
+  }
+  .gps-indicator {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(6px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--success);
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: var(--shadow-sm);
+  }
+  .gps-indicator::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: #22C55E;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+  </div>
+</div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('shell');
+
+function openModal(html) {
+  modalRoot.innerHTML += html;
+}
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
+
+function cerrarGanadaModal() {
+  return `
+    <div class="confetti"></div>
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header__icon modal-header__icon--success">${Icons.trophy}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 18px;">¡Oportunidad ganada! 🎉</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Registra los detalles del cierre</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="padding: 14px; background: var(--success-bg); border-radius: 8px; margin-bottom: 16px;">
+            <div style="font-size: 11.5px; color: var(--success); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Oportunidad</div>
+            <div style="font-weight: 700; color: var(--text-primary);">Proyecto acueducto rural - Piedecuesta</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">EMPAS S.A. · Valor: $ 485.000.000</div>
+          </div>
+          <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px;">Motivo del cierre</div>
+          <div class="motivo-option is-selected--success" onclick="this.classList.toggle('is-selected--success')">
+            <div class="motivo-option__radio"></div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px;">Adjudicación directa</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Cliente seleccionó a Extrucol como proveedor</div>
+            </div>
+          </div>
+          <div class="motivo-option" onclick="this.classList.toggle('is-selected--success')">
+            <div class="motivo-option__radio"></div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px;">Licitación ganada</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Proceso competitivo favorable</div>
+            </div>
+          </div>
+          <div class="motivo-option" onclick="this.classList.toggle('is-selected--success')">
+            <div class="motivo-option__radio"></div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px;">Mejor precio</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Cliente eligió por precio competitivo</div>
+            </div>
+          </div>
+          <div class="form-field" style="margin: 16px 0;">
+            <label class="form-field__label">Valor final del cierre (COP)</label>
+            <input class="input" value="$ 485.000.000" />
+          </div>
+          <div class="form-field" style="margin-bottom: 16px;">
+            <label class="form-field__label">Observaciones</label>
+            <textarea class="textarea" rows="2" placeholder="Detalles adicionales del cierre..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" style="background: var(--success);">${Icons.check} Confirmar cierre</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function cerrarPerdidaModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header__icon modal-header__icon--error">${Icons.xCircle}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 18px;">Cerrar como Perdida</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">El motivo nos ayuda a mejorar</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="padding: 14px; background: var(--error-bg); border-radius: 8px; margin-bottom: 16px;">
+            <div style="font-size: 11.5px; color: var(--error); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Oportunidad</div>
+            <div style="font-weight: 700; color: var(--text-primary);">Proyecto acueducto rural - Piedecuesta</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">EMPAS S.A. · Valor: $ 485.000.000</div>
+          </div>
+          <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px;">Motivo de pérdida <span style="color: var(--error);">*</span></div>
+          <div class="motivo-option" onclick="selectMotivoPerdida(this)">
+            <div class="motivo-option__radio"></div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px;">Precio no competitivo</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Cliente encontró mejor precio en competencia</div>
+            </div>
+          </div>
+          <div class="motivo-option is-selected--error" onclick="selectMotivoPerdida(this)">
+            <div class="motivo-option__radio"></div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px;">Competencia ganó licitação</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Otro proveedor fue adjudicado</div>
+            </div>
+          </div>
+          <div class="motivo-option" onclick="selectMotivoPerdida(this)">
+            <div class="motivo-option__radio"></div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px;">Cliente pospuso decisión</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Proyecto aplazado indefinidamente</div>
+            </div>
+          </div>
+          <div class="motivo-option" onclick="selectMotivoPerdida(this)">
+            <div class="motivo-option__radio"></div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px;">Requerimientos técnicos no coinciden</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">No tenemos producto para esta necesidad</div>
+            </div>
+          </div>
+          <div class="form-field" style="margin: 16px 0;">
+            <label class="form-field__label">Observaciones detalladas <span class="req">*</span></label>
+            <textarea class="textarea" rows="3" placeholder="Explica qué sucedió para poder aprender...">La competencia ofreció un precio 12% menor con tiempos de entrega similares.</textarea>
+          </div>
+          <div class="alert alert--info">${Icons.chartBar}<div style="font-size: 12px;">Los motivos de pérdida se analizan en los reportes del director para mejorar la estrategia.</div></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" style="background: var(--error);">${Icons.xCircle} Confirmar cierre perdido</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function editarOportunidadModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+          <div class="modal-header__icon modal-header__icon--primary">${Icons.pencil}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Editar oportunidad</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">OPP-2025-0042</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Título de la oportunidad <span class="req">*</span></label>
+            <input class="input" value="Proyecto acueducto rural - Piedecuesta" />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Tipo</label>
+              <select class="select">
+                <option>Licitación pública</option>
+                <option selected>Suministro directo</option>
+                <option>Proyecto a medida</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Sector</label>
+              <select class="select">
+                <option selected>Agua potable</option>
+                <option>Gas natural</option>
+                <option>Agricultura / Riego</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Valor estimado (COP)</label>
+              <input class="input" value="$ 485.000.000" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Fecha cierre estimada</label>
+              <input class="input" type="date" value="2026-04-25" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Descripción</label>
+            <textarea class="textarea" rows="2">Construcción de red de distribución de agua potable para zona rural.</textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary">${Icons.check} Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function avanzarEstadoModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header__icon modal-header__icon--accent">${Icons.arrowRight}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Avanzar estado</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Cambia el estado de la oportunidad</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="padding: 14px; background: var(--page-bg); border-radius: 8px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="badge badge--propuesta"><span class="dot"></span> Propuesta</span>
+              <span style="color: var(--text-muted);">→</span>
+              <span class="badge badge--negociacion"><span class="dot"></span> Negociación</span>
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Nuevo estado</label>
+            <select class="select">
+              <option>Negociación</option>
+              <option>Ganada</option>
+            </select>
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Fecha del cambio</label>
+            <input class="input" type="date" value="2026-04-22" />
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Comentario (opcional)</label>
+            <textarea class="textarea" rows="2" placeholder="Agrega un comentario sobre este cambio de estado..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary">${Icons.check} Confirmar cambio</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function agregarProductoModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header__icon modal-header__icon--primary">${Icons.archive}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Agregar producto</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Busca y selecciona productos para esta oportunidad</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div class="input-wrapper" style="margin-bottom: 14px;">
+            ${Icons.search}
+            <input class="input input--with-icon" placeholder="Buscar por nombre, tipo o referencia..." />
+          </div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Productos disponibles</div>
+          ${[
+            { nombre: 'Tubería PE100 SDR 11 - 4"', tipo: 'Tubería', presion: '16 bar' },
+            { nombre: 'Tubería PE100 SDR 17 - 6"', tipo: 'Tubería', presion: '10 bar' },
+            { nombre: 'Accesorios electrofusión 4"', tipo: 'Accesorio', presion: '16 bar' },
+            { nombre: 'Válvula de compuerta 4" AWWA', tipo: 'Válvula', presion: '16 bar' },
+            { nombre: 'Codo 90° PE100 4"', tipo: 'Accesorio', presion: '16 bar' },
+          ].map(p => `
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer;" onclick="this.style.borderColor='var(--primary);this.style.background='var(--primary-bg)'">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--primary-bg); color: var(--primary); display: flex; align-items: center; justify-content: center;">${Icons.archive}</div>
+              <div style="flex:1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">${p.nombre}</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">${p.tipo} · ${p.presion}</div>
+              </div>
+              <button class="topbar__icon-btn" style="color: var(--primary);">${Icons.plus}</button>
+            </div>
+          `).join('')}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cerrar</button>
+          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Agregar seleccionados</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function registrarActividadModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header__icon modal-header__icon--primary">${Icons.clipboard}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Registrar actividad</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Actividad relacionada con esta oportunidad</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body" style="padding-bottom: 0;">
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;">Datos de la actividad</div>
+          <div class="activity-type-selector" style="margin-bottom: 14px;">
+            ${[
+              { tipo: 'Visita', icon: 'mapPin', active: true },
+              { tipo: 'Llamada', icon: 'phone', active: false },
+              { tipo: 'Reunión', icon: 'view', active: false },
+              { tipo: 'Email', icon: 'envelope', active: false },
+            ].map(t => `
+              <div class="activity-type-card ${t.active ? 'is-active' : ''}">
+                <div class="activity-type-card__icon">${Icons[t.icon]}</div>
+                <div class="activity-type-card__label">${t.tipo}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="form-field" style="margin-bottom: 12px;">
+            <label class="form-field__label">Asunto <span class="req">*</span></label>
+            <input class="input" placeholder="Describe brevemente la actividad..." />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+            <div class="form-field">
+              <label class="form-field__label">Fecha</label>
+              <input class="input" type="date" value="2026-04-22" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Hora</label>
+              <input class="input" type="time" value="10:00" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">¿Virtual?</label>
+              <select class="select">
+                <option>Presencial</option>
+                <option>Virtual</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 0 24px;">
+          <div style="height: 1px; background: var(--border); margin: 0 0 16px;"></div>
+        </div>
+        <div style="padding: 0 24px 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Resultado y ubicación</div>
+            <span style="font-size: 11px; color: var(--text-disabled);">Se completa el día de la actividad</span>
+          </div>
+          <div class="form-field" style="margin-bottom: 12px;">
+            <label class="form-field__label">Resultado</label>
+            <textarea class="textarea" rows="2" placeholder="Qué se logró o acordó..." disabled style="background: var(--page-bg); cursor: not-allowed;"></textarea>
+          </div>
+          <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 4px;">
+            <div style="padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--page-bg);">
+              <div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Ubicación</div>
+                <div style="font-size: 11px; color: var(--text-disabled);">GPS · Se captura el día de la actividad</div>
+              </div>
+              <span class="badge badge--neutral" style="opacity: 0.6;">${Icons.mapPin.replace('class="icon"','class="icon icon--xs"')} Pendiente</span>
+            </div>
+            <div style="height: 160px; background: var(--page-bg); display: flex; align-items: center; justify-content: center; opacity: 0.5;">
+              <span style="font-size: 12px; color: var(--text-disabled);">Mapa disponible el día de la actividad</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Registrar actividad</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function content() {
+  const productosHTML = `
+    <div class="producto-row">
+      <div class="producto-icon">${Icons.archive}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600; color: var(--text-primary); font-size: 13.5px;">Tubería PE100 SDR 11 - 4"</div>
+        <div style="font-size: 12px; color: var(--text-muted);">Uso: Conducción agua potable · Presión 16 bar</div>
+      </div>
+      <span class="badge badge--info">Principal</span>
+    </div>
+    <div class="producto-row">
+      <div class="producto-icon">${Icons.archive}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600; color: var(--text-primary); font-size: 13.5px;">Accesorios electrofusión 4"</div>
+        <div style="font-size: 12px; color: var(--text-muted);">Codos 90°, tees, reducciones · EF</div>
+      </div>
+    </div>
+    <div class="producto-row">
+      <div class="producto-icon">${Icons.archive}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600; color: var(--text-primary); font-size: 13.5px;">Válvulas de compuerta 4"</div>
+        <div style="font-size: 12px; color: var(--text-muted);">AWWA C509 · Vástago no ascendente</div>
+      </div>
+    </div>
+  `;
+
+  const actividadesHTML = `
+    <div class="timeline">
+      <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
+        <div class="timeline__dot timeline__dot--success"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Reunión técnica en planta</div>
+          <span class="timeline__date">Hoy, 10:30 AM</span>
+        </div>
+        <div class="timeline__desc">
+          Visita con el ingeniero residente para revisar especificaciones del acueducto rural.
+          Se acordó entregar propuesta revisada el 25 de marzo.
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--info">${Icons.mapPin.replace('class="icon"','class="icon icon--xs"')} Visita</span>
+          <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
+        </div>
+      </div>
+      <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
+        <div class="timeline__dot timeline__dot--success"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Envío de cotización preliminar</div>
+          <span class="timeline__date">15 Mar, 3:20 PM</span>
+        </div>
+        <div class="timeline__desc">
+          Propuesta económica inicial por $ 485 M enviada al comité técnico.
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--neutral">${Icons.envelope.replace('class="icon"','class="icon icon--xs"')} Email</span>
+          <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
+        </div>
+      </div>
+      <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
+        <div class="timeline__dot"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Llamada de seguimiento inicial</div>
+          <span class="timeline__date">10 Mar, 11:00 AM</span>
+        </div>
+        <div class="timeline__desc">
+          Primera llamada con el gerente de proyectos para conocer requerimientos técnicos.
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--neutral">${Icons.phone.replace('class="icon"','class="icon icon--xs"')} Llamada</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const historialHTML = `
+    <div class="timeline">
+      <div class="timeline__item">
+        <div class="timeline__dot"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Cambio a Propuesta</div>
+          <span class="timeline__date">18 Mar</span>
+        </div>
+        <div class="timeline__desc">Desde "Calificación" · por Juan Pérez</div>
+      </div>
+      <div class="timeline__item">
+        <div class="timeline__dot timeline__dot--muted"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Cambio a Calificación</div>
+          <span class="timeline__date">12 Mar</span>
+        </div>
+        <div class="timeline__desc">Desde "Prospección" · por Juan Pérez</div>
+      </div>
+      <div class="timeline__item">
+        <div class="timeline__dot timeline__dot--muted"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Oportunidad creada</div>
+          <span class="timeline__date">05 Mar</span>
+        </div>
+        <div class="timeline__desc">Convertida desde Lead "Proyecto acueducto rural EMPAS"</div>
+      </div>
+    </div>
+  `;
+
+  const headerHTML = `
+    <div class="detail-header">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+        <a href="02-oportunidades-kanban.html" style="color: var(--primary); text-decoration: none;">Oportunidades</a>
+        <span>/</span>
+        <span>OPP-2025-0042</span>
+      </div>
+      <div class="detail-header__row">
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <span class="badge badge--propuesta"><span class="dot"></span> Propuesta</span>
+            <span class="badge badge--accent">Licitación</span>
+          </div>
+          <div class="detail-title">Proyecto acueducto rural - Piedecuesta</div>
+          <div class="detail-subtitle">EMPAS S.A. · Piedecuesta, Santander · Sector Agua Potable</div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+          <button class="btn btn--secondary btn--sm" onclick="openModal(editarOportunidadModal())">${Icons.pencil} Editar</button>
+          <a href="13-actividad-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+            <button class="btn btn--secondary btn--sm">${Icons.plus} Actividad</button>
+          </a>
+          <button class="btn btn--primary btn--sm" onclick="openModal(avanzarEstadoModal())">${Icons.arrowRight} Avanzar estado</button>
+        </div>
+      </div>
+      <div class="detail-meta">
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Valor estimado</span>
+          <span class="detail-meta__value detail-meta__value--accent">$ 485.000.000</span>
+        </div>
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Cierre estimado</span>
+          <span class="detail-meta__value">25 Abr 2026</span>
+        </div>
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Ejecutivo</span>
+          <span class="detail-meta__value">Juan Pérez</span>
+        </div>
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Probabilidad</span>
+          <span class="detail-meta__value">65%</span>
+        </div>
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Edad</span>
+          <span class="detail-meta__value">13 días</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const tabsHTML = `
+    <div class="tabs">
+      <a class="tab is-active">Resumen</a>
+      <a class="tab">Productos <span class="tab__count">3</span></a>
+      <a class="tab">Actividades <span class="tab__count">8</span></a>
+      <a class="tab">Historial</a>
+    </div>
+  `;
+
+  const productosCard = `
+    <div class="card">
+      <div class="card__header">
+        <div>
+          <div class="card__title">Productos asociados</div>
+          <div class="card__subtitle">3 productos en esta oportunidad</div>
+        </div>
+        <button class="btn btn--ghost btn--sm" onclick="openModal(agregarProductoModal())">${Icons.plus} Agregar</button>
+      </div>
+      <div class="card__body" style="padding-top: 4px; padding-bottom: 4px;">
+        ${productosHTML}
+      </div>
+    </div>
+  `;
+
+  const actividadesCard = `
+    <div class="card">
+      <div class="card__header">
+        <div>
+          <div class="card__title">Actividades recientes</div>
+          <div class="card__subtitle">Últimas 3 de 8</div>
+        </div>
+        <a href="07-actividades.html" style="text-decoration: none;"><button class="btn btn--ghost btn--sm">Ver todas</button></a>
+      </div>
+      <div class="card__body">${actividadesHTML}</div>
+      <div class="card__footer" style="justify-content: center;">
+        <button class="btn btn--secondary btn--sm btn--block" onclick="openModal(registrarActividadModal())">${Icons.plus} Registrar actividad</button>
+      </div>
+    </div>
+  `;
+
+  const sidePanel = `
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Empresa</div>
+          <a href="14-cliente-detalle.html" style="text-decoration: none;"><button class="btn btn--ghost btn--sm">${Icons.view}</button></a>
+        </div>
+        <div class="card__body">
+          <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+            <div class="avatar avatar--lg avatar--color-1">ES</div>
+            <div>
+              <div style="font-weight:700; color: var(--text-primary);">EMPAS S.A.</div>
+              <div style="font-size: 12px; color: var(--text-muted);">NIT 890.200.341-2</div>
+            </div>
+          </div>
+          <dl class="detail-info-list">
+            <dt>Sector</dt><dd>Agua Potable</dd>
+            <dt>Municipio</dt><dd>Piedecuesta</dd>
+            <dt>Modalidad</dt><dd>Interior</dd>
+            <dt>Cliente</dt><dd><span class="badge badge--info">Recurrente</span></dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Contacto</div>
+          <div style="display: flex; gap: 4px;">
+            <button class="topbar__icon-btn" onclick="openModal(contactOptionsModal())">${Icons.dots}</button>
+            <button class="btn btn--ghost btn--sm" onclick="openModal(agregarContactoModal())">${Icons.plus} Agregar</button>
+          </div>
+        </div>
+        <div class="card__body">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <div class="avatar avatar--sm avatar--color-2">AR</div>
+            <div>
+              <div style="font-weight:600; color: var(--text-primary);">Andrés Rodríguez</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Gerente de Proyectos</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <a style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--primary); cursor: pointer;">
+              ${Icons.phone} +57 310 555 8842
+            </a>
+            <a style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--primary); cursor: pointer;">
+              ${Icons.envelope} a.rodriguez@empas.gov.co
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Cierre de oportunidad</div>
+        </div>
+        <div class="card__body" style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn btn--primary btn--block" style="background: var(--success);" onclick="openModal(cerrarGanadaModal())">${Icons.check} Marcar como Ganada</button>
+          <button class="btn btn--secondary btn--block" style="color: var(--error); border-color: var(--error-border);" onclick="openModal(cerrarPerdidaModal())">${Icons.xCircle} Marcar como Perdida</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return `
+    <div class="content">
+      ${headerHTML}
+      ${tabsHTML}
+      <div style="display: grid; gap: 16px; grid-template-columns: 1fr 320px;">
+        <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+          ${productosCard}
+          ${actividadesCard}
+
+          <div class="card">
+            <div class="card__header">
+              <div class="card__title">Historial de estados</div>
+            </div>
+            <div class="card__body">${historialHTML}</div>
+          </div>
+        </div>
+        ${sidePanel}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('oportunidades', 'ejecutivo')}
+  <div class="main-area">
+    ${renderTopbar({ breadcrumb: ['Oportunidades', 'Detalle'] })}
+    ${content()}
+  </div>
+`;
+
+function agregarContactoModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content" style="max-width: 520px;">
+        <div class="modal-header">
+          <div class="modal-header__icon" style="background: var(--primary-bg); color: var(--primary);">${Icons.user}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Agregar contacto</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Nuevo contacto para EMPAS S.A.</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Nombre completo <span class="req">*</span></label>
+              <input class="input" placeholder="Nombre del contacto" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Cargo</label>
+              <input class="input" placeholder="Ej: Gerente de Proyectos" />
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Teléfono</label>
+              <input class="input" placeholder="+57 XXX XXX XXXX" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Email</label>
+              <input class="input" type="email" placeholder="contacto@empresa.com" />
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Área / Departamento</label>
+            <input class="input" placeholder="Ej: Compras, Proyectos, Dirección" />
+          </div>
+          <div class="form-field" style="margin-bottom: 6px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+              <input type="checkbox" style="width: 15px; height: 15px;" />
+              <span>Marcar como contacto principal</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Agregar contacto</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function contactOptionsModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content" style="max-width: 380px;">
+        <div class="modal-header">
+          <div class="modal-header__icon" style="background: var(--page-bg); color: var(--text-muted);">${Icons.user}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 15px;">Andrés Rodríguez</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Gerente de Proyectos · EMPAS S.A.</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body" style="padding: 8px;">
+          <button class="dropdown-item" onclick="closeModal()">${Icons.phone} Llamar ahora</button>
+          <button class="dropdown-item" onclick="closeModal()">${Icons.pencil} Editar contacto</button>
+          <button class="dropdown-item" style="color: var(--error);" onclick="closeModal()">${Icons.trash} Eliminar contacto</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

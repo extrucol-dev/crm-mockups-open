@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Director · Forecasting</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .forecast-chart {
+    height: 280px;
+    position: relative;
+    padding: 20px 40px 40px 60px;
+  }
+  .forecast-chart__grid {
+    position: absolute; inset: 20px 40px 40px 60px;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+    background-size: calc(100%/6) 25%;
+  }
+  .forecast-chart__y-axis {
+    position: absolute;
+    top: 20px; bottom: 40px; left: 0;
+    width: 60px;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+  }
+  .forecast-chart__y-label {
+    font-size: 10.5px; color: var(--text-muted);
+    text-align: right; padding-right: 10px;
+    font-weight: 600;
+  }
+  .forecast-chart__x-axis {
+    position: absolute;
+    left: 60px; right: 40px; bottom: 0;
+    height: 30px;
+    display: flex; justify-content: space-between;
+    padding-top: 8px;
+  }
+  .forecast-chart__x-label {
+    font-size: 11px; color: var(--text-muted);
+    font-weight: 600;
+  }
+  .forecast-chart__svg {
+    position: absolute;
+    top: 20px; left: 60px; right: 40px; bottom: 40px;
+    width: calc(100% - 100px);
+    height: calc(100% - 60px);
+  }
+  .forecast-chart__legend {
+    position: absolute;
+    top: 10px; right: 50px;
+    display: flex; gap: 16px;
+    background: #fff;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .legend-dot-sq {
+    width: 10px; height: 10px; border-radius: 2px;
+    display: inline-block;
+  }
+
+  .scenario-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    position: relative;
+  }
+  .scenario-card--best { border-color: var(--success); background: #F4FBF7; }
+  .scenario-card--worst { border-color: var(--error); background: #FEF4F3; }
+  .scenario-card--expected { border-color: var(--primary); background: var(--primary-bg); }
+
+  .scenario-card__badge {
+    position: absolute; top: -10px; left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    padding: 3px 12px;
+    border-radius: 10px;
+    font-size: 10px; font-weight: 700;
+    border: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .opp-forecast-row {
+    display: grid;
+    grid-template-columns: 2fr 180px 80px 120px 120px 100px 60px;
+    gap: 14px; align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .opp-forecast-row:hover { background: var(--page-bg); }
+
+  .prob-gauge {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .prob-gauge__bar {
+    width: 50px; height: 5px;
+    background: var(--border); border-radius: 3px;
+    overflow: hidden;
+  }
+  .prob-gauge__fill { height: 100%; }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+function content() {
+  const monthsData = [
+    { month: 'Feb', real: 820, optimista: null, esperada: null, pesimista: null },
+    { month: 'Mar', real: 1080, optimista: null, esperada: null, pesimista: null },
+    { month: 'Abr', real: 1240, optimista: null, esperada: null, pesimista: null },
+    { month: 'May', real: null, optimista: 1380, esperada: 1100, pesimista: 820 },
+    { month: 'Jun', real: null, optimista: 1720, esperada: 1400, pesimista: 1050 },
+    { month: 'Jul', real: null, optimista: 1150, esperada: 890, pesimista: 640 },
+    { month: 'Ago', real: null, optimista: 1320, esperada: 1020, pesimista: 720 },
+    { month: 'Sep', real: null, optimista: 1480, esperada: 1180, pesimista: 830 },
+  ];
+
+  const maxY = 1800;
+
+  const width = 100;
+  const height = 100;
+  const xStep = width / (monthsData.length - 1);
+
+  function buildPolyline(key, skipNulls = true) {
+    return monthsData
+      .map((m, i) => m[key] !== null ? `${i * xStep},${100 - (m[key] / maxY * 100)}` : null)
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  const realPoints = buildPolyline('real');
+  const optimistaPoints = buildPolyline('optimista');
+  const esperadaPoints = buildPolyline('esperada');
+  const pesimistaPoints = buildPolyline('pesimista');
+
+  const bridge = `${2 * xStep},${100 - (1240 / maxY * 100)} ${3 * xStep},${100 - (1100 / maxY * 100)}`;
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Forecasting</div>
+          <div class="page-head__subtitle">Proyección de ventas basada en pipeline ponderado · Horizonte 6 meses</div>
+        </div>
+        <div class="page-head__actions">
+          <select class="select" style="max-width: 160px;">
+            <option>6 meses</option>
+            <option>3 meses</option>
+            <option>12 meses</option>
+          </select>
+          <button class="btn btn--secondary btn--sm">${Icons.adjustments} Configurar</button>
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+          <button class="btn btn--primary btn--sm">${Icons.chartBar} Comparar</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--accent">${Icons.currency}</div>
+          <div class="stat-card__label">Ventas proyectadas Q2+Q3</div>
+          <div class="stat-card__value stat-card__value--accent">$ 6.590 M</div>
+          <div class="stat-card__subtext">Escenario esperado</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon" style="background: #E8F5EE; color: var(--success);">${Icons.trendingUp}</div>
+          <div class="stat-card__label">Mejor escenario</div>
+          <div class="stat-card__value stat-card__value--success">$ 8.150 M</div>
+          <div class="stat-card__subtext">+24% vs esperado</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon" style="background: #FDECEA; color: var(--error);">${Icons.trendingDown}</div>
+          <div class="stat-card__label">Peor escenario</div>
+          <div class="stat-card__value" style="color: var(--error);">$ 4.910 M</div>
+          <div class="stat-card__subtext">-26% vs esperado</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">${Icons.chartPie}</div>
+          <div class="stat-card__label">Pipeline ponderado</div>
+          <div class="stat-card__value">$ 2.940 M</div>
+          <div class="stat-card__subtext">$ 4.820 M en pipeline × prob.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__header">
+          <div>
+            <div class="card__title">Proyección de ventas mensuales</div>
+            <div class="card__subtitle">Línea continua: datos reales · Líneas discontinuas: proyecciones</div>
+          </div>
+          <select class="select select--sm" style="max-width: 140px;">
+            <option>Todos los sectores</option>
+            <option>Agua Potable</option>
+            <option>Gas Natural</option>
+          </select>
+        </div>
+        <div class="card__body" style="padding-bottom: 8px;">
+          <div class="forecast-chart">
+            <div class="forecast-chart__legend">
+              <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px;"><span class="legend-dot-sq" style="background: var(--primary);"></span> Real</span>
+              <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px;"><span class="legend-dot-sq" style="background: var(--success);"></span> Optimista</span>
+              <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px;"><span class="legend-dot-sq" style="background: var(--accent);"></span> Esperado</span>
+              <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px;"><span class="legend-dot-sq" style="background: var(--error);"></span> Pesimista</span>
+            </div>
+
+            <div class="forecast-chart__grid"></div>
+
+            <div class="forecast-chart__y-axis">
+              <span class="forecast-chart__y-label">$ 1.800 M</span>
+              <span class="forecast-chart__y-label">$ 1.350 M</span>
+              <span class="forecast-chart__y-label">$ 900 M</span>
+              <span class="forecast-chart__y-label">$ 450 M</span>
+              <span class="forecast-chart__y-label">$ 0</span>
+            </div>
+
+            <svg class="forecast-chart__svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#F39610" stop-opacity="0.15"/>
+                  <stop offset="100%" stop-color="#F39610" stop-opacity="0.02"/>
+                </linearGradient>
+              </defs>
+
+              <polygon
+                points="${2 * xStep},${100 - (1240 / maxY * 100)} ${optimistaPoints.split(' ').join(' ')} ${pesimistaPoints.split(' ').reverse().join(' ')} ${2 * xStep},${100 - (1240 / maxY * 100)}"
+                fill="url(#areaGradient)"
+                vector-effect="non-scaling-stroke"
+              />
+
+              <polyline points="${2 * xStep},${100 - (1240 / maxY * 100)} ${optimistaPoints}"
+                fill="none" stroke="#22C55E" stroke-width="2" stroke-dasharray="3,2"
+                vector-effect="non-scaling-stroke"/>
+
+              <polyline points="${2 * xStep},${100 - (1240 / maxY * 100)} ${esperadaPoints}"
+                fill="none" stroke="#F39610" stroke-width="2.5" stroke-dasharray="4,2"
+                vector-effect="non-scaling-stroke"/>
+
+              <polyline points="${2 * xStep},${100 - (1240 / maxY * 100)} ${pesimistaPoints}"
+                fill="none" stroke="#EF4444" stroke-width="2" stroke-dasharray="3,2"
+                vector-effect="non-scaling-stroke"/>
+
+              <polyline points="${realPoints}"
+                fill="none" stroke="#24388C" stroke-width="3"
+                vector-effect="non-scaling-stroke"/>
+
+              ${monthsData.map((m, i) => m.real !== null ? `<circle cx="${i * xStep}" cy="${100 - (m.real / maxY * 100)}" r="1" fill="#24388C" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="0.5"/>` : '').join('')}
+
+              ${monthsData.map((m, i) => m.esperada !== null ? `<circle cx="${i * xStep}" cy="${100 - (m.esperada / maxY * 100)}" r="0.8" fill="#F39610" vector-effect="non-scaling-stroke"/>` : '').join('')}
+
+              <line x1="${2 * xStep}" y1="0" x2="${2 * xStep}" y2="100"
+                stroke="#6B6B6B" stroke-width="0.5" stroke-dasharray="1,1"
+                vector-effect="non-scaling-stroke"/>
+            </svg>
+
+            <div class="forecast-chart__x-axis">
+              ${monthsData.map(m => `<span class="forecast-chart__x-label">${m.month}</span>`).join('')}
+            </div>
+          </div>
+
+          <div style="text-align: center; padding: 8px 0; font-size: 11px; color: var(--text-muted);">
+            <span style="padding: 2px 8px; background: var(--page-bg); border-radius: 3px;">
+              ← Histórico &nbsp;|&nbsp; Proyección →
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__header">
+          <div>
+            <div class="card__title">Escenarios por trimestre</div>
+            <div class="card__subtitle">Comparativa de los tres escenarios de cierre basados en probabilidad</div>
+          </div>
+        </div>
+        <div class="card__body">
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+            <div>
+              <div style="font-weight: 700; font-size: 13px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.04em;">
+                Q2 2026 (May-Jun-Jul)
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <div class="scenario-card scenario-card--best">
+                  <div class="scenario-card__badge" style="color: var(--success);">Mejor</div>
+                  <div style="margin-top: 6px;">
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Optimista</div>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--success); margin: 4px 0;">$ 4.25 B</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Probabilidad ≥ 80%</div>
+                  </div>
+                </div>
+                <div class="scenario-card scenario-card--expected">
+                  <div class="scenario-card__badge" style="color: var(--primary);">★ Esperado</div>
+                  <div style="margin-top: 6px;">
+                    <div style="font-size: 11px; color: var(--primary); text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Más probable</div>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--primary); margin: 4px 0;">$ 3.39 B</div>
+                    <div style="font-size: 11px; color: var(--primary);">Probabilidad ≥ 50%</div>
+                  </div>
+                </div>
+                <div class="scenario-card scenario-card--worst">
+                  <div class="scenario-card__badge" style="color: var(--error);">Peor</div>
+                  <div style="margin-top: 6px;">
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Pesimista</div>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--error); margin: 4px 0;">$ 2.51 B</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Solo 100% compromiso</div>
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 14px; background: var(--page-bg); border-radius: 6px; margin-top: 10px; font-size: 12px;">
+                <span style="color: var(--text-muted);">Delta del rango:</span>
+                <strong style="color: var(--text-primary);">$ 1.74 B <span style="color: var(--text-muted); font-weight: 400;">(±26%)</span></strong>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-weight: 700; font-size: 13px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.04em;">
+                Q3 2026 (Ago-Sep-Oct)
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <div class="scenario-card scenario-card--best">
+                  <div class="scenario-card__badge" style="color: var(--success);">Mejor</div>
+                  <div style="margin-top: 6px;">
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Optimista</div>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--success); margin: 4px 0;">$ 3.90 B</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Probabilidad ≥ 80%</div>
+                  </div>
+                </div>
+                <div class="scenario-card scenario-card--expected">
+                  <div class="scenario-card__badge" style="color: var(--primary);">★ Esperado</div>
+                  <div style="margin-top: 6px;">
+                    <div style="font-size: 11px; color: var(--primary); text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Más probable</div>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--primary); margin: 4px 0;">$ 3.20 B</div>
+                    <div style="font-size: 11px; color: var(--primary);">Probabilidad ≥ 50%</div>
+                  </div>
+                </div>
+                <div class="scenario-card scenario-card--worst">
+                  <div class="scenario-card__badge" style="color: var(--error);">Peor</div>
+                  <div style="margin-top: 6px;">
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Pesimista</div>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--error); margin: 4px 0;">$ 2.40 B</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Solo 100% compromiso</div>
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 14px; background: var(--page-bg); border-radius: 6px; margin-top: 10px; font-size: 12px;">
+                <span style="color: var(--text-muted);">Delta del rango:</span>
+                <strong style="color: var(--text-primary);">$ 1.50 B <span style="color: var(--text-muted); font-weight: 400;">(±23%)</span></strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Distribución por probabilidad</div>
+              <div class="card__subtitle">Oportunidades activas agrupadas por probabilidad de cierre</div>
+            </div>
+          </div>
+          <div class="card__body">
+            ${[
+              { range: '90-100%', label: 'Compromiso cliente', count: 8, value: '$ 680 M', color: 'var(--success)' },
+              { range: '70-89%', label: 'Alta probabilidad', count: 14, value: '$ 1.120 M', color: '#3B82F6' },
+              { range: '50-69%', label: 'Media probabilidad', count: 22, value: '$ 1.580 M', color: 'var(--accent)' },
+              { range: '30-49%', label: 'Baja probabilidad', count: 15, value: '$ 980 M', color: '#A855F7' },
+              { range: '< 30%', label: 'Incierto', count: 6, value: '$ 460 M', color: 'var(--error)' },
+            ].map((p, i) => {
+              const total = 4820;
+              const valNum = parseFloat(p.value.replace(/[$M,.\s]/g, '')) / 10;
+              const pct = (valNum / total * 100 * 10).toFixed(0);
+              return `
+                <div style="padding: 10px 0; border-bottom: ${i < 4 ? '1px solid var(--border)' : 'none'};">
+                  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: ${p.color};"></span>
+                    <span style="font-weight: 700; font-size: 12.5px; color: var(--text-primary); min-width: 80px;">${p.range}</span>
+                    <span style="flex: 1; color: var(--text-muted); font-size: 12px;">${p.label}</span>
+                    <span style="font-weight: 700; color: var(--accent); font-size: 13px;">${p.value}</span>
+                    <span style="color: var(--text-muted); font-size: 11.5px; min-width: 50px; text-align: right;">${p.count} opp</span>
+                  </div>
+                  <div class="progress__bar"><div class="progress__fill" style="width: ${pct}%; background: ${p.color};"></div></div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Factores de confianza del forecast</div>
+              <div class="card__subtitle">Calidad de los datos y precisión histórica</div>
+            </div>
+          </div>
+          <div class="card__body">
+            <div style="text-align: center; padding: 10px 0;">
+              <div style="display: inline-flex; align-items: center; justify-content: center; width: 140px; height: 140px; border-radius: 50%; background: conic-gradient(var(--success) 0 78%, var(--border) 78%); position: relative;">
+                <div style="position: absolute; inset: 10px; background: #fff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <div style="font-size: 32px; font-weight: 800; color: var(--success);">78%</div>
+                  <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Confianza</div>
+                </div>
+              </div>
+              <div style="margin-top: 10px; font-size: 12.5px; color: var(--success); font-weight: 600;">Nivel alto de confianza</div>
+            </div>
+
+            <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);">
+              ${[
+                { factor: 'Histórico de precisión', score: 82, note: 'Forecasts pasados con error < 10%' },
+                { factor: 'Frescura del pipeline', score: 75, note: '87% de opp actualizadas esta semana' },
+                { factor: 'Tamaño de muestra', score: 88, note: '65 oportunidades activas' },
+                { factor: 'Diversificación sectores', score: 70, note: 'Concentración máxima 30%' },
+                { factor: 'Estabilidad del equipo', score: 65, note: '6 ejecutivos · 2 bajo meta' },
+              ].map(f => `
+                <div style="padding: 8px 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: var(--text-primary);">${f.factor}</span>
+                    <span style="font-weight: 700; font-size: 13px; color: ${f.score >= 80 ? 'var(--success)' : f.score >= 65 ? 'var(--accent)' : 'var(--error)'};">${f.score}%</span>
+                  </div>
+                  <div class="progress__bar"><div class="progress__fill" style="width: ${f.score}%; background: ${f.score >= 80 ? 'var(--success)' : f.score >= 65 ? 'var(--accent)' : 'var(--error)'};"></div></div>
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">${f.note}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 0; margin-bottom: 16px;">
+        <div class="card__header" style="padding: 16px;">
+          <div>
+            <div class="card__title">Oportunidades clave del forecast</div>
+            <div class="card__subtitle">Top 10 oportunidades que más impactan la proyección · Ordenadas por valor × probabilidad</div>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn--ghost btn--sm" onclick="toggleFiltrosForecast()">${Icons.filter} Filtros</button>
+            <button class="btn btn--ghost btn--sm">${Icons.download}</button>
+          </div>
+        </div>
+        <div id="filtros-forecast-panel" class="card" style="display: none; margin-bottom: 16px; padding: 16px;">
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+            <div class="form-field" style="min-width: 160px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Sector</label>
+              <select class="select" style="max-width: 160px;">
+                <option>Todos los sectores</option>
+                <option>Agua Potable</option>
+                <option>Gas Natural</option>
+                <option>Agro / Riego</option>
+                <option>Construcción</option>
+                <option>Industria</option>
+              </select>
+            </div>
+            <div class="form-field" style="min-width: 160px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Ejecutivo</label>
+              <select class="select" style="max-width: 160px;">
+                <option>Todos</option>
+                <option>María García</option>
+                <option>Juan Pérez</option>
+                <option>Ana Martínez</option>
+                <option>Laura Jiménez</option>
+                <option>Carlos Rodríguez</option>
+                <option>Pedro Salazar</option>
+              </select>
+            </div>
+            <div class="form-field" style="min-width: 160px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Probabilidad</label>
+              <select class="select" style="max-width: 160px;">
+                <option>Todas</option>
+                <option>90-100%</option>
+                <option>70-89%</option>
+                <option>50-69%</option>
+                <option>30-49%</option>
+                <option>&lt; 30%</option>
+              </select>
+            </div>
+            <div class="form-field" style="min-width: 140px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Valor mínimo</label>
+              <input class="input" placeholder="$ 0 M" style="max-width: 140px;" />
+            </div>
+            <div class="form-field" style="min-width: 140px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Cierre hasta</label>
+              <input class="input" type="date" style="max-width: 160px;" />
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn--primary btn--sm">${Icons.check} Aplicar</button>
+              <button class="btn btn--secondary btn--sm" onclick="toggleFiltrosForecast()">${Icons.close} Cerrar</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="opp-forecast-row" style="background: var(--page-bg); font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">
+            <div>Oportunidad</div>
+            <div>Ejecutivo</div>
+            <div style="text-align: right;">Valor</div>
+            <div>Probabilidad</div>
+            <div style="text-align: right;">Valor ponderado</div>
+            <div>Cierre est.</div>
+            <div></div>
+          </div>
+          ${[
+            { op: 'Licitación acueducto Bucaramanga', emp: 'EMPAS S.A.', execName: 'María García', exec: 'MG', color: 3, valor: 560, prob: 75, cierre: '30 Abr', urgent: true },
+            { op: 'Proyecto acueducto rural', emp: 'EMPAS S.A.', execName: 'Juan Pérez', exec: 'JP', color: 1, valor: 485, prob: 65, cierre: '25 Abr', urgent: true },
+            { op: 'Suministro anual tubería', emp: 'Constructora Andina', execName: 'Juan Pérez', exec: 'JP', color: 1, valor: 420, prob: 65, cierre: '15 May' },
+            { op: 'Línea conducción 8km', emp: 'Distriaguas Caribe', execName: 'Laura Jiménez', exec: 'LJ', color: 2, valor: 380, prob: 70, cierre: '05 May' },
+            { op: 'Ampliación red matriz', emp: 'Acueducto Metropolitano', execName: 'Ana Martínez', exec: 'AM', color: 4, valor: 340, prob: 40, cierre: '10 Jun' },
+            { op: 'Gasoducto Santa Marta', emp: 'Gas Natural Fenosa', execName: 'María García', exec: 'MG', color: 3, valor: 320, prob: 60, cierre: '20 May' },
+            { op: 'Red gas sector norte', emp: 'Hidgas', execName: 'Laura Jiménez', exec: 'LJ', color: 2, valor: 280, prob: 75, cierre: '08 May' },
+            { op: 'Sistema riego Palmeras', emp: 'Palmares del Sur', execName: 'Ana Martínez', exec: 'AM', color: 4, valor: 225, prob: 55, cierre: '25 May' },
+            { op: 'Tubería industrial Ecopetrol', emp: 'Ecopetrol', execName: 'Carlos Rodríguez', exec: 'CR', color: 5, valor: 215, prob: 50, cierre: '30 Jun' },
+            { op: 'Sistema presurizado', emp: 'Ingenio del Cauca', execName: 'María García', exec: 'MG', color: 3, valor: 180, prob: 50, cierre: '20 May' },
+          ].map(o => {
+            const ponderado = Math.round(o.valor * o.prob / 100);
+            const probColor = o.prob >= 70 ? 'var(--success)' : o.prob >= 50 ? 'var(--accent)' : 'var(--error)';
+            return `
+              <div class="opp-forecast-row">
+                <div style="min-width: 0;">
+                  <div style="font-weight: 600; color: var(--text-primary); font-size: 13px;">${o.op}</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                    ${o.emp} ${o.urgent ? '<span class="badge badge--perdida" style="font-size: 9px; padding: 0 6px;">◆ Esta semana</span>' : ''}
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <div class="avatar avatar--xs avatar--color-${o.color}">${o.exec}</div>
+                  <span style="font-size: 12px; color: var(--text-secondary);">${o.execName}</span>
+                </div>
+                <div style="text-align: right; font-weight: 700; color: var(--text-primary);">$ ${o.valor} M</div>
+                <div>
+                  <div class="prob-gauge">
+                    <div class="prob-gauge__bar"><div class="prob-gauge__fill" style="width: ${o.prob}%; background: ${probColor};"></div></div>
+                    <strong style="font-size: 12px; color: ${probColor}; min-width: 32px;">${o.prob}%</strong>
+                  </div>
+                </div>
+                <div style="text-align: right; font-weight: 800; color: var(--accent);">$ ${ponderado} M</div>
+                <div style="font-size: 12px; color: var(--text-muted);">${o.cierre}</div>
+                <div><a href="07-oportunidad-detalle.html" style="text-decoration: none; color: inherit;"><button class="table__action">${Icons.view}</button></a></div>
+              </div>
+            `;
+          }).join('')}
+          <div style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: var(--page-bg); font-size: 13px;">
+            <span style="color: var(--text-muted);">Mostrando 10 de 65 oportunidades activas</span>
+            <strong style="color: var(--accent);">Suma ponderada Top 10: $ 2.020 M</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Forecast Q2 por sector</div>
+              <div class="card__subtitle">Distribución esperada del cierre</div>
+            </div>
+          </div>
+          <div class="card__body">
+            ${[
+              { sector: 'Agua Potable', color: '#24388C', val: 1020, pct: 30 },
+              { sector: 'Gas Natural', color: '#F39610', val: 745, pct: 22 },
+              { sector: 'Agro / Riego', color: '#A855F7', val: 610, pct: 18 },
+              { sector: 'Construcción', color: '#22C55E', val: 508, pct: 15 },
+              { sector: 'Industria', color: '#EF4444', val: 508, pct: 15 },
+            ].map(s => `
+              <div style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 10px; height: 10px; border-radius: 3px; background: ${s.color};"></span>
+                    <strong style="font-size: 13px; color: var(--text-primary);">${s.sector}</strong>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <strong style="color: var(--accent); font-size: 14px;">$ ${s.val} M</strong>
+                    <span style="color: var(--text-muted); font-size: 11.5px;">${s.pct}%</span>
+                  </div>
+                </div>
+                <div class="progress__bar"><div class="progress__fill" style="width: ${s.pct * 3}%; background: ${s.color};"></div></div>
+              </div>
+            `).join('')}
+            <div style="padding-top: 10px; display: flex; justify-content: space-between; font-weight: 700;">
+              <span style="color: var(--text-primary);">Total Q2 esperado</span>
+              <span style="color: var(--accent); font-size: 17px;">$ 3.390 M</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">⚠ Riesgos del forecast</div>
+              <div class="card__subtitle">Factores que pueden afectar negativamente la proyección</div>
+            </div>
+          </div>
+          <div class="card__body">
+            ${[
+              { severity: 'Alto', title: 'Licitación EMPAS en riesgo', desc: '$ 560 M pueden caer si competencia gana. Representa 16% del Q2.', color: 'var(--error)', bg: '#FDECEA' },
+              { severity: 'Medio', title: '2 ejecutivos bajo meta', desc: 'Pedro S. (48%) y Carlos R. (62%) impactan $ 420 M de pipeline.', color: 'var(--accent)', bg: '#FFF4E0' },
+              { severity: 'Medio', title: 'Concentración en EMPAS', desc: '2 oportunidades del mismo cliente suman 31% del Q2.', color: 'var(--accent)', bg: '#FFF4E0' },
+              { severity: 'Bajo', title: 'Cierre Q2 apretado', desc: '$ 1.045 M con fecha de cierre en los últimos 10 días de cada mes.', color: 'var(--primary)', bg: 'var(--primary-bg)' },
+            ].map(r => `
+              <div style="padding: 12px; background: ${r.bg}; border-left: 3px solid ${r.color}; border-radius: 4px; margin-bottom: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; background: ${r.color}; color: #fff; border-radius: 10px;">${r.severity}</span>
+                  <strong style="font-size: 13px; color: var(--text-primary);">${r.title}</strong>
+                </div>
+                <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">${r.desc}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('forecasting', 'director')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Forecasting' })}
+    ${content()}
+  </div>
+`;
+function toggleFiltrosForecast() {
+  const panel = document.getElementById('filtros-forecast-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+function openOppDetalle() {
+  window.location.href = '07-oportunidad-detalle.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Formularios</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 40px; }
+  .form-card {
+    max-width: 672px; margin: 0 auto;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; box-shadow: var(--shadow-sm);
+  }
+  .form-section {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+  }
+  .form-section:last-child { border-bottom: none; }
+  .form-section__title {
+    font-size: 13px; font-weight: 700; color: var(--text-primary);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .form-section__title .icon { color: var(--primary); }
+  .form-grid-2 {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+  }
+  .form-grid-full { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('shell');
+function openModal(html) { modalRoot.innerHTML += html; }
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
+
+function buscarProductoModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header__icon" style="background: var(--primary-bg); color: var(--primary);">${Icons.archive}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Buscar producto</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Busca por nombre, tipo o referencia</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div class="input-wrapper" style="margin-bottom: 14px;">
+            ${Icons.search}
+            <input class="input input--with-icon" placeholder="Buscar por nombre, tipo o referencia..." />
+          </div>
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Productos disponibles</div>
+          ${[
+            { nombre: 'Tubería PE100 SDR 11 - 4"', tipo: 'Tubería', presion: '16 bar', ref: 'PE100-SDR11-4' },
+            { nombre: 'Tubería PE100 SDR 17 - 6"', tipo: 'Tubería', presion: '10 bar', ref: 'PE100-SDR17-6' },
+            { nombre: 'Accesorios electrofusión 4"', tipo: 'Accesorio', presion: '16 bar', ref: 'EF-4IN' },
+            { nombre: 'Válvula de compuerta 4" AWWA', tipo: 'Válvula', presion: '16 bar', ref: 'VC-AWWA-4' },
+            { nombre: 'Codo 90° PE100 4"', tipo: 'Accesorio', presion: '16 bar', ref: 'CODO-90-4' },
+          ].map(p => `
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer;" onclick="this.style.borderColor='var(--primary)';this.style.background='var(--primary-bg)'">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--primary-bg); color: var(--primary); display: flex; align-items: center; justify-content: center;">${Icons.archive}</div>
+              <div style="flex:1;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">${p.nombre}</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">${p.tipo} · ${p.presion} · ${p.ref}</div>
+              </div>
+              <button class="topbar__icon-btn" style="color: var(--primary);">${Icons.plus}</button>
+            </div>
+          `).join('')}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cerrar</button>
+          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Agregar seleccionados</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function content() {
+  const formHTML = `
+    <div class="form-card">
+      <div class="form-section">
+        <div class="form-section__title">${Icons.briefcase} Información básica</div>
+        <div class="form-grid-2" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="form-field form-grid-full">
+            <label class="form-field__label">Título de la oportunidad <span class="req">*</span></label>
+            <input class="input" value="Proyecto acueducto rural - Piedecuesta" />
+            <span class="form-field__hint">Describe brevemente la oportunidad de negocio</span>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Tipo de oportunidad <span class="req">*</span></label>
+            <select class="select">
+              <option>Licitación pública</option>
+              <option>Suministro directo</option>
+              <option>Proyecto a medida</option>
+              <option>Contrato marco</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Sector <span class="req">*</span></label>
+            <select class="select">
+              <option>Agua potable</option>
+              <option>Gas natural</option>
+              <option>Agricultura / Riego</option>
+              <option>Industria</option>
+            </select>
+          </div>
+          <div class="form-field form-grid-full">
+            <label class="form-field__label">Descripción</label>
+            <textarea class="textarea" rows="3">Construcción de red de distribución de agua potable para zona rural de Piedecuesta, fase 1 - conducción principal 3km.</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section__title">${Icons.building} Empresa y contacto</div>
+        <div class="form-grid-2" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="form-field form-grid-full">
+            <label class="form-field__label">Empresa <span class="req">*</span></label>
+            <div class="input-wrapper">
+              ${Icons.search}
+              <input class="input input--with-icon" value="EMPAS S.A." />
+            </div>
+            <span class="form-field__hint">Busca una empresa existente o crea una nueva</span>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Contacto asignado</label>
+            <select class="select">
+              <option>Andrés Rodríguez — Gerente de Proyectos</option>
+              <option>María López — Compradora</option>
+              <option>+ Nuevo contacto</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Lead de origen</label>
+            <select class="select">
+              <option>Lead #124 - Proyecto acueducto rural</option>
+              <option>Sin lead de origen</option>
+            </select>
+            <span class="form-field__hint">Se usa para medir conversión</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section__title">${Icons.currency} Valores y fechas</div>
+        <div class="form-grid-2" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="form-field">
+            <label class="form-field__label">Valor estimado (COP) <span class="req">*</span></label>
+            <input class="input" value="$ 485.000.000" />
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Fecha estimada de cierre <span class="req">*</span></label>
+            <input class="input" type="date" value="2026-04-25" />
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Probabilidad de cierre</label>
+            <input class="input" value="65" />
+            <span class="form-field__hint">Porcentaje estimado (0-100)</span>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Estado inicial</label>
+            <select class="select">
+              <option>Prospección</option>
+              <option selected>Calificación</option>
+              <option>Propuesta</option>
+              <option>Negociación</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section__title">${Icons.archive} Productos asociados</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--page-bg); border-radius: 6px;">
+            <div style="flex:1;">
+              <div style="font-weight:600; font-size: 13px;">Tubería PE100 SDR 11 - 4"</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Agregado al listado</div>
+            </div>
+            <button class="topbar__icon-btn" style="color: var(--error);">${Icons.trash}</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--page-bg); border-radius: 6px;">
+            <div style="flex:1;">
+              <div style="font-weight:600; font-size: 13px;">Accesorios electrofusión 4"</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Agregado al listado</div>
+            </div>
+            <button class="topbar__icon-btn" style="color: var(--error);">${Icons.trash}</button>
+          </div>
+          <button class="btn btn--secondary btn--block" style="border-style: dashed;" onclick="openModal(buscarProductoModal())">${Icons.plus} Agregar producto</button>
+        </div>
+      </div>
+
+      <div class="form-section" style="background: var(--page-bg);">
+        <div class="form-actions" style="border-top: none; padding-top: 0; margin-top: 0;">
+          <a href="02-oportunidades-kanban.html" style="text-decoration: none;"><button class="btn btn--secondary">Cancelar</button></a>
+          <button class="btn btn--primary">${Icons.check} Guardar oportunidad</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Nueva oportunidad</div>
+          <div class="page-head__subtitle">Completa los datos para crear una nueva oportunidad comercial</div>
+        </div>
+      </div>
+      ${formHTML}
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('oportunidades', 'ejecutivo')}
+  <div class="main-area">
+    ${renderTopbar({ breadcrumb: ['Oportunidades', 'Nueva'] })}
+    ${content()}
+  </div>
+`;
+</script>
+</body>
+</html>

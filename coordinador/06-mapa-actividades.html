@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Coordinador · Monitoreo y Notificaciones</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-section-title { font: 700 15px 'Roboto'; color: #24388C; margin: 40px 0 20px; padding: 8px 14px; background: #fff; border: 1px solid #E5E5E5; border-radius: 6px; display: inline-block; }
+
+  .big-map {
+    height: 480px;
+    border-radius: 12px;
+    background-color: #E8EEF5;
+    background-image:
+      linear-gradient(rgba(36, 56, 140, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36, 56, 140, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at 25% 30%, rgba(243, 150, 16, 0.18), transparent 40%),
+      radial-gradient(circle at 75% 70%, rgba(36, 56, 140, 0.15), transparent 40%);
+    background-size: 28px 28px, 28px 28px, auto, auto;
+    position: relative; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .map-pin {
+    position: absolute;
+    width: 26px; height: 26px;
+    background: var(--primary);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 11px; font-weight: 700;
+  }
+  .map-pin--accent { background: var(--accent); }
+  .map-pin--success { background: var(--green-bright); }
+  .map-pin--error { background: var(--error); }
+  .map-legend {
+    position: absolute;
+    top: 16px; left: 16px;
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    font-size: 12px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .map-stats {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: #fff;
+    padding: 14px 18px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    display: flex; gap: 20px;
+  }
+  .map-stats__item { text-align: center; }
+  .map-stats__value { font-size: 20px; font-weight: 800; color: var(--primary); }
+  .map-stats__label { font-size: 10.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .notif-item {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .notif-icon {
+    width: 38px; height: 38px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .notif-icon--error { background: #FDECEA; color: var(--error); }
+  .notif-icon--warning { background: #FFF8E5; color: #B87E15; }
+  .notif-icon--info { background: var(--primary-bg); color: var(--primary); }
+  .notif-icon--success { background: #E8F5EE; color: var(--success); }
+
+  .compliance-mini {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px; position: relative;
+  }
+  .compliance-mini::before { content: ''; position: absolute; inset: 3px; background: #fff; border-radius: 50%; }
+  .compliance-mini > span { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+  </div>
+</div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('modal-root');
+
+function verDetalleModal(visita) {
+  modalRoot.innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div style="display:flex;align-items:center;">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-bg);color:var(--primary);display:flex;align-items:center;justify-content:center;margin-right:12px;">${Icons.mapPin}</div>
+            <div>
+              <div style="font-weight:700;font-size:16px;">Detalle de visita</div>
+              <div style="font-size:12.5px;color:var(--text-muted);">${visita.exec} · ${visita.time}</div>
+            </div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <dl class="detail-info-list" style="margin-bottom:16px;">
+            <dt>Ejecutivo</dt><dd>${visita.exec}</dd>
+            <dt>Empresa visitada</dt><dd>${visita.empresa}</dd>
+            <dt>Ciudad</dt><dd>${visita.ciudad}</dd>
+            <dt>Hora</dt><dd>${visita.time}</dd>
+            <dt>Coordenadas</dt><dd><span style="font-family:monospace;">${visita.coords}</span></dd>
+          </dl>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function closeModal() { modalRoot.innerHTML = ''; }
+
+function mapaContent() {
+  const pines = [
+    { top: '22%', left: '35%', label: 'JP', class: '' },
+    { top: '30%', left: '55%', label: 'JP', class: '' },
+    { top: '45%', left: '28%', label: 'MG', class: 'accent' },
+    { top: '60%', left: '45%', label: 'AM', class: '' },
+    { top: '35%', left: '72%', label: 'JP', class: '' },
+    { top: '55%', left: '65%', label: 'LJ', class: 'success' },
+    { top: '70%', left: '32%', label: 'MG', class: 'accent' },
+    { top: '25%', left: '80%', label: 'CR', class: 'error' },
+    { top: '75%', left: '60%', label: 'AM', class: '' },
+    { top: '40%', left: '50%', label: 'MG', class: 'accent' },
+    { top: '65%', left: '78%', label: 'LJ', class: 'success' },
+    { top: '50%', left: '18%', label: 'JP', class: '' },
+  ];
+
+  const content = `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Mapa de actividades</div>
+          <div class="page-head__subtitle">Visitas georreferenciadas del equipo · Últimos 7 días</div>
+        </div>
+        <div class="page-head__actions">
+          <select class="select" style="max-width: 160px;">
+            <option>Últimos 7 días</option><option>Hoy</option><option>Últimas 24h</option>
+          </select>
+          <select class="select" style="max-width: 180px;">
+            <option>Todos los ejecutivos</option>
+          </select>
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <button class="btn btn--ghost btn--sm" style="background: var(--primary-bg); color: var(--primary);">
+          Todos (${pines.length})
+        </button>
+        <button class="btn btn--ghost btn--sm">JP Juan P. (${pines.filter(p => p.label === 'JP').length})</button>
+        <button class="btn btn--ghost btn--sm" style="color: #C7770D;">MG María G. (${pines.filter(p => p.label === 'MG').length})</button>
+        <button class="btn btn--ghost btn--sm">AM Ana M. (${pines.filter(p => p.label === 'AM').length})</button>
+        <button class="btn btn--ghost btn--sm">LJ Laura J. (${pines.filter(p => p.label === 'LJ').length})</button>
+        <button class="btn btn--ghost btn--sm" style="color: var(--error);">CR Carlos R. (${pines.filter(p => p.label === 'CR').length})</button>
+      </div>
+
+      <div class="big-map" style="height: 480px; margin-bottom: 16px;">
+        <div class="map-legend">
+          <div style="font-weight: 700; font-size: 11px; color: var(--text-primary); margin-bottom: 4px;">Leyenda</div>
+          <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 12px; height: 12px; border-radius: 50%; background: var(--primary);"></span> Juan Pérez</div>
+          <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 12px; height: 12px; border-radius: 50%; background: var(--accent);"></span> María García</div>
+          <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 12px; height: 12px; border-radius: 50%; background: var(--primary);"></span> Ana Martínez</div>
+          <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 12px; height: 12px; border-radius: 50%; background: var(--green-bright);"></span> Laura Jiménez</div>
+          <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 12px; height: 12px; border-radius: 50%; background: var(--error);"></span> Carlos Rodríguez</div>
+        </div>
+
+        <div class="map-stats">
+          <div class="map-stats__item">
+            <div class="map-stats__value">${pines.length}</div>
+            <div class="map-stats__label">Visitas</div>
+          </div>
+          <div class="map-stats__item">
+            <div class="map-stats__value">5</div>
+            <div class="map-stats__label">Ejecutivos</div>
+          </div>
+          <div class="map-stats__item">
+            <div class="map-stats__value">8</div>
+            <div class="map-stats__label">Ciudades</div>
+          </div>
+        </div>
+
+        ${pines.map(p => `
+          <div class="map-pin ${p.class ? 'map-pin--' + p.class : ''}" style="top: ${p.top}; left: ${p.left}; transform: translate(-50%, -50%);">${p.label}</div>
+        `).join('')}
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div>
+            <div class="card__title">Visitas recientes</div>
+            <div class="card__subtitle">Últimas 5 visitas registradas con GPS</div>
+          </div>
+          <a href="07-actividades.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+            <button class="btn btn--ghost btn--sm">Ver todas ${Icons.arrowRight}</button>
+          </a>
+
+        </div>
+        <div style="padding: 0;">
+          ${[
+            { exec: 'María García', color: 3, empresa: 'Tecnoagua SAS', ciudad: 'Medellín', time: 'Hace 30 min', coords: '6.2468, -75.5707' },
+            { exec: 'Juan Pérez', color: 1, empresa: 'EMPAS S.A.', ciudad: 'Piedecuesta', time: 'Hace 2h', coords: '6.9831, -73.0483' },
+            { exec: 'Laura Jiménez', color: 2, empresa: 'Acueducto Oriental', ciudad: 'Bucaramanga', time: 'Hace 4h', coords: '7.1193, -73.1227' },
+            { exec: 'Ana Martínez', color: 4, empresa: 'Palmares del Sur', ciudad: 'Cali', time: 'Hace 5h', coords: '3.4516, -76.5320' },
+            { exec: 'Juan Pérez', color: 1, empresa: 'Construcciones Andinas', ciudad: 'Bucaramanga', time: 'Hoy 09:15', coords: '7.1193, -73.1227' },
+          ].map(v => `
+            <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-top: 1px solid var(--border);">
+              <div class="avatar avatar--sm avatar--color-${v.color}">${v.exec.split(' ').map(x=>x[0]).join('')}</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13px;"><span style="color: var(--text-primary);">${v.exec}</span> visitó <span style="color: var(--primary);">${v.empresa}</span></div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">
+                  ${Icons.mapPin.replace('class="icon"','class="icon icon--xs"')} ${v.ciudad} · 
+                  <span style="font-family: monospace;">${v.coords}</span> ·
+                  ${v.time}
+                </div>
+              </div>
+              <button class="btn btn--ghost btn--sm" onclick='verDetalleModal(${JSON.stringify(v).replace(/'/g, "\\'")})'>${Icons.view}</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  return content;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('mapa', 'coordinador')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Mapa de actividades' })}
+    ${mapaContent()}
+  </div>
+`;
+</script>
+</body>
+</html>

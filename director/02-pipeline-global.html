@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Director · Pipeline Global</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+function content() {
+  const pipelineData = [
+    { estado: 'Prospección', count: 18, valor: '$ 580 M', pct: 12, color: '#3B82F6' },
+    { estado: 'Calificación', count: 14, valor: '$ 820 M', pct: 17, color: '#F97316' },
+    { estado: 'Propuesta', count: 21, valor: '$ 1.580 M', pct: 33, color: '#A855F7' },
+    { estado: 'Negociación', count: 12, valor: '$ 1.240 M', pct: 26, color: '#EAB308' },
+    { estado: 'Ganadas (mes)', count: 8, valor: '$ 600 M', pct: 12, color: '#22C55E' },
+  ];
+
+  const rows = pipelineData.map(p => `
+    <div style="display: grid; grid-template-columns: 180px 80px 1fr 120px; gap: 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border);">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: ${p.color};"></span>
+        <span style="font-weight: 600; color: var(--text-primary);">${p.estado}</span>
+      </div>
+      <span style="font-weight: 700; color: var(--text-primary);">${p.count}</span>
+      <div>
+        <div class="progress__bar"><div class="progress__fill" style="width: ${p.pct * 3}%; background: ${p.color};"></div></div>
+      </div>
+      <span style="font-weight: 700; color: var(--accent); text-align: right;">${p.valor}</span>
+    </div>
+  `).join('');
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Pipeline global</div>
+          <div class="page-head__subtitle">Visión agregada de todas las oportunidades del equipo</div>
+        </div>
+        <div class="page-head__actions">
+          <select class="select" style="max-width: 160px;"><option>Todos los ejecutivos</option></select>
+          <select class="select" style="max-width: 160px;"><option>Todos los sectores</option></select>
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div class="stat-card">
+          <div class="stat-card__label">Total oportunidades activas</div>
+          <div class="stat-card__value">65</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Pipeline ponderado</div>
+          <div class="stat-card__value stat-card__value--accent">$ 2.940 M</div>
+          <div class="stat-card__subtext">Según probabilidad cierre</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Ticket promedio</div>
+          <div class="stat-card__value">$ 74 M</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Ciclo promedio venta</div>
+          <div class="stat-card__value">42 <span style="font-size: 14px;">días</span></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__header">
+          <div>
+            <div class="card__title">Distribución por estado</div>
+            <div class="card__subtitle">Oportunidades abiertas + cerradas este mes</div>
+          </div>
+        </div>
+        <div class="card__body">${rows}</div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div>
+            <div class="card__title">Oportunidades activas</div>
+            <div class="card__subtitle">65 oportunidades · vista consolidada</div>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn--secondary btn--sm" onclick="toggleFiltros()">${Icons.filter} Filtros</button>
+          </div>
+        </div>
+        <div id="filtros-panel" class="card" style="display: none; margin-bottom: 16px; padding: 16px;">
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+            <div class="form-field" style="min-width: 160px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Estado</label>
+              <select class="select" style="max-width: 160px;">
+                <option>Todos los estados</option>
+                <option>Prospección</option>
+                <option>Calificación</option>
+                <option>Propuesta</option>
+                <option>Negociación</option>
+              </select>
+            </div>
+            <div class="form-field" style="min-width: 160px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Ejecutivo</label>
+              <select class="select" style="max-width: 160px;">
+                <option>Todos</option>
+                <option>María García</option>
+                <option>Juan Pérez</option>
+                <option>Ana Martínez</option>
+                <option>Laura Jiménez</option>
+                <option>Carlos Rodríguez</option>
+                <option>Pedro Salazar</option>
+              </select>
+            </div>
+            <div class="form-field" style="min-width: 160px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Sector</label>
+              <select class="select" style="max-width: 160px;">
+                <option>Todos los sectores</option>
+                <option>Agua Potable</option>
+                <option>Gas Natural</option>
+                <option>Agro / Riego</option>
+                <option>Construcción</option>
+                <option>Industria</option>
+              </select>
+            </div>
+            <div class="form-field" style="min-width: 140px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Valor mínimo</label>
+              <input class="input" placeholder="$ 0 M" style="max-width: 140px;" />
+            </div>
+            <div class="form-field" style="min-width: 140px; margin-bottom: 0;">
+              <label class="form-field__label" style="font-size: 11px;">Valor máximo</label>
+              <input class="input" placeholder="$ 1.000 M" style="max-width: 140px;" />
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn--primary btn--sm">${Icons.check} Aplicar</button>
+              <button class="btn btn--secondary btn--sm" onclick="toggleFiltros()">${Icons.close} Cerrar</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Oportunidad</th>
+                <th>Empresa</th>
+                <th>Ejecutivo</th>
+                <th>Estado</th>
+                <th>Valor</th>
+                <th>Prob.</th>
+                <th>Cierre est.</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${[
+                { op: 'Licitación acueducto Bucaramanga', emp: 'EMPAS S.A.', exec: 'MG', execName: 'María G.', color: 3, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 560 M', prob: '75%', cierre: '30 Abr' },
+                { op: 'Suministro anual tubería', emp: 'Constructora Andina', exec: 'JP', execName: 'Juan P.', color: 1, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 420 M', prob: '65%', cierre: '15 May' },
+                { op: 'Proyecto acueducto rural', emp: 'EMPAS S.A.', exec: 'JP', execName: 'Juan P.', color: 1, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 485 M', prob: '60%', cierre: '25 Abr' },
+                { op: 'Ampliación red matriz', emp: 'Acueducto Metrop.', exec: 'AM', execName: 'Ana M.', color: 4, estado: 'calificacion', estadoL: 'Calificación', valor: '$ 340 M', prob: '40%', cierre: '10 Jun' },
+                { op: 'Línea conducción 8km', emp: 'Distriaguas Caribe', exec: 'LJ', execName: 'Laura J.', color: 2, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 380 M', prob: '70%', cierre: '05 May' },
+                { op: 'Sistema presurizado', emp: 'Ingenio del Cauca', exec: 'MG', execName: 'María G.', color: 3, estado: 'calificacion', estadoL: 'Calificación', valor: '$ 180 M', prob: '50%', cierre: '20 May' },
+                { op: 'Riego goteo 30 Ha', emp: 'Palmares del Sur', exec: 'AM', execName: 'Ana M.', color: 4, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 88 M', prob: '55%', cierre: '28 Abr' },
+                { op: 'Red gas sector norte', emp: 'Hidrogas', exec: 'LJ', execName: 'Laura J.', color: 2, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 280 M', prob: '75%', cierre: '08 May' },
+                { op: 'Gasoducto Santa Marta', emp: 'Gas Natural Fenosa', exec: 'MG', execName: 'María G.', color: 3, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 320 M', prob: '60%', cierre: '20 May' },
+                { op: 'Tubería industrial', emp: 'Ecopetrol', exec: 'CR', execName: 'Carlos R.', color: 5, estado: 'calificacion', estadoL: 'Calificación', valor: '$ 215 M', prob: '50%', cierre: '30 Jun' },
+              ].map(r => `
+                <tr>
+                  <td>
+                    <a href="07-oportunidad-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+                      <div style="font-weight: 600; color: var(--text-primary);">${r.op}</div>
+                    </a>
+                  </td>
+                  <td style="color: var(--text-muted);">${r.emp}</td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <div class="avatar avatar--xs avatar--color-${r.color}">${r.exec}</div>
+                      <span style="font-size: 12.5px;">${r.execName}</span>
+                    </div>
+                  </td>
+                  <td><span class="badge badge--${r.estado}"><span class="dot"></span> ${r.estadoL}</span></td>
+                  <td style="font-weight: 700; color: var(--accent);">${r.valor}</td>
+                  <td><span style="font-weight: 600;">${r.prob}</span></td>
+                  <td style="color: var(--text-muted);">${r.cierre}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('pipeline', 'director')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Pipeline global' })}
+    ${content()}
+  </div>
+`;
+function toggleFiltros() {
+  const panel = document.getElementById('filtros-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+</body>
+</html>

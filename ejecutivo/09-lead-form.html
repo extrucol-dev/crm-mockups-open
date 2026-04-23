@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Lead Form</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 40px; }
+
+  .form-card { max-width: 672px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-sm); }
+  .form-section { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+  .form-section:last-child { border-bottom: none; }
+  .form-section__title { font-size: 13px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .form-section__title .icon { color: var(--primary); }
+  .form-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .form-grid-full { grid-column: 1 / -1; }
+
+  .interes-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px; border-radius: 999px;
+    border: 1px solid var(--border-input);
+    background: var(--surface); font-size: 12.5px;
+    font-weight: 600; color: var(--text-secondary);
+    cursor: pointer; transition: all 180ms;
+  }
+  .interes-chip:hover { border-color: var(--primary); }
+  .interes-chip.is-selected { border-color: var(--primary); background: var(--primary-bg); color: var(--primary); }
+  .interes-chip.is-selected::before { content: '✓'; font-weight: 700; }
+
+  .origen-option {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 14px 10px; border-radius: 8px;
+    border: 1px solid var(--border); cursor: pointer;
+    transition: all 180ms; text-align: center;
+  }
+  .origen-option:hover { border-color: var(--primary); background: var(--primary-bg); }
+  .origen-option.is-selected { border-color: var(--primary); background: var(--primary-bg); }
+  .origen-option__icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--page-bg); color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .origen-option.is-selected .origen-option__icon { background: var(--primary); color: #fff; }
+  .origen-option__label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); }
+  .origen-option.is-selected .origen-option__label { color: var(--primary); }
+
+  .score-selector {
+    display: flex; gap: 10px; align-items: stretch;
+  }
+  .score-card {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 14px 8px 10px; border-radius: 10px;
+    border: 2px solid var(--border); cursor: pointer;
+    background: var(--surface); transition: all 200ms;
+    position: relative; overflow: hidden;
+  }
+  .score-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .score-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .score-card.is-selected { border-color: var(--primary); background: var(--primary-bg); }
+  .score-card__n {
+    width: 32px; height: 32px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; margin-bottom: 6px;
+  }
+  .score-card__label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; margin-bottom: 4px;
+  }
+  .score-card__desc { font-size: 10px; color: var(--text-muted); text-align: center; }
+  .score-card[data-score="1"]::before { background: #93C5FD; }
+  .score-card[data-score="1"] .score-card__n { background: #EEF1FA; color: #24388C; }
+  .score-card[data-score="2"]::before { background: #A5B4FC; }
+  .score-card[data-score="2"] .score-card__n { background: #EEF1FA; color: #6366F1; }
+  .score-card[data-score="3"]::before { background: #FCD34D; }
+  .score-card[data-score="3"] .score-card__n { background: #FFF4E0; color: #C7770D; }
+  .score-card[data-score="4"]::before { background: #FB923C; }
+  .score-card[data-score="4"] .score-card__n { background: #FFF4E0; color: #EA580C; }
+  .score-card[data-score="5"]::before { background: #4ADE80; }
+  .score-card[data-score="5"] .score-card__n { background: #E8F5EE; color: #1A8754; }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+function content() {
+  const origenes = [
+    { icon: 'globe', label: 'Página Web', sel: true },
+    { icon: 'phone', label: 'Llamada' },
+    { icon: 'envelope', label: 'Email' },
+    { icon: 'users', label: 'Referido' },
+    { icon: 'chartBar', label: 'Facebook' },
+    { icon: 'sparkles', label: 'Instagram' },
+    { icon: 'clipboard', label: 'WhatsApp' },
+    { icon: 'briefcase', label: 'Licitación' },
+  ];
+
+  const intereses = [
+    { label: 'Tubería PE100', sel: true },
+    { label: 'Sistema de riego', sel: true },
+    { label: 'Accesorios PE' },
+    { label: 'Asesoría técnica', sel: false },
+    { label: 'Válvulas y fittings' },
+    { label: 'Tubería CPVC' },
+    { label: 'Instalación' },
+    { label: 'Mantenimiento' },
+  ];
+
+  return `
+    <div class="content">
+
+        <div class="page-head">
+          <div class="page-head__title-group">
+            <div class="page-head__title">Nuevo Lead</div>
+            <div class="page-head__subtitle">Registra un prospecto y sus intereses comerciales</div>
+          </div>
+        </div>
+      <div class="form-card">
+        <div class="form-section">
+          <div class="form-section__title">${Icons.funnel} Información básica</div>
+          <div class="form-grid-2" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="form-field form-grid-full">
+              <label class="form-field__label">Título del lead <span class="req">*</span></label>
+              <input class="input" value="Consulta portafolio sistema de riego" />
+              <span class="form-field__hint">Un resumen breve de la necesidad del prospecto</span>
+            </div>
+            <div class="form-field form-grid-full">
+              <label class="form-field__label">Descripción</label>
+              <textarea class="textarea" rows="3">Cliente interesado en conocer opciones de riego por goteo para cultivo de 30 hectáreas. Solicita visita técnica y cotización preliminar.</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section__title">${Icons.globe} Origen del lead</div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            ${origenes.map(o => `
+              <div class="origen-option ${o.sel ? 'is-selected' : ''}">
+                <div class="origen-option__icon">${Icons[o.icon]}</div>
+                <div class="origen-option__label">${o.label}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section__title">${Icons.building} Empresa y contacto</div>
+          <div class="form-grid-2" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="form-field">
+              <label class="form-field__label">Empresa</label>
+              <div class="input-wrapper">
+                ${Icons.search}
+                <input class="input input--with-icon" value="Agroindustria Llanera" />
+              </div>
+              <span class="form-field__hint">Opcional · si ya existe</span>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Contacto</label>
+              <div class="input-wrapper">
+                ${Icons.search}
+                <input class="input input--with-icon" placeholder="Buscar o crear contacto" />
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Email del contacto</label>
+              <input class="input" type="email" placeholder="cliente@empresa.com" value="contacto@agrollanera.co" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Teléfono</label>
+              <input class="input" placeholder="+57 300 000 0000" value="+57 315 678 9012" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section__title">${Icons.tag} Intereses</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Selecciona todos los productos o servicios de interés del lead</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            ${intereses.map(i => `
+              <span class="interes-chip ${i.sel ? 'is-selected' : ''}">${i.label}</span>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section__title">${Icons.fire} Scoring inicial</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Calificación prospectiva — ayuda a priorizar seguimiento</div>
+          <div class="score-selector">
+            <div class="score-card" data-score="1">
+              <div class="score-card__n">1</div>
+              <div class="score-card__label">Frío</div>
+              <div class="score-card__desc">Lead sin interés demostrado aún</div>
+            </div>
+            <div class="score-card" data-score="2">
+              <div class="score-card__n">2</div>
+              <div class="score-card__label">Tibio</div>
+              <div class="score-card__desc">Contacto inicial, sin compromiso</div>
+            </div>
+            <div class="score-card is-selected" data-score="3">
+              <div class="score-card__n">3</div>
+              <div class="score-card__label">Cálido</div>
+              <div class="score-card__desc">Interés claro, requiere seguimiento</div>
+            </div>
+            <div class="score-card" data-score="4">
+              <div class="score-card__n">4</div>
+              <div class="score-card__label">Caliente</div>
+              <div class="score-card__desc">Alto potencial, oportunidad real</div>
+            </div>
+            <div class="score-card" data-score="5">
+              <div class="score-card__n">5</div>
+              <div class="score-card__label">Muy caliente</div>
+              <div class="score-card__desc">Listo para conversión inmediata</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section" style="background: var(--page-bg);">
+          <div class="form-actions" style="border-top: none; padding-top: 0; margin-top: 0;">
+            <a href="03-leads-kanban.html" style="text-decoration: none;"><button class="btn btn--secondary">Cancelar</button></a>
+            <button class="btn btn--primary">${Icons.check} Guardar lead</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `${renderSidebar('leads','ejecutivo')}<div class="main-area">${renderTopbar({breadcrumb:['Leads','Nuevo']})}${content()}</div>`;
+
+document.querySelectorAll('.score-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.score-card').forEach(c => c.classList.remove('is-selected'));
+    card.classList.add('is-selected');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Director · Análisis Sectores</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .sector-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sector-card__stripe {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .sector-card__header {
+    display: flex; align-items: flex-start; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .sector-card__icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sector-card__name {
+    font-size: 16px; font-weight: 800; color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+  .sector-card__desc {
+    font-size: 12px; color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .sector-card__main-value {
+    font-size: 28px; font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 2px;
+  }
+  .sector-card__main-label {
+    font-size: 11px; color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .sector-card__mini-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    padding-top: 14px; margin-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .mini-metric__label {
+    font-size: 10px; color: var(--text-disabled);
+    text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600;
+  }
+  .mini-metric__value {
+    font-size: 15px; font-weight: 700; color: var(--text-primary);
+    margin-top: 2px;
+  }
+
+  .stacked-bar {
+    display: flex; height: 36px;
+    border-radius: 8px; overflow: hidden;
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  .stacked-bar__segment {
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 11.5px; font-weight: 700;
+    transition: all 200ms;
+    min-width: 0;
+  }
+
+  .comparison-table {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+  }
+  .comparison-table th {
+    font-size: 11px; color: var(--text-muted); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    text-align: left;
+    padding: 10px 14px; background: var(--page-bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .comparison-table td {
+    padding: 14px; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .trend-up { color: var(--success); font-weight: 700; font-size: 12px; }
+  .trend-down { color: var(--error); font-weight: 700; font-size: 12px; }
+
+  .client-mini-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .client-mini-row:last-child { border: none; }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+const sectores = [
+  {
+    nombre: 'Agua Potable',
+    desc: 'Acueductos municipales y redes de distribución',
+    color: '#24388C', bg: '#EEF1FA',
+    icon: 'gps',
+    pipeline: 1446, pipelineM: '$ 1.446 M', pct: 30,
+    ganadas: 12, ventasAcum: '$ 680 M',
+    oppActivas: 22, ticketProm: '$ 65 M',
+    conversion: 38, tendencia: '+12',
+    topClientes: [
+      { name: 'EMPAS S.A.', val: '$ 485 M', avatar: 'ES', color: 1 },
+      { name: 'Acueducto Oriental', val: '$ 340 M', avatar: 'AO', color: 2 },
+      { name: 'Aguas del Valle', val: '$ 180 M', avatar: 'AV', color: 3 },
+    ]
+  },
+  {
+    nombre: 'Gas Natural',
+    desc: 'Redes de distribución y suministro',
+    color: '#F39610', bg: '#FFF4E0',
+    icon: 'fire',
+    pipeline: 1060, pipelineM: '$ 1.060 M', pct: 22,
+    ganadas: 8, ventasAcum: '$ 420 M',
+    oppActivas: 15, ticketProm: '$ 71 M',
+    conversion: 42, tendencia: '+8',
+    topClientes: [
+      { name: 'Hidrogas del Oriente', val: '$ 280 M', avatar: 'HO', color: 5 },
+      { name: 'Gas Natural Fenosa', val: '$ 215 M', avatar: 'GF', color: 4 },
+      { name: 'Promigas', val: '$ 175 M', avatar: 'PM', color: 6 },
+    ]
+  },
+  {
+    nombre: 'Agro / Riego',
+    desc: 'Sistemas de riego tecnificado y cultivos',
+    color: '#A855F7', bg: '#F3E8FF',
+    icon: 'sparkles',
+    pipeline: 868, pipelineM: '$ 868 M', pct: 18,
+    ganadas: 6, ventasAcum: '$ 310 M',
+    oppActivas: 14, ticketProm: '$ 62 M',
+    conversion: 35, tendencia: '+22',
+    topClientes: [
+      { name: 'Ingenio del Cauca', val: '$ 180 M', avatar: 'IC', color: 4 },
+      { name: 'Palmares del Sur', val: '$ 125 M', avatar: 'PS', color: 6 },
+      { name: 'Agroindustria Llanera', val: '$ 88 M', avatar: 'AL', color: 3 },
+    ]
+  },
+  {
+    nombre: 'Construcción',
+    desc: 'Proyectos residenciales y comerciales',
+    color: '#22C55E', bg: '#E8F5EE',
+    icon: 'building',
+    pipeline: 723, pipelineM: '$ 723 M', pct: 15,
+    ganadas: 5, ventasAcum: '$ 195 M',
+    oppActivas: 9, ticketProm: '$ 80 M',
+    conversion: 28, tendencia: '-5',
+    topClientes: [
+      { name: 'Constructora Andina', val: '$ 420 M', avatar: 'CA', color: 6 },
+      { name: 'Constructora Bolívar', val: '$ 180 M', avatar: 'CB', color: 2 },
+      { name: 'Urbanizadora ABC', val: '$ 95 M', avatar: 'UA', color: 1 },
+    ]
+  },
+  {
+    nombre: 'Industria',
+    desc: 'Plantas industriales y tubería especializada',
+    color: '#EF4444', bg: '#FDECEA',
+    icon: 'briefcase',
+    pipeline: 723, pipelineM: '$ 723 M', pct: 15,
+    ganadas: 4, ventasAcum: '$ 145 M',
+    oppActivas: 8, ticketProm: '$ 90 M',
+    conversion: 31, tendencia: '+3',
+    topClientes: [
+      { name: 'Ecopetrol', val: '$ 320 M', avatar: 'EC', color: 1 },
+      { name: 'Cerrejón', val: '$ 215 M', avatar: 'CJ', color: 4 },
+      { name: 'Tecnoagua SAS', val: '$ 85 M', avatar: 'TA', color: 2 },
+    ]
+  },
+];
+
+function sectorCard(s) {
+  return `
+    <div class="sector-card">
+      <div class="sector-card__stripe" style="background: ${s.color};"></div>
+      <div class="sector-card__header">
+        <div class="sector-card__icon" style="background: ${s.bg}; color: ${s.color};">
+          ${Icons[s.icon]}
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div class="sector-card__name">${s.nombre}</div>
+          <div class="sector-card__desc">${s.desc}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 11px; color: ${parseInt(s.tendencia) >= 0 ? 'var(--success)' : 'var(--error)'}; font-weight: 700;">
+            ${parseInt(s.tendencia) >= 0 ? '▲' : '▼'} ${s.tendencia}%
+          </div>
+          <div style="font-size: 10px; color: var(--text-disabled); text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">YoY</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sector-card__main-label">Pipeline del sector</div>
+        <div class="sector-card__main-value" style="color: ${s.color};">${s.pipelineM}</div>
+        <div style="font-size: 12px; color: var(--text-muted);">${s.pct}% del total · ${s.oppActivas} oportunidades activas</div>
+      </div>
+
+      <div class="sector-card__mini-grid">
+        <div>
+          <div class="mini-metric__label">Ganadas</div>
+          <div class="mini-metric__value">${s.ganadas}</div>
+        </div>
+        <div>
+          <div class="mini-metric__label">Ventas acum.</div>
+          <div class="mini-metric__value" style="color: var(--accent);">${s.ventasAcum}</div>
+        </div>
+        <div>
+          <div class="mini-metric__label">Ticket prom.</div>
+          <div class="mini-metric__value">${s.ticketProm}</div>
+        </div>
+        <div>
+          <div class="mini-metric__label">Conversión</div>
+          <div class="mini-metric__value" style="color: ${s.conversion >= 35 ? 'var(--success)' : 'var(--accent)'};">${s.conversion}%</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+        <div style="font-size: 10px; color: var(--text-disabled); text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 8px;">Top 3 clientes</div>
+        ${s.topClientes.map(c => `
+          <div class="client-mini-row">
+            <div class="avatar avatar--xs avatar--color-${c.color}">${c.avatar}</div>
+            <span style="flex: 1; font-size: 12.5px; font-weight: 500; color: var(--text-primary);">${c.name}</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--accent);">${c.val}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function content() {
+  const totalPipeline = sectores.reduce((a,s) => a+s.pipeline, 0);
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Análisis por sectores</div>
+          <div class="page-head__subtitle">Rendimiento del negocio segmentado por sector económico · 5 sectores activos</div>
+        </div>
+        <div class="page-head__actions">
+          <select class="select" style="max-width: 160px;">
+            <option>Año 2026</option>
+            <option>Q1 2026</option>
+            <option>Abril 2026</option>
+            <option>Últimos 12 meses</option>
+          </select>
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar PDF</button>
+          <button class="btn btn--primary btn--sm" onclick="toggleComparar()">${Icons.chartBar} Comparar</button>
+        </div>
+      </div>
+      <div id="comparar-modal" class="modal-overlay" style="display: none;" onclick="if(event.target===this)toggleComparar()">
+        <div class="modal-content" style="max-width: 900px;">
+          <div class="modal-header">
+            <div>
+              <div style="font-weight: 700; font-size: 16px;">Comparación de sectores</div>
+              <div style="font-size: 12.5px; color: var(--text-muted);">Selecciona hasta 3 sectores para comparar lado a lado</div>
+            </div>
+            <button class="topbar__icon-btn" onclick="toggleComparar()">${Icons.close}</button>
+          </div>
+          <div class="modal-body">
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px;">
+              ${[
+                { name: 'Agua Potable', color: '#24388C' },
+                { name: 'Gas Natural', color: '#F39610' },
+                { name: 'Agro / Riego', color: '#A855F7' },
+                { name: 'Construcción', color: '#22C55E' },
+                { name: 'Industria', color: '#EF4444' },
+              ].map(s => `
+                <div onclick="toggleSector('${s.name.replace(/ /g,'')}')" style="padding: 10px; border: 2px solid ${s.color}; border-radius: 8px; text-align: center; background: var(--surface); cursor: pointer;">
+                  <span style="display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: ${s.color}; margin-right: 6px;"></span>
+                  <span style="font-size: 12.5px; font-weight: 600; color: var(--text-primary);">${s.name}</span>
+                </div>
+              `).join('')}
+            </div>
+            <div class="table-wrapper">
+              <table class="comparison-table">
+                <thead>
+                  <tr>
+                    <th>Métrica</th>
+                    <th style="text-align: center; color: #24388C;">Agua Potable</th>
+                    <th style="text-align: center; color: #F39610;">Gas Natural</th>
+                    <th style="text-align: center; color: #A855F7;">Agro / Riego</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${[
+                    { metric: 'Pipeline', v1: '$ 1.446 M', v2: '$ 1.060 M', v3: '$ 868 M' },
+                    { metric: '% del total', v1: '30%', v2: '22%', v3: '18%' },
+                    { metric: 'Opp. activas', v1: '22', v2: '15', v3: '14' },
+                    { metric: 'Ganadas', v1: '12', v2: '8', v3: '6' },
+                    { metric: 'Ventas acumuladas', v1: '$ 680 M', v2: '$ 420 M', v3: '$ 310 M' },
+                    { metric: 'Ticket promedio', v1: '$ 65 M', v2: '$ 71 M', v3: '$ 62 M' },
+                    { metric: 'Tasa conversión', v1: '38%', v2: '42%', v3: '35%' },
+                    { metric: 'Tendencia YoY', v1: '+12%', v2: '+8%', v3: '+22%' },
+                  ].map(r => `
+                    <tr>
+                      <td style="font-weight: 600;">${r.metric}</td>
+                      <td style="text-align: center; font-weight: 700; color: var(--text-primary);">${r.v1}</td>
+                      <td style="text-align: center; font-weight: 700; color: var(--text-primary);">${r.v2}</td>
+                      <td style="text-align: center; font-weight: 700; color: var(--text-primary);">${r.v3}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn--secondary" onclick="toggleComparar()">Cerrar</button>
+            <button class="btn btn--primary">${Icons.download} Exportar comparación</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--accent">${Icons.currency}</div>
+          <div class="stat-card__label">Pipeline global</div>
+          <div class="stat-card__value stat-card__value--accent">$ ${totalPipeline.toLocaleString()} M</div>
+          <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+12%</span> vs año anterior</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--green">${Icons.trophy}</div>
+          <div class="stat-card__label">Ventas totales</div>
+          <div class="stat-card__value stat-card__value--success">$ 1.750 M</div>
+          <div class="stat-card__subtext">35 oportunidades ganadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">${Icons.trendingUp}</div>
+          <div class="stat-card__label">Sector líder</div>
+          <div class="stat-card__value" style="font-size: 20px;">Agua Potable</div>
+          <div class="stat-card__subtext">30% del pipeline total</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">${Icons.sparkles}</div>
+          <div class="stat-card__label">Mayor crecimiento</div>
+          <div class="stat-card__value stat-card__value--success" style="font-size: 20px;">Agro / Riego</div>
+          <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+22%</span> YoY</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card__header">
+          <div>
+            <div class="card__title">Participación en el pipeline</div>
+            <div class="card__subtitle">Distribución proporcional del valor total ($ ${totalPipeline.toLocaleString()} M)</div>
+          </div>
+        </div>
+        <div class="card__body">
+          <div class="stacked-bar">
+            ${sectores.map(s => `
+              <div class="stacked-bar__segment" style="background: ${s.color}; flex: ${s.pct};" title="${s.nombre}: ${s.pct}%">
+                ${s.pct}%
+              </div>
+            `).join('')}
+          </div>
+          <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 14px;">
+            ${sectores.map(s => `
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px;">
+                <span style="width: 10px; height: 10px; border-radius: 3px; background: ${s.color};"></span>
+                <span style="color: var(--text-secondary); font-weight: 600;">${s.nombre}</span>
+                <span style="color: var(--text-muted);">${s.pipelineM}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px;">
+        ${sectores.slice(0, 3).map(sectorCard).join('')}
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px;">
+        ${sectores.slice(3).map(sectorCard).join('')}
+      </div>
+
+      <div class="card" style="padding: 0;">
+        <div class="card__header">
+          <div>
+            <div class="card__title">Comparativo de rendimiento</div>
+            <div class="card__subtitle">Métricas clave lado a lado · ordenadas por pipeline</div>
+          </div>
+          <button class="btn btn--ghost btn--sm">${Icons.download} Exportar tabla</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Sector</th>
+                <th style="text-align: right;">Pipeline</th>
+                <th style="text-align: center;">% Total</th>
+                <th style="text-align: center;">Opp. activas</th>
+                <th style="text-align: center;">Ganadas</th>
+                <th style="text-align: right;">Ventas acum.</th>
+                <th style="text-align: right;">Ticket prom.</th>
+                <th style="text-align: center;">Conversión</th>
+                <th style="text-align: center;">Tendencia YoY</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sectores.map(s => `
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span style="width: 10px; height: 10px; border-radius: 3px; background: ${s.color};"></span>
+                      <strong style="color: var(--text-primary);">${s.nombre}</strong>
+                    </div>
+                  </td>
+                  <td style="text-align: right; font-weight: 700; color: var(--accent);">${s.pipelineM}</td>
+                  <td style="text-align: center; font-weight: 600;">${s.pct}%</td>
+                  <td style="text-align: center;">${s.oppActivas}</td>
+                  <td style="text-align: center; color: var(--success); font-weight: 700;">${s.ganadas}</td>
+                  <td style="text-align: right; font-weight: 600;">${s.ventasAcum}</td>
+                  <td style="text-align: right; color: var(--text-secondary);">${s.ticketProm}</td>
+                  <td style="text-align: center;">
+                    <div style="display: inline-flex; align-items: center; gap: 4px;">
+                      <div class="progress__bar" style="width: 50px;"><div class="progress__fill" style="width: ${s.conversion}%; background: ${s.conversion >= 35 ? 'var(--success)' : 'var(--accent)'};"></div></div>
+                      <span style="font-weight: 700; min-width: 30px;">${s.conversion}%</span>
+                    </div>
+                  </td>
+                  <td style="text-align: center;">
+                    <span class="${parseInt(s.tendencia) >= 0 ? 'trend-up' : 'trend-down'}">
+                      ${parseInt(s.tendencia) >= 0 ? '▲' : '▼'} ${s.tendencia}%
+                    </span>
+                  </td>
+                </tr>
+              `).join('')}
+              <tr style="background: var(--page-bg); font-weight: 700;">
+                <td style="color: var(--text-primary);">TOTAL</td>
+                <td style="text-align: right; color: var(--accent); font-weight: 800;">$ ${totalPipeline.toLocaleString()} M</td>
+                <td style="text-align: center;">100%</td>
+                <td style="text-align: center;">68</td>
+                <td style="text-align: center; color: var(--success);">35</td>
+                <td style="text-align: right; color: var(--success); font-weight: 800;">$ 1.750 M</td>
+                <td style="text-align: right;">$ 74 M</td>
+                <td style="text-align: center;">35%</td>
+                <td style="text-align: center;"><span class="trend-up">▲ +12%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">💡 Insights del período</div>
+              <div class="card__subtitle">Análisis automático basado en datos</div>
+            </div>
+          </div>
+          <div class="card__body" style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="padding: 12px; background: #E8F5EE; border-left: 3px solid var(--success); border-radius: 4px;">
+              <div style="font-weight: 700; font-size: 13px; color: var(--success); margin-bottom: 4px;">↗ Agro / Riego en auge</div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
+                Crecimiento del +22% YoY. Oportunidad de invertir en campañas dirigidas al sector agrícola, especialmente cultivos industriales en Valle del Cauca y Meta.
+              </div>
+            </div>
+            <div style="padding: 12px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 4px;">
+              <div style="font-weight: 700; font-size: 13px; color: #C7770D; margin-bottom: 4px;">⚠ Construcción en caída</div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
+                Pérdida del -5% YoY y la conversión más baja (28%). Revisar estrategia comercial: puede ser tema de precio o ciclo económico del sector.
+              </div>
+            </div>
+            <div style="padding: 12px; background: var(--primary-bg); border-left: 3px solid var(--primary); border-radius: 4px;">
+              <div style="font-weight: 700; font-size: 13px; color: var(--primary); margin-bottom: 4px;">◆ Diversificación saludable</div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
+                Ningún sector concentra más del 30% del pipeline. Buena diversificación reduce el riesgo de dependencia.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">🎯 Recomendaciones estratégicas</div>
+              <div class="card__subtitle">Acciones sugeridas por sector</div>
+            </div>
+          </div>
+          <div class="card__body">
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #A855F7; margin-top: 5px; flex-shrink: 0;"></span>
+              <div>
+                <div style="font-weight: 600; font-size: 13px;">Reforzar equipo en Agro</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Asignar 1-2 ejecutivos adicionales a Valle y Meta</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #22C55E; margin-top: 5px; flex-shrink: 0;"></span>
+              <div>
+                <div style="font-weight: 600; font-size: 13px;">Revisar precios en Construcción</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Analizar motivos de pérdida vs. competencia</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary); margin-top: 5px; flex-shrink: 0;"></span>
+              <div>
+                <div style="font-weight: 600; font-size: 13px;">Defender liderazgo en Agua</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Mantener conversión y fidelizar EMPAS, EAAB</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0;"></span>
+              <div>
+                <div style="font-weight: 600; font-size: 13px;">Ampliar cobertura en Gas</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Mejor conversión (42%), escalar operaciones</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--error); margin-top: 5px; flex-shrink: 0;"></span>
+              <div>
+                <div style="font-weight: 600; font-size: 13px;">Mantener foco en Industria</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Ticket más alto ($90M), pocos clientes pero valiosos</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('sectores', 'director')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Análisis por sectores' })}
+    ${content()}
+  </div>
+`;
+function toggleComparar() {
+  const m = document.getElementById('comparar-modal');
+  m.style.display = m.style.display === 'none' ? 'flex' : 'none';
+}
+function toggleSector(name) {
+  const chip = document.getElementById('chip-' + name);
+  if (chip) {
+    chip.style.background = chip.style.background === 'rgb(255, 244, 224)' ? 'var(--surface)' : 'rgb(255, 244, 224)';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Admin · Usuarios, Catálogos y Auditoría</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 24px; }
+  .canvas-section-title { font: 700 15px 'Roboto'; color: #24388C; margin: 40px 0 20px; padding: 8px 14px; background: #fff; border: 1px solid #E5E5E5; border-radius: 6px; display: inline-block; }
+
+
+  .role-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .role-ejecutivo { background: var(--primary-bg); color: var(--primary); }
+  .role-director { background: var(--accent-bg); color: #C7770D; }
+  .role-coordinador { background: #F3E8FF; color: #7C3AED; }
+  .role-admin { background: #FDECEA; color: var(--error); }
+
+  .catalog-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px; transition: all 180ms; cursor: pointer;
+  }
+  .catalog-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
+  .catalog-card__icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--primary-bg); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+document.getElementById('shell').innerHTML = `${renderSidebar('usuarios','admin')}<div class="main-area">${renderTopbar({title:'Usuarios'})}${usuariosContent('desktop')}</div>`;
+</script>
+</body>
+  const isMobile = bp === 'mobile';
+  const usuarios = [
+    { name: 'Juan Pérez', email: 'juan.perez@extrucol.com', rol: 'Ejecutivo', roleClass: 'ejecutivo', depto: 'Santander', avatar: 'JP', color: 1, activo: true, ultimo: 'Hoy, 10:30am' },
+    { name: 'María García', email: 'maria.garcia@extrucol.com', rol: 'Ejecutivo', roleClass: 'ejecutivo', depto: 'Antioquia', avatar: 'MG', color: 3, activo: true, ultimo: 'Hoy, 09:15am' },
+    { name: 'Carlos Muñoz', email: 'c.munoz@extrucol.com', rol: 'Director', roleClass: 'director', depto: '—', avatar: 'CM', color: 4, activo: true, ultimo: 'Hoy, 08:00am' },
+    { name: 'Diana Ruiz', email: 'diana.ruiz@extrucol.com', rol: 'Coordinador', roleClass: 'coordinador', depto: '—', avatar: 'DR', color: 2, activo: true, ultimo: 'Hoy, 07:45am' },
+    { name: 'Ana Martínez', email: 'ana.martinez@extrucol.com', rol: 'Ejecutivo', roleClass: 'ejecutivo', depto: 'Valle del Cauca', avatar: 'AM', color: 5, activo: true, ultimo: 'Ayer' },
+    { name: 'Laura Jiménez', email: 'laura.jimenez@extrucol.com', rol: 'Ejecutivo', roleClass: 'ejecutivo', depto: 'Santander', avatar: 'LJ', color: 6, activo: true, ultimo: 'Ayer' },
+    { name: 'Pedro Salazar', email: 'pedro.salazar@extrucol.com', rol: 'Ejecutivo', roleClass: 'ejecutivo', depto: 'Atlántico', avatar: 'PS', color: 1, activo: false, ultimo: 'Hace 5 días' },
+    { name: 'Admin Sistema', email: 'admin@extrucol.com', rol: 'Administrador', roleClass: 'admin', depto: '—', avatar: 'AS', color: 4, activo: true, ultimo: 'Hoy' },
+  ];
+
+  if (isMobile) {
+    return `
+      <div class="content">
+        <div class="page-head">
+          <div class="page-head__title-group">
+            <div class="page-head__title">Usuarios</div>
+            <div class="page-head__subtitle">8 usuarios · 7 activos</div>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <div class="input-wrapper" style="flex:1;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar..."></div>
+        </div>
+        <div class="card" style="padding: 0;">
+          ${usuarios.map(u => `
+            <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border);">
+              <div class="avatar avatar--sm avatar--color-${u.color}">${u.avatar}</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; color: var(--text-primary); font-size: 13.5px;">${u.name}</div>
+                <div style="font-size: 11.5px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis;">${u.email}</div>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                  <span class="role-badge role-${u.roleClass}">${u.rol}</span>
+                </div>
+              </div>
+              <button class="topbar__icon-btn">${Icons.dots}</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Gestión de usuarios</div>
+          <div class="page-head__subtitle">${usuarios.length} usuarios · ${usuarios.filter(u=>u.activo).length} activos</div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+          <button class="btn btn--primary btn--sm">${Icons.plus} Nuevo usuario</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(${bp === 'tablet' ? 2 : 4}, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div class="stat-card"><div class="stat-card__label">Ejecutivos</div><div class="stat-card__value">5</div><div class="stat-card__subtext">4 activos</div></div>
+        <div class="stat-card"><div class="stat-card__label">Coordinadores</div><div class="stat-card__value stat-card__value--accent">1</div></div>
+        <div class="stat-card"><div class="stat-card__label">Directores</div><div class="stat-card__value">1</div></div>
+        <div class="stat-card"><div class="stat-card__label">Administradores</div><div class="stat-card__value" style="color: var(--error);">1</div></div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 320px;">
+          ${Icons.search}<input class="input input--with-icon" placeholder="Buscar por nombre, email...">
+        </div>
+        <select class="select" style="max-width: 180px;">
+          <option>Todos los roles</option><option>Ejecutivo</option><option>Coordinador</option><option>Director</option>
+        </select>
+        <select class="select" style="max-width: 180px;">
+          <option>Todos los departamentos</option>
+        </select>
+        <select class="select" style="max-width: 160px;">
+          <option>Activos e inactivos</option>
+        </select>
+      </div>
+
+      <div class="card" style="padding: 0;">
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr><th>Usuario</th><th>Email</th><th>Rol</th><th>Territorio</th><th>Estado</th><th>Última sesión</th><th style="width: 60px;">Acciones</th></tr>
+            </thead>
+            <tbody>
+              ${usuarios.map(u => `
+                <tr>
+                  <td><div style="display: flex; align-items: center; gap: 10px;"><div class="avatar avatar--sm avatar--color-${u.color}">${u.avatar}</div><div style="font-weight: 600; color: var(--text-primary);">${u.name}</div></div></td>
+                  <td style="color: var(--text-muted);">${u.email}</td>
+                  <td><span class="role-badge role-${u.roleClass}">${u.rol}</span></td>
+                  <td style="color: var(--text-secondary);">${u.depto}</td>
+                  <td>${u.activo ? '<span class="badge badge--ganada"><span class="dot"></span> Activo</span>' : '<span class="badge badge--perdida"><span class="dot"></span> Inactivo</span>'}</td>
+                  <td style="color: var(--text-muted); font-size: 12.5px;">${u.ultimo}</td>
+                  <td><div style="display: flex; gap: 4px;"><button class="table__action">${Icons.pencil}</button><button class="table__action">${Icons.dots}</button></div></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function catalogosContent(bp) {
+  const isMobile = bp === 'mobile';
+  const catalogos = [
+    { title: 'Países', desc: '1 país registrado', count: 1, icon: 'globe', table: 'CRM_PAIS' },
+    { title: 'Departamentos', desc: '32 departamentos', count: 32, icon: 'mapPin', table: 'CRM_DEPARTAMENTO' },
+    { title: 'Municipios', desc: '1.120 municipios', count: 1120, icon: 'mapPin', table: 'CRM_MUNICIPIO' },
+    { title: 'Sectores', desc: '5 sectores económicos', count: 5, icon: 'building', table: 'CRM_SECTOR' },
+    { title: 'Modalidades', desc: 'Interior / Exterior', count: 2, icon: 'tag', table: 'CRM_MODALIDAD' },
+    { title: 'Tipos de documento', desc: 'NIT, Cédula, Extranjería', count: 5, icon: 'tag', table: 'CRM_DOCUMENTO' },
+    { title: 'Orígenes de Lead', desc: 'Web, Facebook, WhatsApp', count: 8, icon: 'globe', table: 'CRM_ORIGEN_LEAD' },
+    { title: 'Estados de Lead', desc: 'Nuevo, Contactado, etc', count: 5, icon: 'flag', table: 'CRM_ESTADO_LEAD' },
+    { title: 'Estados de Oportunidad', desc: 'Prospección, Propuesta', count: 6, icon: 'flag', table: 'CRM_ESTADO_OPORTUNIDAD' },
+    { title: 'Motivos de cierre', desc: 'Razones ganada/perdida', count: 12, icon: 'flag', table: 'CRM_MOTIVO_CIERRE' },
+    { title: 'Intereses', desc: 'Tubería, Riego, etc', count: 9, icon: 'sparkles', table: 'CRM_INTERES' },
+    { title: 'Productos', desc: 'Catálogo comercial', count: 42, icon: 'archive', table: 'CRM_PRODUCTO' },
+    { title: 'Tipos de oportunidad', desc: 'Licitación, Suministro', count: 4, icon: 'briefcase', table: 'CRM_TIPO_OPORTUNIDAD' },
+  ];
+  const cols = isMobile ? 1 : bp === 'tablet' ? 2 : 3;
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Catálogos maestros</div>
+          <div class="page-head__subtitle">${catalogos.length} catálogos · Datos de referencia del sistema</div>
+        </div>
+        ${!isMobile ? `<div class="page-head__actions"><button class="btn btn--secondary btn--sm">${Icons.download} Exportar todos</button></div>` : ''}
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 340px;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar catálogo..."></div>
+        ${!isMobile ? `
+          <div style="display: flex; gap: 4px;">
+            <button class="btn btn--ghost btn--sm" style="background: var(--primary-bg); color: var(--primary);">Todos</button>
+            <button class="btn btn--ghost btn--sm">Ubicación</button>
+            <button class="btn btn--ghost btn--sm">Comercial</button>
+            <button class="btn btn--ghost btn--sm">Estados</button>
+          </div>
+        ` : ''}
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: 12px;">
+        ${catalogos.map(c => `
+          <div class="catalog-card">
+            <div class="catalog-card__icon">${Icons[c.icon]}</div>
+            <div style="font-weight: 700; font-size: 15px; color: var(--text-primary); margin-bottom: 4px;">${c.title}</div>
+            <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px;">${c.desc}</div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-weight: 800; font-size: 18px; color: var(--primary);">${c.count}</span>
+                <span style="font-size: 11px; color: var(--text-muted);">registros</span>
+              </div>
+              <button class="btn btn--ghost btn--sm">${Icons.view} Ver</button>
+            </div>
+            <div style="margin-top: 8px; font-family: monospace; font-size: 10px; color: var(--text-disabled); background: var(--page-bg); padding: 3px 6px; border-radius: 4px; display: inline-block;">${c.table}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function auditoriaContent(bp) {
+  const isMobile = bp === 'mobile';
+  const eventos = [
+    { tipo: 'UPDATE', tabla: 'CRM_OPORTUNIDAD', id: 42, user: 'Juan Pérez', color: 1, desc: 'Cambió estado de "Calificación" a "Propuesta"', time: 'Hace 5 min', icon: 'pencil', iconClass: 'accent' },
+    { tipo: 'INSERT', tabla: 'CRM_ACTIVIDAD', id: 871, user: 'Juan Pérez', color: 1, desc: 'Registró visita técnica en EMPAS S.A.', time: 'Hace 12 min', icon: 'plus', iconClass: 'success' },
+    { tipo: 'UPDATE', tabla: 'CRM_CONFIGURACION_SISTEMA', id: 3, user: 'Diana Ruiz', color: 2, desc: 'Modificó variable dias_alerta_lead_sin_contactar de 2 a 3', time: 'Hace 2h', icon: 'adjustments', iconClass: 'warning' },
+    { tipo: 'INSERT', tabla: 'CRM_USUARIO', id: 12, user: 'Admin Sistema', color: 4, desc: 'Creó nuevo usuario: Pedro Salazar (Ejecutivo)', time: 'Hace 3h', icon: 'plus', iconClass: 'success' },
+    { tipo: 'UPDATE', tabla: 'CRM_OPORTUNIDAD', id: 38, user: 'María García', color: 3, desc: 'Marcó oportunidad como "Ganada"', time: 'Hace 4h', icon: 'check', iconClass: 'success' },
+    { tipo: 'DELETE', tabla: 'CRM_LEAD', id: 156, user: 'Carlos Rodríguez', color: 5, desc: 'Eliminó lead "Cotización Ferretería Central"', time: 'Ayer', icon: 'trash', iconClass: 'error' },
+    { tipo: 'UPDATE', tabla: 'CRM_EMPRESA', id: 89, user: 'Ana Martínez', color: 4, desc: 'Actualizó información de Tecnoagua SAS', time: 'Ayer', icon: 'pencil', iconClass: 'accent' },
+    { tipo: 'INSERT', tabla: 'CRM_PRODUCTO', id: 43, user: 'Admin Sistema', color: 4, desc: 'Agregó producto: Válvula mariposa 6"', time: 'Ayer', icon: 'plus', iconClass: 'success' },
+  ];
+  const iconStyles = {
+    success: 'background: #E8F5EE; color: var(--success);',
+    accent: 'background: var(--accent-bg); color: var(--accent);',
+    warning: 'background: #FFF8E5; color: #B87E15;',
+    error: 'background: #FDECEA; color: var(--error);',
+  };
+  const tipoClass = { INSERT: 'ganada', UPDATE: 'calificacion', DELETE: 'perdida' };
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Auditoría del sistema</div>
+          <div class="page-head__subtitle">Registro cronológico · ${eventos.length} eventos recientes</div>
+        </div>
+        ${!isMobile ? `<div class="page-head__actions"><button class="btn btn--secondary btn--sm">${Icons.calendar} Fechas</button><button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button></div>` : ''}
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 320px;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar..."></div>
+        ${!isMobile ? `
+          <select class="select" style="max-width: 160px;"><option>Todos los tipos</option><option>INSERT</option><option>UPDATE</option><option>DELETE</option></select>
+          <select class="select" style="max-width: 180px;"><option>Todas las tablas</option></select>
+          <select class="select" style="max-width: 180px;"><option>Todos los usuarios</option></select>
+        ` : ''}
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(${isMobile ? 2 : 4}, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div class="stat-card"><div class="stat-card__label">Eventos hoy</div><div class="stat-card__value">128</div></div>
+        <div class="stat-card"><div class="stat-card__label">Inserts</div><div class="stat-card__value stat-card__value--success">45</div></div>
+        <div class="stat-card"><div class="stat-card__label">Updates</div><div class="stat-card__value stat-card__value--accent">78</div></div>
+        <div class="stat-card"><div class="stat-card__label">Deletes</div><div class="stat-card__value" style="color: var(--error);">5</div></div>
+      </div>
+
+      <div class="card" style="padding: 0;">
+        ${eventos.map(e => `
+          <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border);">
+            <div style="width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; ${iconStyles[e.iconClass]}">${Icons[e.icon]}</div>
+            <div style="min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px; flex-wrap: wrap;">
+                <span class="badge badge--${tipoClass[e.tipo]}" style="font-size: 10px;">${e.tipo}</span>
+                <span style="font-family: monospace; font-size: 11px; color: var(--text-muted); background: var(--page-bg); padding: 2px 6px; border-radius: 3px;">${e.tabla}#${e.id}</span>
+              </div>
+              <div style="font-size: 13px; color: var(--text-primary); font-weight: 500;">${e.desc}</div>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 11.5px; color: var(--text-muted);">
+                <div class="avatar avatar--xs avatar--color-${e.color}" style="width: 16px; height: 16px; font-size: 9px;">${e.user.split(' ').map(x=>x[0]).join('')}</div>
+                <span>${e.user}</span><span>·</span><span>${e.time}</span>
+              </div>
+            </div>
+            <button class="btn btn--ghost btn--sm">${Icons.view}</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `${renderSidebar('usuarios','admin')}<div class="main-area">${renderTopbar({title:'Usuarios'})}${usuariosContent('desktop')}</div>`;
+</script>
+</body>
+</html>

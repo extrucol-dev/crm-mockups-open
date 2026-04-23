@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Actividades</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 24px; }
+  .canvas-section-title { font: 700 15px 'Roboto'; color: #24388C; margin: 40px 0 20px; padding: 8px 14px; background: #fff; border: 1px solid #E5E5E5; border-radius: 6px; display: inline-block; }
+
+  .activity-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    transition: background 180ms;
+    cursor: pointer;
+  }
+  .activity-row:hover { background: var(--page-bg); }
+  .activity-row__icon {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: var(--primary-bg); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .activity-row__icon--llamada { background: #E8F5EE; color: var(--success); }
+  .activity-row__icon--email { background: #F3E8FF; color: #7C3AED; }
+  .activity-row__icon--visita { background: var(--accent-bg); color: #C7770D; }
+  .activity-row__icon--reunion { background: var(--primary-bg); color: var(--primary); }
+
+  .big-map {
+    height: 280px;
+    border-radius: 8px;
+    background-color: #E8EEF5;
+    background-image:
+      linear-gradient(rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      radial-gradient(circle at 30% 40%, rgba(243, 150, 16, 0.1), transparent 50%);
+    background-size: 24px 24px, 24px 24px, auto;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .map-main-pin {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 36px; height: 36px;
+    background: var(--primary);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(36, 56, 140, 0.4);
+    z-index: 2;
+  }
+  .map-main-pin::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: -10px;
+    transform: translateX(-50%);
+    width: 2px; height: 10px;
+    background: var(--primary);
+  }
+  .map-main-pin::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    background: #fff;
+    border-radius: 50%;
+  }
+
+  .pulse-ring {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    opacity: 0.3;
+    animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: translate(-50%, -100%) scale(0.5); opacity: 0.6; }
+    100% { transform: translate(-50%, -100%) scale(2); opacity: 0; }
+  }
+
+  .gps-indicator {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(6px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--success);
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: var(--shadow-sm);
+  }
+  .gps-indicator::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--green-bright);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0.4; }
+  }
+
+  .activity-type-selector {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .activity-type-card {
+    padding: 16px 8px; border: 1px solid var(--border);
+    border-radius: 8px; text-align: center; cursor: pointer;
+    transition: all 180ms; display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+    background: var(--surface);
+  }
+  .activity-type-card:hover { border-color: var(--primary); }
+  .activity-type-card.is-active {
+    border-color: var(--primary); background: var(--primary-bg);
+  }
+  .activity-type-card__icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--page-bg);
+  }
+  .activity-type-card.is-active .activity-type-card__icon {
+    background: var(--primary); color: #fff;
+  }
+  .activity-type-card__label {
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  }
+  .activity-type-card.is-active .activity-type-card__label {
+    color: var(--primary);
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .calendar-header-cell {
+    background: var(--page-bg);
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .calendar-cell {
+    background: var(--surface);
+    min-height: 100px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .calendar-cell--other-month { background: var(--page-bg); }
+  .calendar-cell--other-month .cal-day-num { color: var(--text-muted); opacity: 0.5; }
+  .calendar-cell--today .cal-day-num {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cal-day-num {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+  .cal-events { display: flex; flex-direction: column; gap: 3px; }
+  .cal-event {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: opacity 150ms;
+  }
+  .cal-event:hover { opacity: 0.8; }
+  .cal-event--visita { background: var(--accent-bg); color: #C7770D; border-left: 2px solid var(--accent); }
+  .cal-event--llamada { background: #E8F5EE; color: var(--success); border-left: 2px solid var(--success); }
+  .cal-event--email { background: #F3E8FF; color: #7C3AED; border-left: 2px solid #7C3AED; }
+  .cal-event--reunion { background: var(--primary-bg); color: var(--primary); border-left: 2px solid var(--primary); }
+  .cal-more {
+    font-size: 10px;
+    color: var(--text-muted);
+    padding: 2px 6px;
+    font-weight: 600;
+  }
+  .calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .calendar-nav__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .calendar-nav__btns { display: flex; gap: 6px; }
+  .cal-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; }
+  .cal-dot--visita { background: var(--accent); }
+  .cal-dot--llamada { background: var(--success); }
+  .cal-dot--email { background: #7C3AED; }
+  .cal-dot--reunion { background: var(--primary); }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+const actividades = [
+  { tipo: 'visita', icon: 'mapPin', iconClass: 'visita', titulo: 'Visita técnica - EMPAS S.A.', sub: 'Inspección de planta para dimensionamiento red', date: '10:30 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 23},
+  { tipo: 'llamada', icon: 'phone', iconClass: 'llamada', titulo: 'Llamada seguimiento - Tecnoagua', sub: 'Seguimiento a propuesta técnica de tubería PE100', date: '9:00 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 23},
+  { tipo: 'reunion', icon: 'view', iconClass: 'reunion', titulo: 'Reunión virtual - Aguas del Valle', sub: 'Presentación inicial del portafolio', date: '3:00 PM', day: 'Hoy', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 23},
+  { tipo: 'email', icon: 'envelope', iconClass: 'email', titulo: 'Email - Constructora Andina', sub: 'Envío de cotización revisada según última reunión', date: '8:15 AM', day: 'Ayer', badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 22},
+  { tipo: 'visita', icon: 'mapPin', iconClass: 'visita', titulo: 'Visita - Ingenio del Cauca', sub: 'Recorrido técnico por cultivo para riego', date: '2:00 PM', day: 'Mañana', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 24},
+  { tipo: 'llamada', icon: 'phone', iconClass: 'llamada', titulo: 'Llamada prospección - EAAB', sub: 'Primer contacto para licitação próxima', date: '11:00 AM', day: 'Viernes', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 25},
+  { tipo: 'visita', icon: 'mapPin', iconClass: 'visita', titulo: 'Visita - Cementos Pacasmayo', sub: 'Evaluación de necesidades de tubería industrial', date: '9:30 AM', day: 'Lun 27', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 27},
+  { tipo: 'email', icon: 'envelope', iconClass: 'email', titulo: 'Email - Minera Shougang', sub: 'Envío de especificaciones técnicas solicitadas', date: '4:00 PM', day: 'Mié 29', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 29},
+  { tipo: 'reunion', icon: 'view', iconClass: 'reunion', titulo: 'Reunión presencial - Gloria', sub: 'Negociación de contrato anual de suministros', date: '10:00 AM', day: 'Jue 30', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 30},
+  { tipo: 'llamada', icon: 'phone', iconClass: 'llamada', titulo: 'Llamada cierre - Austral', sub: 'Confirmar orden de compra pendiente', date: '3:30 PM', day: 'Vie 1 May', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 4, day: 1},
+];
+
+const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAY_NAMES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+let currentCalYear = 2026;
+let currentCalMonth = 3;
+let currentView = 'lista';
+
+function getCalDays(y, m) {
+  const firstDay = new Date(y, m, 1).getDay();
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const daysInPrevMonth = new Date(y, m, 0).getDate();
+  const cells = [];
+  for (let i = firstDay - 1; i >= 0; i--) {
+    cells.push({ day: daysInPrevMonth - i, otherMonth: true, pM: m === 0 ? 11 : m - 1, pY: m === 0 ? y - 1 : y });
+  }
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, otherMonth: false });
+  const remaining = 42 - cells.length;
+  for (let d = 1; d <= remaining; d++) {
+    cells.push({ day: d, otherMonth: true, pM: m === 11 ? 0 : m + 1, pY: m === 11 ? y + 1 : y });
+  }
+  return cells;
+}
+
+function getEventsForCell(y, m, d) {
+  return actividades.filter(a => a.year === y && a.month === m && a.day === d);
+}
+
+function calendarContent() {
+  const cells = getCalDays(currentCalYear, currentCalMonth);
+  const today = new Date();
+  const isToday = (y, m, d) => today.getFullYear() === y && today.getMonth() === m && today.getDate() === d;
+
+  let cellHtml = '';
+  cells.forEach(cell => {
+    const ey = cell.otherMonth ? cell.pY : currentCalYear;
+    const em = cell.otherMonth ? cell.pM : currentCalMonth;
+    const events = getEventsForCell(ey, em, cell.day);
+    const todayClass = isToday(ey, em, cell.day) ? 'calendar-cell--today' : '';
+    const otherClass = cell.otherMonth ? 'calendar-cell--other-month' : '';
+
+    let eventsHtml = '';
+    events.slice(0, 3).forEach(ev => {
+      const shortTitle = ev.titulo.length > 22 ? ev.titulo.substring(0, 22) + '…' : ev.titulo;
+      eventsHtml += `<div class="cal-event cal-event--${ev.iconClass}" title="${ev.titulo}">${shortTitle}</div>`;
+    });
+    if (events.length > 3) {
+      eventsHtml += `<div class="cal-more">+${events.length - 3} más</div>`;
+    }
+
+    cellHtml += `<div class="calendar-cell ${todayClass} ${otherClass}">
+      <div class="cal-day-num">${cell.day}</div>
+      <div class="cal-events">${eventsHtml}</div>
+    </div>`;
+  });
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Mis actividades</div>
+          <div class="page-head__subtitle">${actividades.length} actividades · Vista calendario</div>
+        </div>
+        <div class="page-head__actions">
+          <div class="tabs" style="border-bottom: none; margin-bottom: 0;">
+            <a class="tab" onclick="switchView('lista')">Lista</a>
+            <a class="tab is-active" onclick="switchView('calendario')">Calendario</a>
+            <a class="tab" onclick="switchView('mapa')">Mapa</a>
+          </div>
+          <button class="btn btn--primary btn--sm">${Icons.plus} Registrar</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="cal-dot cal-dot--visita"></span><span style="font-size:12px;color:var(--text-muted)">Visita</span>
+          <span class="cal-dot cal-dot--llamada"></span><span style="font-size:12px;color:var(--text-muted)">Llamada</span>
+          <span class="cal-dot cal-dot--email"></span><span style="font-size:12px;color:var(--text-muted)">Email</span>
+          <span class="cal-dot cal-dot--reunion"></span><span style="font-size:12px;color:var(--text-muted)">Reunión</span>
+        </div>
+      </div>
+
+      <div class="calendar-nav">
+        <button class="btn btn--ghost btn--sm" onclick="calNav(-1)">${Icons.chevronLeft} Anterior</button>
+        <div class="calendar-nav__title">${MONTH_NAMES[currentCalMonth]} ${currentCalYear}</div>
+        <button class="btn btn--ghost btn--sm" onclick="calNav(1)">Siguiente ${Icons.chevronRight}</button>
+      </div>
+
+      <div class="calendar-grid">
+        ${DAY_NAMES.map(d => `<div class="calendar-header-cell">${d}</div>`).join('')}
+        ${cellHtml}
+      </div>
+    </div>
+  `;
+}
+
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('is-active', t.textContent.trim().toLowerCase() === (view === 'lista' ? 'Lista' : view === 'calendario' ? 'Calendario' : 'Mapa'));
+  });
+  renderMainContent();
+}
+
+function calNav(dir) {
+  currentCalMonth += dir;
+  if (currentCalMonth > 11) { currentCalMonth = 0; currentCalYear++; }
+  if (currentCalMonth < 0) { currentCalMonth = 11; currentCalYear--; }
+  renderMainContent();
+}
+
+function renderMainContent() {
+  const mainArea = document.querySelector('.main-area');
+  if (!mainArea) return;
+  if (currentView === 'calendario') {
+    mainArea.innerHTML = renderTopbar({title:'Mis actividades'}) + calendarContent();
+  } else {
+    mainArea.innerHTML = renderTopbar({title:'Mis actividades'}) + listContent();
+  }
+}
+
+function activityRow(a) {
+  return `
+    <a href="18-actividad-detalle.html" style="text-decoration: none; color: inherit;">
+      <div class="activity-row">
+        <div class="activity-row__icon activity-row__icon--${a.iconClass}">${Icons[a.icon]}</div>
+        <div style="flex:1; min-width: 0;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+            <span style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${a.titulo}</span>
+          </div>
+          <div style="font-size: 12.5px; color: var(--text-muted);">${a.sub}</div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+          <span class="badge badge--${a.badge}"><span class="dot"></span> ${a.badgeText}</span>
+          <span style="font-size: 12px; color: var(--text-muted);">${a.day} · ${a.date}</span>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function listContent() {
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Mis actividades</div>
+          <div class="page-head__subtitle">${actividades.length} actividades · 3 completadas hoy</div>
+        </div>
+        <div class="page-head__actions">
+          <div class="tabs" style="border-bottom: none; margin-bottom: 0;">
+            <a class="tab is-active" onclick="switchView('lista')">Lista</a>
+            <a class="tab" onclick="switchView('calendario')">Calendario</a>
+            <a class="tab" onclick="switchView('mapa')">Mapa</a>
+          </div>
+          <a href="13-actividad-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+           <button class="btn btn--primary btn--sm">${Icons.plus} Registrar</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 320px;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar actividad..."></div>
+        <select class="select" style="max-width: 180px;">
+          <option>Todos los tipos</option>
+          <option>Llamadas</option>
+          <option>Visitas</option>
+          <option>Reuniones</option>
+          <option>Emails</option>
+        </select>
+        <select class="select" style="max-width: 180px;">
+          <option>Esta semana</option>
+          <option>Hoy</option>
+          <option>Este mes</option>
+          <option>Último trimestre</option>
+        </select>
+      </div>
+
+      <div class="card" style="padding: 0;">
+        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--page-bg); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Hoy · 19 Abr 2026</span>
+          <span style="font-size: 12px; color: var(--text-muted);">3 actividades</span>
+        </div>
+        ${actividades.slice(0, 3).map(activityRow).join('')}
+
+        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--page-bg); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Ayer · 18 Abr 2026</span>
+          <span style="font-size: 12px; color: var(--text-muted);">1 actividad</span>
+        </div>
+        ${actividades.slice(3, 4).map(activityRow).join('')}
+
+        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--page-bg); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Próximas</span>
+          <span style="font-size: 12px; color: var(--text-muted);">2 agendadas</span>
+        </div>
+        ${actividades.slice(4).map(activityRow).join('')}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `${renderSidebar('actividades', 'ejecutivo')}<div class="main-area">${renderTopbar({title:'Mis actividades'})}${listContent()}</div>`;
+</script>
+</body>
+</html>

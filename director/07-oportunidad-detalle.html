@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Director · Detalle Oportunidad</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 800 14px 'Roboto'; color: #6B6B6B; margin-bottom: 24px; }
+
+  .detail-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .detail-header__row {
+    display: flex; align-items: flex-start; gap: 16px; justify-content: space-between;
+  }
+  .detail-title {
+    font-size: 22px; font-weight: 800; color: var(--text-primary);
+    letter-spacing: -0.02em; line-height: 1.2;
+  }
+  .detail-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .detail-meta {
+    display: flex; gap: 24px; margin-top: 16px;
+    padding-top: 16px; border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .detail-meta__item { display: flex; flex-direction: column; gap: 2px; }
+  .detail-meta__label {
+    font-size: 10.5px; font-weight: 600; color: var(--text-disabled);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .detail-meta__value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .detail-meta__value--accent { color: var(--accent); font-size: 17px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+function content() {
+  const productosHTML = `
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+      <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--primary-bg); color: var(--primary); display: flex; align-items: center; justify-content: center;">${Icons.archive}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600; color: var(--text-primary); font-size: 13.5px;">Tubería PE100 SDR 11 - 4"</div>
+        <div style="font-size: 12px; color: var(--text-muted);">Uso: Conducción agua potable · Presión 16 bar</div>
+      </div>
+      <span class="badge badge--info">Principal</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+      <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--primary-bg); color: var(--primary); display: flex; align-items: center; justify-content: center;">${Icons.archive}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600; color: var(--text-primary); font-size: 13.5px;">Accesorios electrofusión 4"</div>
+        <div style="font-size: 12px; color: var(--text-muted);">Codos 90°, tees, reducciones · EF</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+      <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--primary-bg); color: var(--primary); display: flex; align-items: center; justify-content: center;">${Icons.archive}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600; color: var(--text-primary); font-size: 13.5px;">Válvulas de compuerta 4"</div>
+        <div style="font-size: 12px; color: var(--text-muted);">AWWA C509 · Vástago no ascendente</div>
+      </div>
+    </div>
+  `;
+
+  const actividadesHTML = `
+    <div class="timeline">
+      <div class="timeline__item">
+        <div class="timeline__dot timeline__dot--success"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Reunión técnica en planta</div>
+          <span class="timeline__date">Hoy, 10:30 AM</span>
+        </div>
+        <div class="timeline__desc">
+          Visita con el ingeniero residente para revisar especificaciones del acueducto rural.
+          Se acordó entregar propuesta revisada el 25 de marzo.
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--info">${Icons.mapPin.replace('class="icon"','class="icon icon--xs"')} Visita</span>
+          <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
+        </div>
+      </div>
+      <div class="timeline__item">
+        <div class="timeline__dot timeline__dot--success"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Envío de cotización preliminar</div>
+          <span class="timeline__date">15 Mar, 3:20 PM</span>
+        </div>
+        <div class="timeline__desc">
+          Propuesta económica inicial por $ 485 M enviada al comité técnico.
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--neutral">${Icons.envelope.replace('class="icon"','class="icon icon--xs"')} Email</span>
+          <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
+        </div>
+      </div>
+      <div class="timeline__item">
+        <div class="timeline__dot"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Llamada de seguimiento inicial</div>
+          <span class="timeline__date">10 Mar, 11:00 AM</span>
+        </div>
+        <div class="timeline__desc">
+          Primera llamada con el gerente de proyectos para conocer requerimientos técnicos.
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--neutral">${Icons.phone.replace('class="icon"','class="icon icon--xs"')} Llamada</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const historialHTML = `
+    <div class="timeline">
+      <div class="timeline__item">
+        <div class="timeline__dot"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Cambio a Negociación</div>
+          <span class="timeline__date">18 Mar</span>
+        </div>
+        <div class="timeline__desc">Desde "Propuesta" · por María García</div>
+      </div>
+      <div class="timeline__item">
+        <div class="timeline__dot timeline__dot--muted"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Cambio a Propuesta</div>
+          <span class="timeline__date">12 Mar</span>
+        </div>
+        <div class="timeline__desc">Desde "Calificación" · por María García</div>
+      </div>
+      <div class="timeline__item">
+        <div class="timeline__dot timeline__dot--muted"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Oportunidad creada</div>
+          <span class="timeline__date">05 Mar</span>
+        </div>
+        <div class="timeline__desc">Desde lead "Licitación EMPAS Bucaramanga"</div>
+      </div>
+    </div>
+  `;
+
+  const headerHTML = `
+    <div class="detail-header">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+        <a href="02-pipeline-global.html" style="color: var(--primary); cursor: pointer;">Pipeline global</a>
+        <span>/</span>
+        <span>OPP-2025-0038</span>
+      </div>
+      <div class="detail-header__row">
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <span class="badge badge--negociacion"><span class="dot"></span> Negociación</span>
+            <span class="badge badge--accent">Licitación</span>
+          </div>
+          <div class="detail-title">Licitación acueducto Bucaramanga</div>
+          <div class="detail-subtitle">EMPAS S.A. · Bucaramanga, Santander · Sector Agua Potable</div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+          <a href="02-pipeline-global.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+            <button class="btn btn--secondary btn--sm">${Icons.arrowLeft} Volver al pipeline</button>
+          </a>
+        </div>
+      </div>
+      <div class="detail-meta">
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Valor estimado</span>
+          <span class="detail-meta__value detail-meta__value--accent">$ 560.000.000</span>
+        </div>
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Cierre estimado</span>
+          <span class="detail-meta__value">30 Abr 2026</span>
+        </div>
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Ejecutivo</span>
+          <span class="detail-meta__value">María García</span>
+        </div>
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Probabilidad</span>
+          <span class="detail-meta__value" style="color: var(--success);">75%</span>
+        </div>
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Edad</span>
+          <span class="detail-meta__value">15 días</span>
+        </div>
+        <div class="detail-meta__item">
+          <span class="detail-meta__label">Valor ponderado</span>
+          <span class="detail-meta__value" style="color: var(--primary);">$ 420 M</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const tabsHTML = `
+    <div class="tabs">
+      <a class="tab is-active">Resumen</a>
+      <a class="tab">Productos <span class="tab__count">3</span></a>
+      <a class="tab">Actividades <span class="tab__count">8</span></a>
+      <a class="tab">Historial</a>
+    </div>
+  `;
+
+  const productosCard = `
+    <div class="card">
+      <div class="card__header">
+        <div>
+          <div class="card__title">Productos asociados</div>
+          <div class="card__subtitle">3 productos en esta oportunidad</div>
+        </div>
+      </div>
+      <div class="card__body" style="padding-top: 4px; padding-bottom: 4px;">
+        ${productosHTML}
+      </div>
+    </div>
+  `;
+
+  const actividadesCard = `
+    <div class="card">
+      <div class="card__header">
+        <div>
+          <div class="card__title">Actividades recientes</div>
+          <div class="card__subtitle">Últimas 3 de 8</div>
+        </div>
+        <button class="btn btn--ghost btn--sm">Ver todas</button>
+      </div>
+      <div class="card__body">${actividadesHTML}</div>
+    </div>
+  `;
+
+  const sidePanel = `
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Empresa</div>
+          <button class="btn btn--ghost btn--sm">${Icons.view}</button>
+        </div>
+        <div class="card__body">
+          <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+            <div class="avatar avatar--lg avatar--color-1">ES</div>
+            <div>
+              <div style="font-weight:700; color: var(--text-primary);">EMPAS S.A.</div>
+              <div style="font-size: 12px; color: var(--text-muted);">NIT 890.200.341-2</div>
+            </div>
+          </div>
+          <dl class="detail-info-list">
+            <dt>Sector</dt><dd>Agua Potable</dd>
+            <dt>Municipio</dt><dd>Bucaramanga</dd>
+            <dt>Modalidad</dt><dd>Interior</dd>
+            <dt>Cliente</dt><dd><span class="badge badge--ganada">Recurrente</span></dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Contacto</div>
+        </div>
+        <div class="card__body">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <div class="avatar avatar--sm avatar--color-3">MG</div>
+            <div>
+              <div style="font-weight:600; color: var(--text-primary);">María García</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Gerente de Proyectos</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <a style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--primary); cursor: pointer;">
+              ${Icons.phone} +57 310 555 8842
+            </a>
+            <a style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--primary); cursor: pointer;">
+              ${Icons.envelope} m.garcia@empas.gov.co
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Ejecutivo asignado</div>
+        </div>
+        <div class="card__body">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="avatar avatar--color-3">MG</div>
+            <div>
+              <div style="font-weight: 600; color: var(--text-primary);">María García</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Antioquia</div>
+            </div>
+          </div>
+          <div style="margin-top: 10px; padding: 10px; background: var(--page-bg); border-radius: 6px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Meta mes</span>
+              <span style="font-size: 12px; font-weight: 700;">$ 420 M / $ 380 M</span>
+            </div>
+            <div class="progress__bar" style="height: 6px;">
+              <div class="progress__fill" style="width: 110%; background: var(--success);"></div>
+            </div>
+            <div style="font-size: 10.5px; color: var(--success); font-weight: 600; margin-top: 4px;">✓ Sobre meta (+110%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return `
+    <div class="content">
+      ${headerHTML}
+      ${tabsHTML}
+      <div style="display: grid; gap: 16px; grid-template-columns: 1fr 320px;">
+        <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+          ${productosCard}
+          ${actividadesCard}
+
+          <div class="card">
+            <div class="card__header">
+              <div class="card__title">Historial de estados</div>
+            </div>
+            <div class="card__body">${historialHTML}</div>
+          </div>
+        </div>
+        ${sidePanel}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('pipeline', 'director')}
+  <div class="main-area">
+    ${renderTopbar({ breadcrumb: ['Pipeline global', 'Detalle'] })}
+    ${content()}
+  </div>
+`;
+</script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Admin · Dashboard</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 40px; }
+
+
+  .status-indicator {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600;
+  }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    animation: pulse 2s ease-out infinite;
+  }
+  .status-dot--ok { background: var(--green-bright); box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2); }
+  .status-dot--warn { background: var(--accent); box-shadow: 0 0 0 3px rgba(243, 150, 16, 0.2); }
+  .status-dot--error { background: var(--error); box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.2); }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+document.getElementById('shell').innerHTML = `${renderSidebar('dashboard','admin')}<div class="main-area">${renderTopbar({title:'Administración'})}${content('desktop')}</div>`;
+</script>
+</body>
+  const isCompact = bp === 'mobile' || bp === 'tablet';
+  const isMobile = bp === 'mobile';
+
+  const statCardsHTML = `
+    <div class="stat-card">
+      <div class="stat-card__icon">${Icons.users}</div>
+      <div class="stat-card__label">Usuarios activos</div>
+      <div class="stat-card__value">9</div>
+      <div class="stat-card__subtext">8 conectados hoy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--accent">${Icons.building}</div>
+      <div class="stat-card__label">Empresas</div>
+      <div class="stat-card__value stat-card__value--accent">87</div>
+      <div class="stat-card__subtext">3 nuevas este mes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--success">${Icons.funnel}</div>
+      <div class="stat-card__label">Registros totales</div>
+      <div class="stat-card__value stat-card__value--success">2.4K</div>
+      <div class="stat-card__subtext">Leads + Opp + Act.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon" style="background: var(--success-bg); color: var(--success);">${Icons.shieldCheck}</div>
+      <div class="stat-card__label">Uptime</div>
+      <div class="stat-card__value stat-card__value--success">99.9%</div>
+      <div class="stat-card__subtext">Últimos 30 días</div>
+    </div>
+  `;
+
+  const saludSistemaHTML = `
+    <div class="card">
+      <div class="card__header">
+        <div>
+          <div class="card__title">Salud del sistema</div>
+          <div class="card__subtitle">Monitoreo en tiempo real</div>
+        </div>
+        <span class="status-indicator" style="color: var(--success);">
+          <span class="status-dot status-dot--ok"></span>
+          Todos los servicios operativos
+        </span>
+      </div>
+      <div class="card__body">
+        ${[
+          { label: 'Base de datos Oracle', status: 'ok', detail: 'Latencia promedio: 12ms', value: '99.99%' },
+          { label: 'API REST', status: 'ok', detail: 'Respuesta: 85ms', value: '99.98%' },
+          { label: 'Servicio de notificaciones', status: 'ok', detail: 'Cola: 0 mensajes', value: '100%' },
+          { label: 'Almacenamiento', status: 'warn', detail: '68% de capacidad usada', value: '82%' },
+          { label: 'Autenticación', status: 'ok', detail: 'SSO funcionando', value: '100%' },
+          { label: 'Backup automático', status: 'ok', detail: 'Último: hoy 03:00 AM', value: '✓' },
+        ].map(s => `
+          <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
+            <span class="status-dot status-dot--${s.status}"></span>
+            <div style="flex: 1;">
+              <div style="font-weight: 600; font-size: 13px;">${s.label}</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">${s.detail}</div>
+            </div>
+            <span style="font-weight: 700; color: ${s.status === 'ok' ? 'var(--success)' : s.status === 'warn' ? 'var(--accent)' : 'var(--error)'};">${s.value}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  const quickActionsHTML = `
+    <div class="card">
+      <div class="card__header">
+        <div class="card__title">Acciones rápidas</div>
+      </div>
+      <div class="card__body" style="display: grid; grid-template-columns: repeat(${isMobile ? 2 : 3}, 1fr); gap: 10px;">
+        ${[
+          { icon: 'users', label: 'Nuevo usuario', color: 'var(--primary-bg)', iconColor: 'var(--primary)' },
+          { icon: 'tag', label: 'Agregar catálogo', color: 'var(--accent-bg)', iconColor: 'var(--accent)' },
+          { icon: 'shieldCheck', label: 'Auditoría', color: 'var(--success-bg)', iconColor: 'var(--success)' },
+          { icon: 'settings', label: 'Configuración', color: '#F3E8FF', iconColor: '#7C3AED' },
+          { icon: 'download', label: 'Backup manual', color: '#FEF9C3', iconColor: '#A16207' },
+          { icon: 'upload', label: 'Importar datos', color: '#EEF1FA', iconColor: '#24388C' },
+        ].map(a => `
+          <div style="padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 180ms; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: ${a.color}; color: ${a.iconColor}; display: flex; align-items: center; justify-content: center;">${Icons[a.icon]}</div>
+            <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary);">${a.label}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  const dbStatsHTML = `
+    <div class="card">
+      <div class="card__header">
+        <div>
+          <div class="card__title">Estadísticas de base de datos</div>
+          <div class="card__subtitle">Tablas principales del sistema</div>
+        </div>
+      </div>
+      <div style="padding: 0;">
+        <table class="table">
+          <thead><tr><th>Tabla</th><th style="text-align:right;">Registros</th><th style="text-align:right;">Crecimiento 30d</th><th style="text-align:right;">Tamaño</th></tr></thead>
+          <tbody>
+            <tr><td><code style="font-family: monospace; color: var(--primary); font-weight: 600;">CRM_EMPRESA</code></td><td style="text-align:right; font-weight: 700;">87</td><td style="text-align:right; color: var(--success);">+3</td><td style="text-align:right; font-size: 12px; color: var(--text-muted);">2.4 MB</td></tr>
+            <tr><td><code style="font-family: monospace; color: var(--primary); font-weight: 600;">CRM_CONTACTO</code></td><td style="text-align:right; font-weight: 700;">154</td><td style="text-align:right; color: var(--success);">+8</td><td style="text-align:right; font-size: 12px; color: var(--text-muted);">1.8 MB</td></tr>
+            <tr><td><code style="font-family: monospace; color: var(--primary); font-weight: 600;">CRM_LEAD</code></td><td style="text-align:right; font-weight: 700;">542</td><td style="text-align:right; color: var(--success);">+47</td><td style="text-align:right; font-size: 12px; color: var(--text-muted);">4.1 MB</td></tr>
+            <tr><td><code style="font-family: monospace; color: var(--primary); font-weight: 600;">CRM_OPORTUNIDAD</code></td><td style="text-align:right; font-weight: 700;">324</td><td style="text-align:right; color: var(--success);">+18</td><td style="text-align:right; font-size: 12px; color: var(--text-muted);">3.2 MB</td></tr>
+            <tr><td><code style="font-family: monospace; color: var(--primary); font-weight: 600;">CRM_ACTIVIDAD</code></td><td style="text-align:right; font-weight: 700;">1,287</td><td style="text-align:right; color: var(--success);">+198</td><td style="text-align:right; font-size: 12px; color: var(--text-muted);">5.8 MB</td></tr>
+            <tr><td><code style="font-family: monospace; color: var(--primary); font-weight: 600;">CRM_AUDITORIA</code></td><td style="text-align:right; font-weight: 700;">8,942</td><td style="text-align:right; color: var(--success);">+1,248</td><td style="text-align:right; font-size: 12px; color: var(--text-muted);">12.4 MB</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  if (isMobile) {
+    return `
+      <div class="content">
+        <div class="page-head">
+          <div class="page-head__title-group">
+            <div class="page-head__title">Admin</div>
+            <div class="page-head__subtitle">Panel del sistema</div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+          ${statCardsHTML}
+        </div>
+        ${saludSistemaHTML}
+        <div style="margin-top: 14px;">${quickActionsHTML}</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Panel de administración</div>
+          <div class="page-head__subtitle">Estado general del CRM Extrucol · Última actualización: hace 30 segundos</div>
+        </div>
+        <div class="page-head__actions">
+          <span class="status-indicator" style="color: var(--success); background: var(--success-bg); padding: 8px 14px; border-radius: 999px;">
+            <span class="status-dot status-dot--ok"></span>
+            Sistema operando normal
+          </span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(${bp === 'desktop' ? 4 : 2}, 1fr); gap: 12px; margin-bottom: 20px;">
+        ${statCardsHTML}
+      </div>
+
+      <div style="display: grid; gap: 16px; ${isCompact ? '' : 'grid-template-columns: 1fr 1fr;'}">
+        ${saludSistemaHTML}
+        ${quickActionsHTML}
+      </div>
+
+      <div style="margin-top: 16px;">
+        ${dbStatsHTML}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `${renderSidebar('dashboard','admin')}<div class="main-area">${renderTopbar({title:'Administración'})}${content('desktop')}</div>`;
+</script>
+</body>
+</html>

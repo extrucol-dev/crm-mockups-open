@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Dashboard</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1A1A1A;
+    margin-bottom: 6px;
+  }
+  .canvas-subtitle {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    color: #6B6B6B;
+    margin-bottom: 40px;
+  }
+
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 60px 24px; z-index: 100;
+  }
+  .modal-content {
+    background: var(--surface); border-radius: 12px;
+    max-width: 580px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    gap: 12px;
+  }
+  .modal-header > :first-child { flex-shrink: 0; }
+  .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
+  .modal-header__icon { background: var(--primary-bg); color: var(--primary); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
+  }
+
+  .big-map {
+    height: 280px;
+    border-radius: 8px;
+    background-color: #E8EEF5;
+    background-image:
+      linear-gradient(rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      radial-gradient(circle at 30% 40%, rgba(243, 150, 16, 0.1), transparent 50%);
+    background-size: 24px 24px, 24px 24px, auto;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .map-main-pin {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 36px; height: 36px;
+    background: var(--primary);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(36, 56, 140, 0.4);
+    z-index: 2;
+  }
+  .map-main-pin::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: -10px;
+    transform: translateX(-50%);
+    width: 2px; height: 10px;
+    background: var(--primary);
+  }
+  .map-main-pin::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .pulse-ring {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    opacity: 0.3;
+    animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: translate(-50%, -100%) scale(0.5); opacity: 0.6; }
+    100% { transform: translate(-50%, -100%) scale(2); opacity: 0; }
+  }
+  .gps-indicator {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(6px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--success);
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: var(--shadow-sm);
+  }
+  .gps-indicator::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: #22C55E;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0.4; }
+  }
+
+  .activity-type-selector {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .activity-type-card {
+    padding: 16px 8px; border: 1px solid var(--border);
+    border-radius: 8px; text-align: center; cursor: pointer;
+    transition: all 180ms; display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+    background: var(--surface);
+  }
+  .activity-type-card:hover { border-color: var(--primary); }
+  .activity-type-card.is-active {
+    border-color: var(--primary); background: var(--primary-bg);
+  }
+  .activity-type-card__icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--page-bg);
+  }
+  .activity-type-card.is-active .activity-type-card__icon {
+    background: var(--primary); color: #fff;
+  }
+  .activity-type-card__label {
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  }
+  .activity-type-card.is-active .activity-type-card__label {
+    color: var(--primary);
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('shell');
+function openModal(html) { modalRoot.innerHTML += html; }
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
+
+function registrarActividadModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header__icon">${Icons.clipboard}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Registrar actividad</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Actividad registrada para hoy</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body" style="padding-bottom: 0;">
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;">Datos de la actividad</div>
+          <div class="activity-type-selector" style="margin-bottom: 14px;">
+            ${[
+              { tipo: 'Visita', icon: 'mapPin', active: true },
+              { tipo: 'Llamada', icon: 'phone', active: false },
+              { tipo: 'Reunión', icon: 'view', active: false },
+              { tipo: 'Email', icon: 'envelope', active: false },
+            ].map(t => `
+              <div class="activity-type-card ${t.active ? 'is-active' : ''}">
+                <div class="activity-type-card__icon">${Icons[t.icon]}</div>
+                <div class="activity-type-card__label">${t.tipo}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="form-field" style="margin-bottom: 12px;">
+            <label class="form-field__label">Asunto <span class="req">*</span></label>
+            <input class="input" placeholder="Describe brevemente la actividad..." />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+            <div class="form-field">
+              <label class="form-field__label">Fecha</label>
+              <input class="input" type="date" value="2026-04-22" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Hora</label>
+              <input class="input" type="time" value="10:00" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">¿Virtual?</label>
+              <select class="select">
+                <option>Presencial</option>
+                <option>Virtual</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 0 24px;">
+          <div style="height: 1px; background: var(--border); margin: 0 0 16px;"></div>
+        </div>
+        <div style="padding: 0 24px 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Resultado y ubicación</div>
+            <span style="font-size: 11px; color: var(--text-disabled);">Se completa el día de la actividad</span>
+          </div>
+          <div class="form-field" style="margin-bottom: 12px;">
+            <label class="form-field__label">Resultado</label>
+            <textarea class="textarea" rows="2" placeholder="Qué se logró o acordó..." disabled style="background: var(--page-bg); cursor: not-allowed;"></textarea>
+          </div>
+          <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 4px;">
+            <div style="padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--page-bg);">
+              <div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Ubicación</div>
+                <div style="font-size: 11px; color: var(--text-disabled);">GPS · Se captura el día de la actividad</div>
+              </div>
+              <span class="badge badge--neutral" style="opacity: 0.6;">${Icons.mapPin.replace('class="icon"','class="icon icon--xs"')} Pendiente</span>
+            </div>
+            <div style="height: 160px; background: var(--page-bg); display: flex; align-items: center; justify-content: center; opacity: 0.5;">
+              <span style="font-size: 12px; color: var(--text-disabled);">Mapa disponible el día de la actividad</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Registrar actividad</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function dashboardContent() {
+  const statCards = `
+    <div class="stat-card">
+      <div class="stat-card__icon">${Icons.briefcase}</div>
+      <div class="stat-card__label">Oportunidades activas</div>
+      <div class="stat-card__value">12</div>
+      <div class="stat-card__subtext">
+        <span class="stat-card__trend stat-card__trend--up">+2</span>
+        vs mes anterior
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--accent">${Icons.currency}</div>
+      <div class="stat-card__label">Pipeline activo</div>
+      <div class="stat-card__value stat-card__value--accent">$ 485 M</div>
+      <div class="stat-card__subtext">COP estimados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--success">${Icons.clipboardCheck}</div>
+      <div class="stat-card__label">Actividades semana</div>
+      <div class="stat-card__value stat-card__value--success">18</div>
+      <div class="stat-card__subtext">
+        <span class="stat-card__trend stat-card__trend--up">+4</span>
+        esta semana
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--green">${Icons.trophy}</div>
+      <div class="stat-card__label">Oportunidades ganadas</div>
+      <div class="stat-card__value stat-card__value--green">7</div>
+      <div class="stat-card__subtext">Este trimestre</div>
+    </div>
+  `;
+
+  const estados = [
+    { label: 'Prospección', count: 4, pct: 33, badge: 'prospecto' },
+    { label: 'Calificación', count: 3, pct: 25, badge: 'calificacion' },
+    { label: 'Propuesta', count: 3, pct: 25, badge: 'propuesta' },
+    { label: 'Negociación', count: 2, pct: 17, badge: 'negociacion' },
+  ];
+
+  const estadosHTML = estados.map(e => `
+    <div style="display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+      <span class="badge badge--${e.badge}" style="min-width: 100px;"><span class="dot"></span> ${e.label}</span>
+      <div class="progress" style="flex:1;">
+        <div class="progress__bar"><div class="progress__fill" style="width: ${e.pct*3}%"></div></div>
+      </div>
+      <span style="font-weight:700; color: var(--text-primary); min-width: 30px; text-align: right;">${e.count}</span>
+    </div>
+  `).join('');
+
+  const actividades = [
+    { type: 'success', title: 'Llamada con Tecnoagua SAS', desc: 'Seguimiento a propuesta técnica de tubería PE100', date: 'Hace 2h', badge: 'completada' },
+    { type: 'success', title: 'Reunión virtual — Aguas del Valle', desc: 'Presentación inicial del portafolio de riego', date: 'Hoy, 9:30am', badge: 'completada' },
+    { type: 'blue', title: 'Visita programada — Ingenio del Cauca', desc: 'Cita para inspección técnica en planta', date: 'Mañana, 2:00pm', badge: 'agendada' },
+    { type: 'success', title: 'Email enviado — Constructora Andina', desc: 'Cotización revisada según última reunión', date: 'Ayer', badge: 'completada' },
+    { type: 'blue', title: 'Actividad programada — EAAB', desc: 'Seguimiento telefónico a licitação', date: 'Viernes', badge: 'agendada' },
+  ];
+
+  const actividadesHTML = actividades.map(a => `
+    <div class="activity-item">
+      <div class="activity-item__dot ${a.type === 'blue' ? 'activity-item__dot--blue' : ''}"></div>
+      <div class="activity-item__body">
+        <div class="activity-item__title">
+          ${a.title}
+          <span class="badge badge--${a.badge === 'completada' ? 'ganada' : 'prospecto'}" style="font-size: 10.5px; padding: 1px 8px;">
+            ${a.badge}
+          </span>
+        </div>
+        <div class="activity-item__desc">${a.desc}</div>
+        <div class="activity-item__meta">
+          ${Icons.clock}
+          <span>${a.date}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const leadsCalientes = [
+    { name: 'Acueducto Metropolitano', company: 'ACUAMET SA', score: 92, interes: 'Tubería PE100' },
+    { name: 'Distriaguas del Caribe', company: 'DAC LTDA', score: 84, interes: 'Sistema de riego' },
+    { name: 'Hidrogas del Oriente', company: 'HIDROGAS SA', score: 78, interes: 'Accesorios PE' },
+  ];
+
+  const leadsHTML = leadsCalientes.map(l => `
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+      <div class="avatar avatar--sm avatar--accent">${l.company.substring(0,2)}</div>
+      <div style="flex:1; min-width: 0;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">${l.name}</div>
+        <div style="font-size: 11.5px; color: var(--text-muted);">${l.interes}</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        ${Icons.fire}
+        <span style="font-weight: 700; color: var(--accent); font-size: 13px;">${l.score}</span>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Hola, Juan 👋</div>
+          <div class="page-head__subtitle">Aquí está el resumen de tu semana comercial</div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary btn--sm">${Icons.calendar} Esta semana</button>
+          <a href="05-oportunidad-form.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+              <button class="btn btn--primary btn--sm">${Icons.plus} Nueva oportunidad</button></a>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+        ${statCards}
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px;">
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="card">
+            <div class="card__header">
+              <div>
+                <div class="card__title">Oportunidades por estado</div>
+                <div class="card__subtitle">Distribución de tu pipeline activo</div>
+              </div>
+              <a href="02-oportunidades-kanban.html" style="text-decoration: none;"><button class="btn btn--ghost btn--sm">Ver todas ${Icons.arrowRight}</button></a>
+            </div>
+            <div class="card__body" style="padding-top: 4px; padding-bottom: 4px;">
+              ${estadosHTML}
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__header">
+              <div>
+                <div class="card__title">Leads más activos</div>
+                <div class="card__subtitle">Tus prospectos con mayor probabilidad de conversión</div>
+              </div>
+              <span class="badge badge--accent">${Icons.sparkles} Top 3</span>
+            </div>
+            <div class="card__body" style="padding-top: 4px; padding-bottom: 4px;">
+              ${leadsHTML}
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Mis últimas actividades</div>
+              <div class="card__subtitle">Registro cronológico</div>
+            </div>
+            <a href="07-actividades.html" style="text-decoration: none;"><button class="btn btn--ghost btn--sm">Ver historial</button></a>
+          </div>
+          <div class="card__body" style="padding-top: 0; padding-bottom: 4px;">
+            ${actividadesHTML}
+          </div>
+          <div class="card__footer" style="justify-content: center;">
+            <button class="btn btn--secondary btn--block btn--sm" onclick="openModal(registrarActividadModal())">${Icons.plus} Registrar actividad</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('dashboard', 'ejecutivo')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Mi Dashboard' })}
+    ${dashboardContent()}
+  </div>
+`;
+</script>
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Detalle Actividad</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .activity-detail-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .activity-detail-header__icon-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .activity-detail-header__icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .activity-detail-header__title {
+    font-size: 22px; font-weight: 800; color: var(--text-primary);
+    letter-spacing: -0.02em; line-height: 1.2;
+  }
+  .activity-detail-header__sub {
+    font-size: 13px; color: var(--text-muted); margin-top: 4px;
+  }
+  .activity-detail-meta {
+    display: flex; gap: 24px; margin-top: 16px;
+    padding-top: 16px; border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .activity-detail-meta__item { display: flex; flex-direction: column; gap: 2px; }
+  .activity-detail-meta__label {
+    font-size: 10.5px; font-weight: 600; color: var(--text-disabled);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .activity-detail-meta__value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+  .activity-type-selector {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .activity-type-card {
+    padding: 16px 8px; border: 1px solid var(--border);
+    border-radius: 8px; text-align: center; cursor: pointer;
+    transition: all 180ms; display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+    background: var(--surface);
+  }
+  .activity-type-card:hover { border-color: var(--primary); }
+  .activity-type-card.is-active {
+    border-color: var(--primary); background: var(--primary-bg);
+  }
+  .activity-type-card__icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--page-bg);
+  }
+  .activity-type-card.is-active .activity-type-card__icon {
+    background: var(--primary); color: #fff;
+  }
+  .activity-type-card__label {
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  }
+  .activity-type-card.is-active .activity-type-card__label {
+    color: var(--primary);
+  }
+
+  .big-map {
+    height: 280px;
+    border-radius: 8px;
+    background-color: #E8EEF5;
+    background-image:
+      linear-gradient(rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      radial-gradient(circle at 30% 40%, rgba(243, 150, 16, 0.1), transparent 50%);
+    background-size: 24px 24px, 24px 24px, auto;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .map-main-pin {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 36px; height: 36px;
+    background: var(--primary);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(36, 56, 140, 0.4);
+    z-index: 2;
+  }
+  .map-main-pin::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: -10px;
+    transform: translateX(-50%);
+    width: 2px; height: 10px;
+    background: var(--primary);
+  }
+  .map-main-pin::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .pulse-ring {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    opacity: 0.3;
+    animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: translate(-50%, -100%) scale(0.5); opacity: 0.6; }
+    100% { transform: translate(-50%, -100%) scale(2); opacity: 0; }
+  }
+  .gps-indicator {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(6px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--success);
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: var(--shadow-sm);
+  }
+  .gps-indicator::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: #22C55E;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0.4; }
+  }
+  .timeline-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .timeline-row:last-child { border-bottom: none; }
+  .timeline-row__dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--primary); margin-top: 5px; flex-shrink: 0;
+  }
+  .timeline-row__dot--muted { background: var(--border); }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+function detailContent() {
+  const header = `
+    <div class="activity-detail-header">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+        <a href="07-actividades.html" style="color: var(--primary); cursor: pointer;">Actividades</a>
+        <span>/</span>
+        <span>ACT-2026-0089</span>
+      </div>
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+            <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
+            <span class="badge badge--info">${Icons.mapPin.replace('class="icon"','class="icon icon--xs"')} Visita</span>
+            <span class="badge badge--neutral">Presencial</span>
+          </div>
+          <div class="activity-detail-header__title">Inspección técnica para dimensionamiento</div>
+          <div class="activity-detail-header__sub">EMPAS S.A. · Hoy 22 Abr 2026 · 10:30 AM</div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+          <button class="btn btn--secondary btn--sm">${Icons.pencil} Editar</button>
+        </div>
+      </div>
+      <div class="activity-detail-meta">
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">Fecha</span>
+          <span class="activity-detail-meta__value">22 Abr 2026</span>
+        </div>
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">Hora</span>
+          <span class="activity-detail-meta__value">10:30 AM</span>
+        </div>
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">Tipo</span>
+          <span class="activity-detail-meta__value">Visita presencial</span>
+        </div>
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">Duración</span>
+          <span class="activity-detail-meta__value">1h 15min</span>
+        </div>
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">Ejecutivo</span>
+          <span class="activity-detail-meta__value">Juan Pérez</span>
+        </div>
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">GPS</span>
+          <span class="activity-detail-meta__value" style="color: var(--success);">Capturado</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const mainContent = `
+    <div style="display: flex; flex-direction: column; gap: 16px; flex: 1; min-width: 0;">
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Datos de la actividad</div>
+        </div>
+        <div class="card__body" style="display: flex; flex-direction: column; gap: 12px;">
+          <dl class="detail-info-list">
+            <dt>Relacionado con</dt>
+            <dd>Oportunidad</dd>
+            <dt>Oportunidad</dt>
+            <dd><a style="color: var(--primary); cursor: pointer;">OPP-2025-0042 - Proyecto acueducto rural</a></dd>
+            <dt>Empresa</dt>
+            <dd>EMPAS S.A.</dd>
+            <dt>Asunto</dt>
+            <dd>Inspección técnica para dimensionamiento de red de distribución</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Ubicación</div>
+          <span class="badge badge--ganada"><span class="dot"></span> Calle 29 #28-32, Piedecuesta</span>
+        </div>
+        <div style="padding: 16px;">
+          <div class="big-map">
+            <div class="gps-indicator">GPS activo</div>
+            <div class="pulse-ring"></div>
+            <div class="map-main-pin"></div>
+            <div style="position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(255,255,255,0.95); backdrop-filter: blur(6px); padding: 10px 14px; border-radius: 8px; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 10px;">
+              ${Icons.mapPin}
+              <div style="flex:1; min-width: 0;">
+                <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary);">Calle 29 #28-32, Piedecuesta</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Lat: 6.9831°, Lng: -73.0483°</div>
+              </div>
+              <button class="btn btn--ghost btn--sm">${Icons.gps}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Resultado</div>
+          <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
+        </div>
+        <div class="card__body">
+          <div style="font-size: 14px; color: var(--text-primary); line-height: 1.6;">
+            Se realizó la inspección técnica en planta junto con el ingeniero residente y director técnico.
+            Se revisaron las especificaciones de la red de distribución y se acordó enviar propuesta
+            comercial actualizada antes del 25 de marzo con los volúmenes requeridos para el proyecto.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Actividades relacionadas</div>
+        </div>
+        <div class="card__body" style="padding: 12px 16px;">
+          <div class="timeline-row">
+            <div class="timeline-row__dot"></div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">Email - Cotización revisada enviada</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Hace 3 días · Completada</div>
+            </div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-row__dot"></div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">Llamada - Seguimiento a propuesta</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Hace 5 días · Completada</div>
+            </div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-row__dot timeline-row__dot--muted"></div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-disabled);">Primer contacto - Presentación del portafolio</div>
+              <div style="font-size: 12px; color: var(--text-disabled); margin-top: 2px;">Hace 8 días · Completada</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  const sidePanel = `
+    <div style="display: flex; flex-direction: column; gap: 12px; width: 300px; flex-shrink: 0;">
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Oportunidad</div></div>
+        <div class="card__body">
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">OPP-2025-0042</div>
+          <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px;">Proyecto acueducto rural Piedecuesta</div>
+          <a href="04-oportunidad-detalle.html" style="text-decoration: none;">
+            <button class="btn btn--secondary btn--sm btn--block">${Icons.arrowRight} Ver oportunidad</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Contacto</div></div>
+        <div class="card__body">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <div class="avatar avatar--color-3">CR</div>
+            <div>
+              <div style="font-weight: 700; font-size: 13.5px;">Carlos Rodríguez</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Ingeniero Residente</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.phone} +57 310 456 7890</a>
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.envelope} c.rodriguez@empas.com.co</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Información</div></div>
+        <div class="card__body">
+          <dl class="detail-info-list">
+            <dt>Creada</dt><dd>22 Abr 2026</dd>
+            <dt>Registrada por</dt><dd>Juan Pérez</dd>
+            <dt>ID</dt><dd>ACT-2026-0089</dd>
+            <dt>Duración</dt><dd>1h 15min</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Acciones</div></div>
+        <div class="card__body" style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn btn--secondary btn--block">${Icons.pencil} Editar actividad</button>
+          <button class="btn btn--secondary btn--block">${Icons.plus} Agregar nota</button>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  return `
+    <div class="content">
+      ${header}
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        ${mainContent}
+        ${sidePanel}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `${renderSidebar('actividades', 'ejecutivo')}<div class="main-area">${renderTopbar({breadcrumb:['Actividades','Detalle']})}${detailContent()}</div>`;
+</script>
+</body>
+</html>

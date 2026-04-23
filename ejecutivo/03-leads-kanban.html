@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Leads Kanban</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 40px; }
+
+  .lead-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: var(--shadow-sm);
+    cursor: grab;
+    transition: all 180ms ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .lead-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
+  .lead-card__origen {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-muted);
+  }
+  .lead-card__title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .lead-card__empresa { font-size: 11.5px; color: var(--text-muted); }
+  .lead-card__intereses { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+  .lead-card__interes-chip {
+    font-size: 10px; font-weight: 600; padding: 2px 7px;
+    border-radius: 4px; background: var(--primary-bg); color: var(--primary);
+  }
+  .lead-card__footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 8px; border-top: 1px solid var(--border); margin-top: 2px;
+  }
+  .lead-card__score {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 11px; font-weight: 700; color: var(--accent);
+  }
+  .lead-card__age { font-size: 10.5px; color: var(--text-disabled); }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('shell');
+function openModal(html) { modalRoot.innerHTML += html; }
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
+
+function toggleFiltros() {
+  const panel = document.getElementById('filtrosPanel');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'flex';
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+const leadsData = {
+  NUEVO: { color: '#3B82F6', label: 'Nuevo', badgeClass: 'prospecto', items: [
+    { titulo: 'Consulta portafolio riego', empresa: 'Agroindustria Llanera', origen: 'Página Web', intereses: ['Riego', 'Asesoría'], score: 65, age: '2d', avatar: 'AL', color: 3 },
+    { titulo: 'Solicita cotización PE100', empresa: 'Constructora XYZ', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 48, age: '1d', avatar: 'CX', color: 5 },
+    { titulo: 'Interesado en accesorios', empresa: 'Distribuidora del Sur', origen: 'Facebook', intereses: ['Accesorios'], score: 52, age: '3h', avatar: 'DS', color: 4 },
+  ]},
+  CONTACTADO: { color: '#A855F7', label: 'Contactado', badgeClass: 'propuesta', items: [
+    { titulo: 'Proyecto acueducto municipal', empresa: 'Alcaldía de Piedecuesta', origen: 'Página Web', intereses: ['Tubería PE', 'Asesoría'], score: 78, age: '5d', avatar: 'AP', color: 1 },
+    { titulo: 'Ampliación red residencial', empresa: 'Urbanizadora Andina', origen: 'Instagram', intereses: ['Tubería PE'], score: 68, age: '4d', avatar: 'UA', color: 6 },
+    { titulo: 'Sistema riego invernadero', empresa: 'Floricultura San José', origen: 'Página Web', intereses: ['Riego'], score: 72, age: '3d', avatar: 'FS', color: 3 },
+  ]},
+  INTERESADO: { color: '#F39610', label: 'Interesado', badgeClass: 'calificacion', items: [
+    { titulo: 'Suministro anual de tubería', empresa: 'Constructora Bolívar', origen: 'Página Web', intereses: ['Tubería PE', 'Accesorios'], score: 86, age: '7d', avatar: 'CB', color: 2 },
+    { titulo: 'Red matriz barrio nuevo', empresa: 'Servientrega Colombia', origen: 'Facebook', intereses: ['Tubería PE'], score: 82, age: '6d', avatar: 'SC', color: 4 },
+  ]},
+  CALIFICADO: { color: '#22C55E', label: 'Calificado', badgeClass: 'ganada', items: [
+    { titulo: 'Proyecto acueducto rural', empresa: 'EMPAS S.A.', origen: 'WhatsApp', intereses: ['Tubería PE', 'Asesoría'], score: 92, age: '10d', avatar: 'ES', color: 1 },
+  ]},
+  DESCALIFICADO: { color: '#EF4444', label: 'No Interesado', badgeClass: 'perdida', items: [
+    { titulo: 'Cotización menor', empresa: 'Ferretería Central', origen: 'WhatsApp', intereses: ['Accesorios'], score: 25, age: '8d', avatar: 'FC', color: 5 },
+  ]}
+};
+
+function renderLeadCard(l, estadoKey) {
+  const s = leadsData[estadoKey];
+  return `
+    <a href="10-lead-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+      <div class="lead-card">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span class="lead-card__origen">${Icons.globe} ${l.origen}</span>
+          <button class="topbar__icon-btn" style="width:24px; height:24px;">${Icons.dots}</button>
+        </div>
+        <div class="lead-card__title">${l.titulo}</div>
+        <div class="lead-card__empresa">${l.empresa}</div>
+        <div class="lead-card__intereses">
+          ${l.intereses.map(i => `<span class="lead-card__interes-chip">${i}</span>`).join('')}
+        </div>
+        <div class="lead-card__footer">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="avatar avatar--xs avatar--color-${l.color}">${l.avatar}</div>
+            <span class="lead-card__score">${Icons.fire} ${l.score}</span>
+          </div>
+          <span class="lead-card__age">${l.age}</span>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function renderKanbanColumn(estadoKey) {
+  const col = leadsData[estadoKey];
+  const cards = col.items.map(l => renderLeadCard(l, estadoKey)).join('');
+  return `
+    <div class="kanban-col">
+      <div class="kanban-col__header">
+        <span class="kanban-col__dot" style="background:${col.color}"></span>
+        <span class="kanban-col__label">${col.label}</span>
+        <span class="kanban-col__count">${col.items.length}</span>
+      </div>
+      <div class="kanban-col__line" style="background:${col.color}"></div>
+      <div class="kanban-col__list">
+        ${cards || `<div class="kanban-col__empty">Sin leads</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function content() {
+  const total = Object.values(leadsData).reduce((a,b)=>a+b.items.length, 0);
+  const columnasKanban = `<div class="kanban" style="grid-template-columns: repeat(5, 1fr);">
+       ${renderKanbanColumn('NUEVO')}
+       ${renderKanbanColumn('CONTACTADO')}
+       ${renderKanbanColumn('INTERESADO')}
+       ${renderKanbanColumn('CALIFICADO')}
+       ${renderKanbanColumn('DESCALIFICADO')}
+     </div>`;
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Mis Leads</div>
+          <div class="page-head__subtitle">${total} leads en seguimiento · 3 sin contactar hace +2 días</div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary btn--sm" onclick="toggleFiltros()">${Icons.filter} Filtros</button>
+          <a href="09-lead-form.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+            <button class="btn btn--primary btn--sm">${Icons.plus} Nuevo lead</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 320px;">
+          ${Icons.search}
+          <input class="input input--with-icon" placeholder="Buscar por título, empresa, origen...">
+        </div>
+        <select class="select" style="max-width: 180px;">
+          <option>Todos los orígenes</option>
+          <option>Página Web</option>
+          <option>Facebook</option>
+          <option>WhatsApp</option>
+          <option>Referido</option>
+        </select>
+        <select class="select" style="max-width: 180px;">
+          <option>Todos los intereses</option>
+          <option>Tubería PE</option>
+          <option>Riego</option>
+          <option>Accesorios</option>
+        </select>
+      </div>
+
+      <div id="filtrosPanel" style="display: none; gap: 12px; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: flex-end;">
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Rango de score</div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input class="input" placeholder="Min" style="max-width: 80px;" />
+            <span style="color: var(--text-muted);">—</span>
+            <input class="input" placeholder="Max" style="max-width: 80px;" />
+          </div>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Antigüedad</div>
+          <select class="select">
+            <option>Cualquier edad</option>
+            <option>Menos de 3 días</option>
+            <option>3-7 días</option>
+            <option>Más de 7 días</option>
+          </select>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Solo</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+              <input type="checkbox" style="width: 14px; height: 14px;" /> Sin contactar
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+              <input type="checkbox" style="width: 14px; height: 14px;" /> Alta prioridad
+            </label>
+          </div>
+        </div>
+        <button class="btn btn--ghost btn--sm" onclick="toggleFiltros()">${Icons.close} Cerrar</button>
+      </div>
+
+      <div class="alert alert--warning" style="margin-bottom: 16px;">
+        ${Icons.warning}
+        <div>
+          <strong>2 leads estancados.</strong> Tienes leads en estado "Nuevo" sin contactar hace más de 2 días.
+          El sistema enviará notificación al coordinador si superan 3 días.
+        </div>
+      </div>
+
+      ${columnasKanban}
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('leads', 'ejecutivo')}
+  <div class="main-area">${renderTopbar({ title: 'Mis Leads' })}${content()}</div>
+`;
+</script>
+</body>
+</html>

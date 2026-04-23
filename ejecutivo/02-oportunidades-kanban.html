@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Oportunidades Kanban</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 40px; }
+
+  .closed-toggle {
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  .kanban--6 { grid-template-columns: repeat(6, 1fr); }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('shell');
+function openModal(html) { modalRoot.innerHTML += html; }
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
+
+function toggleFiltros() {
+  const panel = document.getElementById('filtrosPanel');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'flex';
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+const oportunidades = {
+  PROSPECTO: {
+    color: '#3B82F6',
+    items: [
+      { titulo: 'Licitación acueducto Bucaramanga', empresa: 'EMPAS S.A.', valor: '$ 120 M', fecha: '15 Mar', avatar: 'ES', color: 2 },
+      { titulo: 'Cotización tubería PE100', empresa: 'Distriaguas SAS', valor: '$ 45 M', fecha: '12 Mar', avatar: 'DS', color: 3 },
+      { titulo: 'Sistema riego cultivo', empresa: 'Agrícola El Prado', valor: '$ 78 M', fecha: '10 Mar', avatar: 'AP', color: 4 },
+      { titulo: 'Ampliación red gas', empresa: 'Hidrogas SA', valor: '$ 95 M', fecha: '08 Mar', avatar: 'HS', color: 1 },
+    ]
+  },
+  CALIFICACION: {
+    color: '#F97316',
+    items: [
+      { titulo: 'Proyecto alcantarillado', empresa: 'EAAB', valor: '$ 340 M', fecha: '18 Mar', avatar: 'EA', color: 5 },
+      { titulo: 'Sistema presurizado', empresa: 'Ingenio del Cauca', valor: '$ 180 M', fecha: '16 Mar', avatar: 'IC', color: 6 },
+      { titulo: 'Accesorios PE industrial', empresa: 'Tecnoagua SAS', valor: '$ 52 M', fecha: '14 Mar', avatar: 'TS', color: 2 },
+    ]
+  },
+  PROPUESTA: {
+    color: '#A855F7',
+    items: [
+      { titulo: 'Ampliación planta trat.', empresa: 'Aguas del Valle', valor: '$ 215 M', fecha: '20 Mar', avatar: 'AV', color: 3 },
+      { titulo: 'Reposición red matriz', empresa: 'Acueducto Metrop.', valor: '$ 420 M', fecha: '19 Mar', avatar: 'AM', color: 1 },
+      { titulo: 'Riego por goteo 30 Ha', empresa: 'Palmares del Sur', valor: '$ 88 M', fecha: '17 Mar', avatar: 'PS', color: 4 },
+    ]
+  },
+  NEGOCIACION: {
+    color: '#EAB308',
+    items: [
+      { titulo: 'Suministro anual tubería', empresa: 'Constructora Andina', valor: '$ 560 M', fecha: '22 Mar', avatar: 'CA', color: 6 },
+      { titulo: 'Línea conducción 8km', empresa: 'Distriaguas Caribe', valor: '$ 380 M', fecha: '21 Mar', avatar: 'DC', color: 5 },
+    ]
+  },
+  GANADA: { color: '#22C55E', items: [
+    { titulo: 'Proyecto Acueducto Norte', empresa: 'Tecnoagua SAS', valor: '$ 410 M', fecha: '05 Mar', avatar: 'TS', color: 2 },
+    { titulo: 'Riego Palmales Fase 2', empresa: 'Palmares Sur', valor: '$ 125 M', fecha: '28 Feb', avatar: 'PS', color: 3 },
+  ]},
+  PERDIDA: { color: '#EF4444', items: [
+    { titulo: 'Licitación menor', empresa: 'Municipio de X', valor: '$ 65 M', fecha: '01 Mar', avatar: 'MX', color: 5 },
+  ]}
+};
+
+const estadoLabels = {
+  PROSPECTO: { label: 'Prospección', badgeClass: 'prospecto' },
+  CALIFICACION: { label: 'Calificación', badgeClass: 'calificacion' },
+  PROPUESTA: { label: 'Propuesta', badgeClass: 'propuesta' },
+  NEGOCIACION: { label: 'Negociación', badgeClass: 'negociacion' },
+  GANADA: { label: 'Ganada', badgeClass: 'ganada' },
+  PERDIDA: { label: 'Perdida', badgeClass: 'perdida' },
+};
+
+function renderKanbanCard(op, estadoKey) {
+  const s = estadoLabels[estadoKey];
+  return `
+    <a href="04-oportunidad-detalle.html" style="text-decoration: none; color: inherit;">
+      <div class="kanban-card">
+        <span class="badge badge--${s.badgeClass}"><span class="dot"></span> ${s.label}</span>
+        <div class="kanban-card__title">${op.titulo}</div>
+        <div class="kanban-card__company">${op.empresa}</div>
+        <div class="kanban-card__value">${op.valor}</div>
+        <div class="kanban-card__footer">
+          <span class="kanban-card__date">${Icons.calendar} ${op.fecha}</span>
+          <div class="avatar avatar--xs avatar--color-${op.color}">${op.avatar}</div>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function renderKanbanColumn(estadoKey) {
+  const col = oportunidades[estadoKey];
+  const s = estadoLabels[estadoKey];
+  const cards = col.items.map(op => renderKanbanCard(op, estadoKey)).join('');
+  return `
+    <div class="kanban-col">
+      <div class="kanban-col__header">
+        <span class="kanban-col__dot" style="background:${col.color}"></span>
+        <span class="kanban-col__label">${s.label}</span>
+        <span class="kanban-col__count">${col.items.length}</span>
+      </div>
+      <div class="kanban-col__line" style="background:${col.color}"></div>
+      <div class="kanban-col__list">
+        ${cards || `<div class="kanban-col__empty">Sin oportunidades</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function kanbanContent() {
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Mis Oportunidades</div>
+          <div class="page-head__subtitle">
+            ${Object.values(oportunidades).reduce((a,b)=>a+b.items.length,0)} oportunidades
+            · $ 2.920 M en pipeline
+          </div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary btn--sm" onclick="toggleFiltros()">${Icons.filter} Filtros</button>
+          <a href="05-oportunidad-form.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+            <button class="btn btn--primary btn--sm">${Icons.plus} Nueva oportunidad</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 320px;">
+          ${Icons.search.replace('class="icon"', 'class="icon"')}
+          <input class="input input--with-icon" placeholder="Buscar por título, empresa...">
+        </div>
+        <select class="select" style="max-width: 180px;">
+          <option>Todos los sectores</option>
+          <option>Agua potable</option>
+          <option>Gas</option>
+          <option>Agro/Riego</option>
+        </select>
+        <select class="select" style="max-width: 180px;">
+          <option>Todos los tipos</option>
+          <option>Licitación</option>
+          <option>Suministro</option>
+          <option>Proyecto</option>
+        </select>
+        <div style="margin-left:auto; display: flex; gap: 8px; align-items: center; font-size: 12.5px; color: var(--text-muted);">
+          ${Icons.arrowsUpDown}
+          <span>Ordenar:</span>
+          <select class="select" style="max-width: 140px; padding: 6px 32px 6px 10px;">
+            <option>Fecha reciente</option>
+            <option>Valor mayor</option>
+            <option>Cierre próximo</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="filtrosPanel" style="display: none; gap: 12px; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: flex-end;">
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Ejecutivo</div>
+          <select class="select">
+            <option>Todos</option>
+            <option>Juan Pérez</option>
+            <option>Ana Gómez</option>
+          </select>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Rango de valor</div>
+          <div style="display: flex; gap: 8px;">
+            <input class="input" placeholder="Min" style="max-width: 100px;" />
+            <input class="input" placeholder="Max" style="max-width: 100px;" />
+          </div>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Fecha cierre</div>
+          <div style="display: flex; gap: 8px;">
+            <input class="input" type="date" style="max-width: 140px;" />
+            <input class="input" type="date" style="max-width: 140px;" />
+          </div>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Solo</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+              <input type="checkbox" style="width: 14px; height: 14px;" /> Mis oportunidades
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+              <input type="checkbox" style="width: 14px; height: 14px;" /> Próximas a cerrar
+            </label>
+          </div>
+        </div>
+        <button class="btn btn--ghost btn--sm" onclick="toggleFiltros()">${Icons.close} Cerrar</button>
+      </div>
+
+      <div class="kanban kanban--6">
+        ${renderKanbanColumn('PROSPECTO')}
+        ${renderKanbanColumn('CALIFICACION')}
+        ${renderKanbanColumn('PROPUESTA')}
+        ${renderKanbanColumn('NEGOCIACION')}
+        ${renderKanbanColumn('GANADA')}
+        ${renderKanbanColumn('PERDIDA')}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('oportunidades', 'ejecutivo')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Mis Oportunidades' })}
+    ${kanbanContent()}
+  </div>
+`;
+</script>
+</body>
+</html>

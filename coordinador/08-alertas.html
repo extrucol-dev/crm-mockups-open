@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Coordinador · Alertas Activas</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .alert-card {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 20px; border-radius: 12px;
+    border: 1px solid transparent; margin-bottom: 10px;
+    transition: all 180ms;
+  }
+  .alert-card:hover { box-shadow: var(--shadow-md); }
+  .alert-card--critical { background: var(--error-bg); border-color: var(--error-border); }
+  .alert-card--warning { background: #FFF8E5; border-color: #F5E0B0; }
+  .alert-card--info { background: var(--primary-bg); border-color: #c5cfed; }
+  .alert-card--success { background: var(--success-bg); border-color: #b7e0c4; }
+
+  .alert-card__icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .alert-card__icon--critical { background: var(--error); color: #fff; }
+  .alert-card__icon--warning { background: #C7770D; color: #fff; }
+  .alert-card__icon--info { background: var(--primary); color: #fff; }
+  .alert-card__icon--success { background: var(--success); color: #fff; }
+
+  .alert-card__meta {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 4px; flex-wrap: wrap;
+  }
+  .alert-card__tag {
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; padding: 2px 8px; border-radius: 4px;
+  }
+  .tag--lead { background: var(--primary-bg); color: var(--primary); }
+  .tag--opp { background: var(--accent-bg); color: #C7770D; }
+  .tag--ejec { background: #E8F5EE; color: var(--success); }
+
+  .dias-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 6px;
+    font-size: 11px; font-weight: 700;
+  }
+  .dias-badge--danger { background: rgba(192,57,43,0.15); color: var(--error); }
+  .dias-badge--warning { background: rgba(199,119,13,0.15); color: #C7770D; }
+
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 60px 24px;
+    z-index: 100;
+  }
+  .modal-content {
+    background: var(--surface);
+    border-radius: 12px;
+    max-width: 520px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px;
+    background: var(--page-bg);
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+  </div>
+</div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('modal-root');
+
+const alertas = [
+  {
+    tipo: 'critical', icono: 'warning', prioridad: 'danger',
+    titulo: 'Lead estancado — 5 días sin contacto',
+    descripcion: '"Proyecto acueducto rural EMPAS" — Asignado a Juan Pérez. Último estado: Contactado.',
+    registro: 'LEAD-234', empresa: 'EMPAS S.A.', ejec: 'Juan Pérez', ejecColor: 1,
+    estado: 'Contactado', badgeClass: 'propuesta',
+    dias: 5, umbral: 3, tiempo: 'Hace 5 min',
+    acciones: [
+      { label: 'Ver lead', route: '../ejecutivo/10-lead-detalle.html', icon: 'view' },
+      { label: 'Notificar', action: 'notificar', icon: 'bell' },
+      { label: 'Reasignar', action: 'reasignar', icon: 'users' },
+    ]
+  },
+  {
+    tipo: 'critical', icono: 'warning', prioridad: 'danger',
+    titulo: 'Oportunidad sin actividad — 7 días',
+    descripcion: '"Suministro anual Constructora Andina" — Asignado a María García. Estado: Negociación.',
+    registro: 'OPP-0038', empresa: 'Constructora Andina', ejec: 'María García', ejecColor: 3,
+    estado: 'Negociación', badgeClass: 'negociacion', valor: '$ 560 M',
+    dias: 7, umbral: 7, tiempo: 'Hace 1h',
+    acciones: [
+      { label: 'Ver opp.', route: '../ejecutivo/04-oportunidad-detalle.html', icon: 'view' },
+      { label: 'Notificar', action: 'notificar', icon: 'bell' },
+      { label: 'Reasignar', action: 'reasignar', icon: 'users' },
+    ]
+  },
+  {
+    tipo: 'critical', icono: 'warning', prioridad: 'danger',
+    titulo: 'Oportunidad sin actividad — 14 días (crítico)',
+    descripcion: '"Riego Palmales Fase 2" — Asignado a Pedro Salazar. Estado: Propuesta.',
+    registro: 'OPP-0024', empresa: 'Palmares del Sur', ejec: 'Pedro Salazar', ejecColor: 5,
+    estado: 'Propuesta', badgeClass: 'propuesta', valor: '$ 125 M',
+    dias: 14, umbral: 7, tiempo: 'Ayer 10:30',
+    acciones: [
+      { label: 'Ver opp.', route: '../ejecutivo/04-oportunidad-detalle.html', icon: 'view' },
+      { label: 'Notificar', action: 'notificar', icon: 'bell' },
+      { label: 'Reasignar', action: 'reasignar', icon: 'users' },
+    ]
+  },
+  {
+    tipo: 'warning', icono: 'clock', prioridad: 'warning',
+    titulo: '3 leads sin contactar hace 2 días',
+    descripcion: 'Ejecutivos con múltiples leads pendientes: Carlos R. (2), Ana M. (1).',
+    ejecs: ['Carlos Rodríguez', 'Ana Martínez'],
+    ejecColors: [5, 4],
+    tiempo: 'Hace 3h',
+    acciones: [
+      { label: 'Ver leads', route: '../ejecutivo/03-leads-kanban.html', icon: 'funnel' },
+    ]
+  },
+  {
+    tipo: 'warning', icono: 'clock', prioridad: 'warning',
+    titulo: 'Oportunidad próxima a vencer — 3 días',
+    descripcion: '"Ampliación red gas Hidgas Oriente" — Fecha de cierre: 25 Abr 2026.',
+    registro: 'OPP-0021', empresa: 'Hidgas Oriente', ejec: 'Pedro Salazar', ejecColor: 5,
+    estado: 'Calificación', badgeClass: 'calificacion', valor: '$ 95 M',
+    dias: 3, umbral: 7, tiempo: 'Hace 4h',
+    acciones: [
+      { label: 'Ver opp.', route: '../ejecutivo/04-oportunidad-detalle.html', icon: 'view' },
+      { label: 'Notificar', action: 'notificar', icon: 'bell' },
+    ]
+  },
+  {
+    tipo: 'info', icono: 'bell', prioridad: 'info',
+    titulo: '12 oportunidades próximas a cerrar',
+    descripcion: 'Fecha estimada de cierre en los próximos 7 días. Revisar estado y seguimiento.',
+    cantidad: 12, tiempo: 'Hoy 08:00',
+    acciones: [
+      { label: 'Ver pipeline', route: '../director/02-pipeline-global.html', icon: 'funnel' },
+    ]
+  },
+  {
+    tipo: 'info', icono: 'trophy', prioridad: 'info',
+    titulo: 'María García superó la meta mensual',
+    descripcion: 'Cumplimiento del 92% — 3er mes consecutivo superando objetivos.',
+    ejec: 'María García', ejecColor: 3, tiempo: 'Ayer 17:00',
+    acciones: [
+      { label: 'Ver cumplimiento', route: '04-cumplimiento.html', icon: 'clipboardCheck' },
+    ]
+  },
+  {
+    tipo: 'success', icono: 'check', prioridad: 'info',
+    titulo: 'Alerta resuelta — Lead contactado',
+    descripcion: '"Cotización tubería PE Constructora XYZ" fue contactado por Carlos Rodríguez.',
+    registro: 'LEAD-231', empresa: 'Constructora XYZ', ejec: 'Carlos Rodríguez', ejecColor: 5,
+    estado: 'Contactado', badgeClass: 'propuesta',
+    tiempo: 'Hace 2h',
+    acciones: [
+      { label: 'Ver lead', route: '../ejecutivo/10-lead-detalle.html', icon: 'view' },
+    ]
+  },
+];
+
+const typeConfig = {
+  critical: { cardClass: 'alert-card--critical', iconClass: 'alert-card__icon--critical', badge: 'badge--perdida', tagClass: 'tag--lead' },
+  warning: { cardClass: 'alert-card--warning', iconClass: 'alert-card__icon--warning', badge: 'badge--calificacion', tagClass: 'tag--opp' },
+  info: { cardClass: 'alert-card--info', iconClass: 'alert-card__icon--info', badge: 'badge--info', tagClass: 'tag--ejec' },
+  success: { cardClass: 'alert-card--success', iconClass: 'alert-card__icon--success', badge: 'badge--ganada', tagClass: 'tag--ejec' },
+};
+
+function renderAlertCard(a) {
+  const cfg = typeConfig[a.tipo];
+  return `
+    <div class="alert-card ${cfg.cardClass}">
+      <div class="alert-card__icon ${cfg.iconClass}">${Icons[a.icono]}</div>
+      <div style="flex:1; min-width:0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+          <span style="font-weight:700;font-size:14px;color:var(--text-primary);">${a.titulo}</span>
+          <span class="badge ${cfg.badge}" style="font-size:10px;">
+            ${a.tipo === 'critical' ? Icons.warning.replace('class="icon"','class="icon icon--xs"') : a.tipo === 'warning' ? Icons.clock.replace('class="icon"','class="icon icon--xs"') : a.tipo === 'success' ? Icons.check.replace('class="icon"','class="icon icon--xs"') : Icons.bell.replace('class="icon"','class="icon icon--xs"')}
+            ${a.tipo === 'critical' ? 'Crítica' : a.tipo === 'warning' ? 'Advertencia' : a.tipo === 'success' ? 'Resuelta' : 'Info'}
+          </span>
+        </div>
+        <div style="font-size:12.5px;color:var(--text-secondary);margin-bottom:6px;">${a.descripcion}</div>
+        <div class="alert-card__meta">
+          ${a.registro ? `<span class="alert-card__tag tag--${a.registro.startsWith('OPP') ? 'opp' : 'lead'}">${a.registro}</span>` : ''}
+          ${a.estado ? `<span class="badge badge--${a.badgeClass}"><span class="dot"></span>${a.estado}</span>` : ''}
+          ${a.valor ? `<span style="font-weight:700;color:var(--accent);font-size:12px;">${a.valor}</span>` : ''}
+          ${a.ejec ? `
+            <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary);">
+              <div class="avatar avatar--xs avatar--color-${a.ejecColor}">${a.ejec.split(' ').map(x=>x[0]).join('')}</div>
+              ${a.ejec}
+            </span>
+          ` : ''}
+          ${a.ejecs ? a.ejecs.map((e,i) => `
+            <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary);">
+              <div class="avatar avatar--xs avatar--color-${a.ejecColors[i]}">${e.split(' ').map(x=>x[0]).join('')}</div>
+              ${e}
+            </span>
+          `).join('') : ''}
+          ${a.dias ? `<span class="dias-badge dias-badge--${a.prioridad}">${Icons.clock.replace('class="icon"','class="icon icon--xs"')} ${a.dias}d</span>` : ''}
+          ${a.cantidad ? `<span style="font-weight:700;color:var(--primary);">${a.cantidad} opp.</span>` : ''}
+          <span style="font-size:11px;color:var(--text-disabled);">${a.tiempo}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
+        ${a.acciones.map(ac => ac.route
+          ? `<a href="${ac.route}" style="text-decoration:none;color:inherit;"><button class="btn btn--ghost btn--sm">${Icons[ac.icon]} ${ac.label}</button></a>`
+          : `<button class="btn btn--ghost btn--sm" onclick="openAccionModal('${ac.action}', ${encodeURIComponent(JSON.stringify(a))})">${Icons[ac.icon]} ${ac.label}</button>`
+        ).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function notificarModal(registro) {
+  return `
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div style="display:flex;align-items:center;">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--error-bg);color:var(--error);display:flex;align-items:center;justify-content:center;margin-right:12px;">${Icons.bell}</div>
+            <div>
+              <div style="font-weight:700;font-size:16px;">Notificar ejecutivo</div>
+              <div style="font-size:12.5px;color:var(--text-muted);">Enviar alerta inmediata por email y push</div>
+            </div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="background:var(--page-bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px;">
+            <div style="font-weight:700;color:var(--text-primary);">${registro.titulo}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${registro.descripcion}</div>
+          </div>
+          <div class="form-field" style="margin-bottom:12px;">
+            <label class="form-field__label">Tipo de alerta</label>
+            <select class="select">
+              <option>Alerta estándar</option>
+              <option>Recordatorio urgente</option>
+              <option>Escalamiento al director</option>
+            </select>
+          </div>
+          <div class="form-field" style="margin-bottom:12px;">
+            <label class="form-field__label">Mensaje personalizado</label>
+            <textarea class="textarea" style="min-height:80px;" placeholder="Agrega un mensaje adicional para el ejecutivo..."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Canales</label>
+            <div style="display:flex;gap:12px;margin-top:4px;">
+              <label class="checkbox"><input type="checkbox" checked disabled /><span style="color:var(--text-disabled);">Email</span></label>
+              <label class="checkbox"><input type="checkbox" checked /> Push</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary">${Icons.send} Enviar notificación</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function reasignarModal(registro) {
+  return `
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div style="display:flex;align-items:center;">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-bg);color:#C7770D;display:flex;align-items:center;justify-content:center;margin-right:12px;">${Icons.users}</div>
+            <div>
+              <div style="font-weight:700;font-size:16px;">Reasignar registro</div>
+              <div style="font-size:12.5px;color:var(--text-muted);">Cambiar ejecutivo asignado</div>
+            </div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="background:var(--page-bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px;">
+            <div style="font-weight:700;color:var(--text-primary);">${registro.titulo}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${registro.descripcion}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div class="form-field">
+              <label class="form-field__label">Ejecutivo actual</label>
+              <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--page-bg);border:1px solid var(--border);border-radius:6px;">
+                <div class="avatar avatar--xs avatar--color-${registro.ejecColor || 1}">${(registro.ejec || registro.ejecs?.[0] || '').split(' ').map(x=>x[0]).join('').slice(0,2)}</div>
+                <span style="font-weight:600;color:var(--text-secondary);">${registro.ejec || registro.ejecs?.[0]}</span>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Nuevo ejecutivo <span class="req">*</span></label>
+              <select class="select">
+                <option value="">Seleccionar...</option>
+                <option>Juan Pérez (JP)</option>
+                <option>María García (MG)</option>
+                <option>Carlos Rodríguez (CR)</option>
+                <option>Ana Martínez (AM)</option>
+                <option>Laura Jiménez (LJ)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-field__label">Motivo de reasignación</label>
+            <select class="select">
+              <option>Redistribución de cartera</option>
+              <option>Ejecutivo en periodo de ausencia</option>
+              <option>Bajo rendimiento del ejecutivo</option>
+              <option>Solicitud del ejecutivo</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="alert alert--warning" style="margin-top:12px;">
+            ${Icons.warning}
+            <div>Se notificará al nuevo ejecutivo y se dejará registro del cambio en el historial.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary">${Icons.check} Confirmar reasignación</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.openAccionModal = function(action, registroEncoded) {
+  const registro = JSON.parse(decodeURIComponent(registroEncoded));
+  if (action === 'notificar') modalRoot.innerHTML = notificarModal(registro);
+  else if (action === 'reasignar') modalRoot.innerHTML = reasignarModal(registro);
+};
+
+window.closeModal = function() {
+  modalRoot.innerHTML = '';
+};
+
+function content() {
+  const criticas = alertas.filter(a => a.tipo === 'critical');
+  const advertencias = alertas.filter(a => a.tipo === 'warning');
+  const info = alertas.filter(a => a.tipo === 'info');
+  const resueltas = alertas.filter(a => a.tipo === 'success');
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Alertas activas</div>
+          <div class="page-head__subtitle">${alertas.length} alertas · ${criticas.length} críticas · ${advertencias.length} advertencias</div>
+        </div>
+        <div class="page-head__actions">
+          <select class="select" style="max-width:160px;">
+            <option>Todas las alertas</option>
+            <option>Solo críticas</option>
+            <option>Solo advertencias</option>
+          </select>
+          <select class="select" style="max-width:160px;">
+            <option>Todas</option>
+            <option>Leads</option>
+            <option>Oportunidades</option>
+          </select>
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-card__icon" style="background:var(--error-bg);color:var(--error);">${Icons.warning}</div>
+          <div class="stat-card__label">Críticas</div>
+          <div class="stat-card__value" style="color:var(--error);">${criticas.length}</div>
+          <div class="stat-card__subtext">Requieren acción inmediata</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--accent">${Icons.clock}</div>
+          <div class="stat-card__label">Advertencias</div>
+          <div class="stat-card__value stat-card__value--accent">${advertencias.length}</div>
+          <div class="stat-card__subtext">Cerca del umbral</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">${Icons.bell}</div>
+          <div class="stat-card__label">Información</div>
+          <div class="stat-card__value">${info.length}</div>
+          <div class="stat-card__subtext">Recordatorios</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--success">${Icons.check}</div>
+          <div class="stat-card__label">Resueltas</div>
+          <div class="stat-card__value stat-card__value--success">${resueltas.length}</div>
+          <div class="stat-card__subtext">Últimas 24h</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab is-active">Todas <span class="tab__count">${alertas.length}</span></button>
+        <button class="tab">Críticas <span class="tab__count">${criticas.length}</span></button>
+        <button class="tab">Advertencias <span class="tab__count">${advertencias.length}</span></button>
+        <button class="tab">Información <span class="tab__count">${info.length}</span></button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1;max-width:320px;">
+          ${Icons.search}<input class="input input--with-icon" placeholder="Buscar por título, empresa, ejecutivo...">
+        </div>
+        <select class="select" style="max-width:160px;"><option>Todos los ejecutivos</option></select>
+        <select class="select" style="max-width:160px;"><option>Todos los tipos</option></select>
+        <select class="select" style="max-width:160px;"><option>Orden: más reciente</option><option>Por prioridad</option><option>Por días</option></select>
+      </div>
+
+      <div style="margin-top:4px;">
+        ${alertas.map(renderAlertCard).join('')}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('alertas', 'coordinador')}
+  <div class="main-area">
+    ${renderTopbar({ title: 'Alertas activas' })}
+    ${content()}
+  </div>
+`;
+</script>
+</body>
+</html>

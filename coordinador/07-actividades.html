@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Ejecutivo · Actividades</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
+  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 24px; }
+  .canvas-section-title { font: 700 15px 'Roboto'; color: #24388C; margin: 40px 0 20px; padding: 8px 14px; background: #fff; border: 1px solid #E5E5E5; border-radius: 6px; display: inline-block; }
+  .breakpoints-row { display: flex; gap: 60px; align-items: flex-start; margin-bottom: 30px; }
+  .bp-col { display: flex; flex-direction: column; }
+
+  /* Activity Row */
+  .activity-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    transition: background 180ms;
+    cursor: pointer;
+  }
+  .activity-row:hover { background: var(--page-bg); }
+  .activity-row__icon {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: var(--primary-bg); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .activity-row__icon--llamada { background: #E8F5EE; color: var(--success); }
+  .activity-row__icon--email { background: #F3E8FF; color: #7C3AED; }
+  .activity-row__icon--visita { background: var(--accent-bg); color: #C7770D; }
+  .activity-row__icon--reunion { background: var(--primary-bg); color: var(--primary); }
+
+  /* Map with pin style */
+  .big-map {
+    height: 280px;
+    border-radius: 8px;
+    background-color: #E8EEF5;
+    background-image:
+      linear-gradient(rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36, 56, 140, 0.06) 1px, transparent 1px),
+      radial-gradient(circle at 30% 40%, rgba(243, 150, 16, 0.1), transparent 50%);
+    background-size: 24px 24px, 24px 24px, auto;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .map-main-pin {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 36px; height: 36px;
+    background: var(--primary);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(36, 56, 140, 0.4);
+    z-index: 2;
+  }
+  .map-main-pin::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: -10px;
+    transform: translateX(-50%);
+    width: 2px; height: 10px;
+    background: var(--primary);
+  }
+  .map-main-pin::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    background: #fff;
+    border-radius: 50%;
+  }
+
+  .pulse-ring {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    opacity: 0.3;
+    animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: translate(-50%, -100%) scale(0.5); opacity: 0.6; }
+    100% { transform: translate(-50%, -100%) scale(2); opacity: 0; }
+  }
+
+  .gps-indicator {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(6px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--success);
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: var(--shadow-sm);
+  }
+  .gps-indicator::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--green-bright);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0.4; }
+  }
+
+  .activity-type-selector {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .activity-type-card {
+    padding: 16px 8px; border: 1px solid var(--border);
+    border-radius: 8px; text-align: center; cursor: pointer;
+    transition: all 180ms; display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+    background: var(--surface);
+  }
+  .activity-type-card:hover { border-color: var(--primary); }
+  .activity-type-card.is-active {
+    border-color: var(--primary); background: var(--primary-bg);
+  }
+  .activity-type-card__icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--page-bg);
+  }
+  .activity-type-card.is-active .activity-type-card__icon {
+    background: var(--primary); color: #fff;
+  }
+  .activity-type-card__label {
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  }
+  .activity-type-card.is-active .activity-type-card__label {
+    color: var(--primary);
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+  </div>
+</div>
+
+<script src="../shared/components.js"></script>
+<script>
+const actividades = [
+  { tipo: 'visita', icon: 'mapPin', iconClass: 'visita', titulo: 'Visita técnica - EMPAS S.A.', sub: 'Inspección de planta para dimensionamiento red', date: '10:30 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada'},
+  { tipo: 'llamada', icon: 'phone', iconClass: 'llamada', titulo: 'Llamada seguimiento - Tecnoagua', sub: 'Seguimiento a propuesta técnica de tubería PE100', date: '9:00 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada'},
+  { tipo: 'reunion', icon: 'view', iconClass: 'reunion', titulo: 'Reunión virtual - Aguas del Valle', sub: 'Presentación inicial del portafolio', date: '3:00 PM', day: 'Hoy', badge: 'prospecto', badgeText: 'Agendada'},
+  { tipo: 'email', icon: 'envelope', iconClass: 'email', titulo: 'Email - Constructora Andina', sub: 'Envío de cotización revisada según última reunión', date: '8:15 AM', day: 'Ayer', badge: 'ganada', badgeText: 'Completada'},
+  { tipo: 'visita', icon: 'mapPin', iconClass: 'visita', titulo: 'Visita - Ingenio del Cauca', sub: 'Recorrido técnico por cultivo para riego', date: '2:00 PM', day: 'Mañana', badge: 'prospecto', badgeText: 'Agendada'},
+  { tipo: 'llamada', icon: 'phone', iconClass: 'llamada', titulo: 'Llamada prospección - EAAB', sub: 'Primer contacto para licitación próxima', date: '11:00 AM', day: 'Viernes', badge: 'prospecto', badgeText: 'Agendada'},
+];
+
+function activityRow(a) {
+  return `
+    <a href="../ejecutivo/18-actividad-detalle.html" style="text-decoration: none; color: inherit;">
+      <div class="activity-row">
+        <div class="activity-row__icon activity-row__icon--${a.iconClass}">${Icons[a.icon]}</div>
+        <div style="flex:1; min-width: 0;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+            <span style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${a.titulo}</span>
+          </div>
+          <div style="font-size: 12.5px; color: var(--text-muted);">${a.sub}</div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+          <span class="badge badge--${a.badge}"><span class="dot"></span> ${a.badgeText}</span>
+          <span style="font-size: 12px; color: var(--text-muted);">${a.day} · ${a.date}</span>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function listContent(bp) {
+  const isMobile = bp === 'mobile';
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Actividades</div>
+          <div class="page-head__subtitle">${actividades.length} actividades · 3 completadas hoy</div>
+        </div>
+        ${!isMobile ? `
+          <div class="page-head__actions">
+            <div class="tabs" style="border-bottom: none; margin-bottom: 0;">
+              <a class="tab is-active">Lista</a>
+              <a class="tab">Calendario</a>
+              <a class="tab">Mapa</a>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+
+      <div class="filter-bar">
+        <div class="input-wrapper" style="flex:1; max-width: 320px;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar actividad..."></div>
+        ${!isMobile ? `
+          <select class="select" style="max-width: 180px;">
+            <option>Todos los tipos</option>
+            <option>Llamadas</option>
+            <option>Visitas</option>
+            <option>Reuniones</option>
+            <option>Emails</option>
+          </select>
+          <select class="select" style="max-width: 180px;">
+            <option>Esta semana</option>
+            <option>Hoy</option>
+            <option>Este mes</option>
+            <option>Último trimestre</option>
+          </select>
+        ` : ''}
+      </div>
+
+      <div class="card" style="padding: 0;">
+        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--page-bg); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Hoy · 19 Abr 2026</span>
+          <span style="font-size: 12px; color: var(--text-muted);">3 actividades</span>
+        </div>
+        ${actividades.slice(0, 3).map(activityRow).join('')}
+
+        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--page-bg); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Ayer · 18 Abr 2026</span>
+          <span style="font-size: 12px; color: var(--text-muted);">1 actividad</span>
+        </div>
+        ${actividades.slice(3, 4).map(activityRow).join('')}
+
+        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--page-bg); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Próximas</span>
+          <span style="font-size: 12px; color: var(--text-muted);">2 agendadas</span>
+        </div>
+        ${actividades.slice(4).map(activityRow).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Render
+document.getElementById('list-desktop').innerHTML = `${renderSidebar('actividades', 'coordinador')}<div class="main-area">${renderTopbar({title:'Actividades'})}${listContent('desktop')}</div>`;
+</script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CRM Extrucol · Coordinador · Perfil Ejecutivo</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .profile-header {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; margin-bottom: 16px;
+  }
+  .profile-meta__label { font-size: 10.5px; color: var(--text-disabled); text-transform: uppercase; font-weight: 600; letter-spacing: 0.06em; }
+  .profile-meta__value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .activity-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    transition: background 180ms; cursor: pointer;
+  }
+  .activity-row:hover { background: var(--page-bg); }
+  .activity-row__icon {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: var(--primary-bg); color: var(--primary);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .activity-row__icon--llamada { background: #E8F5EE; color: var(--success); }
+  .activity-row__icon--email { background: #F3E8FF; color: #7C3AED; }
+  .activity-row__icon--visita { background: var(--accent-bg); color: #C7770D; }
+  .activity-row__icon--reunion { background: var(--primary-bg); color: var(--primary); }
+  .meta-row {
+    display: grid; grid-template-columns: 160px 1fr 110px;
+    gap: 14px; align-items: center; padding: 10px 0;
+  }
+  .meta-label { font-size: 12.5px; color: var(--text-secondary); }
+  .meta-bar-wrap { position: relative; height: 22px; background: var(--page-bg); border-radius: 6px; overflow: hidden; }
+  .meta-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; color: #fff; font-weight: 700; font-size: 11px; }
+  .meta-line { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--text-primary); z-index: 2; }
+  .meta-line::after { content: 'META'; position: absolute; top: -14px; left: -14px; font-size: 8.5px; font-weight: 700; color: var(--text-primary); background: #fff; padding: 1px 4px; border-radius: 3px; }
+  .meta-value { font-size: 13px; font-weight: 700; color: var(--text-primary); text-align: right; }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('shell');
+function openModal(html) { modalRoot.innerHTML += html; }
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
+
+const URL_PARAMS = new URLSearchParams(window.location.search);
+const ejecutivoId = URL_PARAMS.get('id') || 'JP';
+
+const ejecutivoData = {
+  name: 'Juan Pérez',
+  depto: 'Santander',
+  avatar: 'JP',
+  color: 1,
+  email: 'juan.perez@extrucol.co',
+  phone: '+57 310 555 1234',
+  joined: '12 Mar 2024',
+  cumplimiento: 85,
+  metas: [
+    { label: 'Actividades / semana', actual: 18, meta: 20, pct: 90, color: 'var(--accent)' },
+    { label: 'Oportunidades activas', actual: 12, meta: 10, pct: 120, color: 'var(--success)' },
+    { label: 'Leads contactados (%)', actual: 78, meta: 80, pct: 97, color: 'var(--accent)' },
+    { label: 'Tasa conversión', actual: 15, meta: 15, pct: 100, color: 'var(--success)' },
+    { label: 'Valor cerrado (M)', actual: 425, meta: 500, pct: 85, color: 'var(--accent)' },
+  ],
+  leads: [
+    { titulo: 'Suministro anual de tubería', empresa: 'Constructora Bolívar', origen: 'Página Web', score: 86, estado: 'INTERESADO' },
+    { titulo: 'Proyecto acueducto municipal', empresa: 'Alcaldía de Piedecuesta', origen: 'WhatsApp', score: 78, estado: 'CONTACTADO' },
+    { titulo: 'Consulta portafolio riego', empresa: 'Agroindustria Llanera', origen: 'Página Web', score: 65, estado: 'NUEVO' },
+  ],
+  oportunidades: [
+    { titulo: 'Licitación acueducto Bucaramanga', empresa: 'EMPAS S.A.', valor: '$ 120 M', estado: 'PROSPECTO', fecha: '15 Mar' },
+    { titulo: 'Cotización tubería PE100', empresa: 'Distriaguas SAS', valor: '$ 45 M', estado: 'CALIFICACION', fecha: '12 Mar' },
+    { titulo: 'Sistema riego cultivo', empresa: 'Agrícola El Prado', valor: '$ 78 M', estado: 'PROPUESTA', fecha: '10 Mar' },
+  ],
+  actividades: [
+    { tipo: 'visita', iconClass: 'visita', titulo: 'Visita técnica - EMPAS S.A.', sub: 'Inspección de planta', date: '10:30 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada' },
+    { tipo: 'llamada', iconClass: 'llamada', titulo: 'Llamada seguimiento - Tecnoagua', sub: 'Seguimiento a propuesta', date: '9:00 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada' },
+    { tipo: 'reunion', iconClass: 'reunion', titulo: 'Reunión virtual - Aguas del Valle', sub: 'Presentación portafolio', date: '3:00 PM', day: 'Hoy', badge: 'prospecto', badgeText: 'Agendada' },
+  ]
+};
+
+let currentTab = 'resumen';
+
+function tabsContent() {
+  const tabs = [
+    { id: 'resumen', label: 'Resumen' },
+    { id: 'leads', label: `Leads (${ejecutivoData.leads.length})` },
+    { id: 'oportunidades', label: `Oportunidades (${ejecutivoData.oportunidades.length})` },
+    { id: 'actividades', label: `Actividades (${ejecutivoData.actividades.length})` },
+  ];
+  return tabs.map(t => `<a class="tab ${currentTab === t.id ? 'is-active' : ''}" onclick="switchTab('${t.id}')">${t.label}</a>`).join('');
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  renderMainContent();
+}
+
+function renderMainContent() {
+  const mainArea = document.querySelector('.main-area');
+  mainArea.innerHTML = renderTopbar({ title: ejecutivoData.name, breadcrumb: ['Cumplimiento', 'Perfil ejecutivo'] }) + content();
+}
+
+function resumenTab() {
+  return `
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+      <div class="stat-card">
+        <div class="stat-card__label">Cumplimiento</div>
+        <div class="stat-card__value stat-card__value--${ejecutivoData.cumplimiento >= 80 ? 'success' : ejecutivoData.cumplimiento >= 65 ? 'accent' : ''}">${ejecutivoData.cumplimiento}%</div>
+        <div class="stat-card__subtext">General</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__label">Actividades semana</div>
+        <div class="stat-card__value">${ejecutivoData.metas[0].actual}/${ejecutivoData.metas[0].meta}</div>
+        <div class="stat-card__subtext">${ejecutivoData.metas[0].pct}% meta</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__label">Oportunidades activas</div>
+        <div class="stat-card__value">${ejecutivoData.oportunidades.length}</div>
+        <div class="stat-card__subtext">Leads: ${ejecutivoData.leads.length}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__label">Tasa conversión</div>
+        <div class="stat-card__value">${ejecutivoData.metas[3].actual}%</div>
+        <div class="stat-card__subtext">Meta: ${ejecutivoData.metas[3].meta}%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__header">
+        <div class="card__title">Desempeño vs metas</div>
+        <span class="badge badge--${ejecutivoData.cumplimiento >= 80 ? 'ganada' : ejecutivoData.cumplimiento >= 65 ? 'calificacion' : 'perdida'}">${ejecutivoData.cumplimiento}% cumplimiento</span>
+      </div>
+      <div class="card__body">
+        ${ejecutivoData.metas.map(m => `
+          <div class="meta-row">
+            <div class="meta-label">${m.label}</div>
+            <div class="meta-bar-wrap">
+              <div class="meta-line" style="left: ${Math.min(100, m.meta/Math.max(m.meta, m.actual)*100)}%;"></div>
+              <div class="meta-bar-fill" style="background: ${m.color}; width: ${Math.min(100, m.pct/Math.max(100, m.pct)*100)}%;">
+                ${m.actual >= m.meta ? '✓' : ''} ${m.actual}
+              </div>
+            </div>
+            <div class="meta-value">${m.pct}% · meta ${m.meta}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <div class="card__header">
+        <div class="card__title">Últimas actividades</div>
+        <button class="btn btn--ghost btn--sm" onclick="switchTab('actividades')">Ver todas</button>
+      </div>
+      <div class="card__body" style="padding: 0;">
+        ${ejecutivoData.actividades.slice(0, 3).map(a => `
+          <a href="../ejecutivo/18-actividad-detalle.html" style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; cursor: pointer; transition: background 150ms;" onmouseover="this.style.background='var(--page-bg)'" onmouseout="this.style.background=''">
+            <div class="activity-row__icon activity-row__icon--${a.iconClass}">${Icons[a.tipo === 'visita' ? 'mapPin' : a.tipo === 'llamada' ? 'phone' : a.tipo === 'email' ? 'envelope' : 'users']}</div>
+            <div style="flex:1; min-width: 0;">
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${a.titulo}</div>
+              <div style="font-size: 12.5px; color: var(--text-muted);">${a.sub}</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+              <span class="badge badge--${a.badge}"><span class="dot"></span> ${a.badgeText}</span>
+              <span style="font-size: 12px; color: var(--text-muted);">${a.day} · ${a.date}</span>
+            </div>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function leadsTab() {
+  const estadoColors = { 'INTERESADO': 'ganada', 'CONTACTADO': 'propuesta', 'NUEVO': 'prospecto', 'DESCALIFICADO': 'perdida' };
+  return `
+    <div class="card" style="padding: 0;">
+      <div class="card__header">
+        <div class="card__title">Leads de ${ejecutivoData.name}</div>
+        <span style="font-size: 13px; color: var(--text-muted);">${ejecutivoData.leads.length} leads</span>
+      </div>
+      <div class="card__body" style="padding: 0;">
+        ${ejecutivoData.leads.map(l => `
+          <a href="../ejecutivo/10-lead-detalle.html" style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; cursor: pointer; transition: background 150ms;" onmouseover="this.style.background='var(--page-bg)'" onmouseout="this.style.background=''">
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${l.titulo}</div>
+              <div style="font-size: 12px; color: var(--text-muted);">${l.empresa} · ${l.origen}</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+              <span style="font-size: 12px; color: var(--accent); font-weight: 700;">${Icons.fire} ${l.score}</span>
+              <span class="badge badge--${estadoColors[l.estado]}">${l.estado}</span>
+              ${Icons.chevronRight}
+            </div>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function oportunidadesTab() {
+  const estadoColors = { 'PROSPECTO': 'prospecto', 'CALIFICACION': 'calificacion', 'PROPUESTA': 'propuesta', 'NEGOCIACION': 'negociacion', 'GANADA': 'ganada', 'PERDIDA': 'perdida' };
+  return `
+    <div class="card" style="padding: 0;">
+      <div class="card__header">
+        <div class="card__title">Oportunidades de ${ejecutivoData.name}</div>
+        <span style="font-size: 13px; color: var(--text-muted);">${ejecutivoData.oportunidades.length} oportunidades</span>
+      </div>
+      <div class="card__body" style="padding: 0;">
+        ${ejecutivoData.oportunidades.map(o => `
+          <a href="../ejecutivo/04-oportunidad-detalle.html" style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; cursor: pointer; transition: background 150ms;" onmouseover="this.style.background='var(--page-bg)'" onmouseout="this.style.background=''">
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${o.titulo}</div>
+              <div style="font-size: 12px; color: var(--text-muted);">${o.empresa} · ${o.fecha}</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+              <span style="font-size: 14px; font-weight: 700; color: var(--accent);">${o.valor}</span>
+              <span class="badge badge--${estadoColors[o.estado]}">${o.estado}</span>
+              ${Icons.chevronRight}
+            </div>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function actividadesTab() {
+  return `
+    <div class="card" style="padding: 0;">
+      <div class="card__header">
+        <div class="card__title">Actividades de ${ejecutivoData.name}</div>
+        <span style="font-size: 13px; color: var(--text-muted);">${ejecutivoData.actividades.length} actividades</span>
+      </div>
+      <div class="card__body" style="padding: 0;">
+        ${ejecutivoData.actividades.map(a => `
+          <a href="../ejecutivo/18-actividad-detalle.html" style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; cursor: pointer; transition: background 150ms;" onmouseover="this.style.background='var(--page-bg)'" onmouseout="this.style.background=''">
+            <div class="activity-row__icon activity-row__icon--${a.iconClass}">${Icons[a.tipo === 'visita' ? 'mapPin' : a.tipo === 'llamada' ? 'phone' : a.tipo === 'email' ? 'envelope' : 'users']}</div>
+            <div style="flex:1; min-width: 0;">
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">${a.titulo}</div>
+              <div style="font-size: 12.5px; color: var(--text-muted);">${a.sub}</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+              <span class="badge badge--${a.badge}"><span class="dot"></span> ${a.badgeText}</span>
+              <span style="font-size: 12px; color: var(--text-muted);">${a.day} · ${a.date}</span>
+            </div>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function content() {
+  let tabContent = '';
+  if (currentTab === 'resumen') tabContent = resumenTab();
+  else if (currentTab === 'leads') tabContent = leadsTab();
+  else if (currentTab === 'oportunidades') tabContent = oportunidadesTab();
+  else if (currentTab === 'actividades') tabContent = actividadesTab();
+
+  return `
+    <div class="content">
+      <div class="profile-header">
+        <div style="display: flex; align-items: flex-start; gap: 20px; margin-bottom: 20px;">
+          <div class="avatar avatar--xl avatar--color-${ejecutivoData.color}">${ejecutivoData.avatar}</div>
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
+              <span style="font-size: 22px; font-weight: 800; color: var(--text-primary);">${ejecutivoData.name}</span>
+              <span class="badge badge--${ejecutivoData.cumplimiento >= 80 ? 'ganada' : ejecutivoData.cumplimiento >= 65 ? 'calificacion' : 'perdida'}">${ejecutivoData.cumplimiento}% cumplimiento</span>
+            </div>
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">${ejecutivoData.depto}</div>
+            <div style="display: flex; gap: 16px; font-size: 12px; color: var(--text-muted);">
+              <span>${Icons.envelope} ${ejecutivoData.email}</span>
+              <span>${Icons.phone} ${ejecutivoData.phone}</span>
+              <span>${Icons.calendar} Desde ${ejecutivoData.joined}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+          <div>
+            <div class="profile-meta__label">Cumplimiento</div>
+            <div class="profile-meta__value" style="color: ${ejecutivoData.cumplimiento >= 80 ? 'var(--success)' : ejecutivoData.cumplimiento >= 65 ? 'var(--accent)' : 'var(--error)'};">${ejecutivoData.cumplimiento}%</div>
+          </div>
+          <div>
+            <div class="profile-meta__label">Actividades/sem</div>
+            <div class="profile-meta__value">${ejecutivoData.metas[0].actual}/${ejecutivoData.metas[0].meta}</div>
+          </div>
+          <div>
+            <div class="profile-meta__label">Oportunidades</div>
+            <div class="profile-meta__value">${ejecutivoData.oportunidades.length}</div>
+          </div>
+          <div>
+            <div class="profile-meta__label">Leads</div>
+            <div class="profile-meta__value">${ejecutivoData.leads.length}</div>
+          </div>
+          <div>
+            <div class="profile-meta__label">Tasa conversión</div>
+            <div class="profile-meta__value">${ejecutivoData.metas[3].actual}%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs" style="margin-bottom: 16px;">
+        ${tabsContent()}
+      </div>
+
+      ${tabContent}
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `
+  ${renderSidebar('cumplimiento', 'coordinador')}
+  <div class="main-area">
+    ${renderTopbar({ title: ejecutivoData.name, breadcrumb: ['Cumplimiento', 'Perfil ejecutivo'] })}
+    ${content()}
+  </div>
+`;
+</script>
+</body>
+</html>
