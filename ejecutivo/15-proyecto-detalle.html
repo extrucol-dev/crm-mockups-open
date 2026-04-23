@@ -25,6 +25,29 @@
   }
   .proyecto-card__icon--success { background: #dcfce7; color: var(--green-bright); }
   .proyecto-card__icon--warning { background: var(--accent-bg); color: var(--accent); }
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 60px 24px; z-index: 100;
+  }
+  .modal-content {
+    background: var(--surface); border-radius: 12px;
+    max-width: 580px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .modal-header > :first-child { flex-shrink: 0; }
+  .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
+  .modal-header__icon { background: var(--primary-bg); color: var(--primary); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
+  }
 </style>
 </head>
 <body>
