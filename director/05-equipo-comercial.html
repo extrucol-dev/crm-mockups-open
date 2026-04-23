@@ -23,12 +23,11 @@
 <script>
 function content() {
   const ejecutivos = [
-    { name: 'María García', depto: 'Antioquia', avatar: 'MG', color: 3, ventas: '$ 420 M', meta: '$ 380 M', metaPct: 110, opp: 9, leads: 5, act: 22, comp: 92, tendencia: '▲ +15%' },
-    { name: 'Juan Pérez', depto: 'Santander', avatar: 'JP', color: 1, ventas: '$ 385 M', meta: '$ 350 M', metaPct: 110, opp: 12, leads: 8, act: 18, comp: 85, tendencia: '▲ +12%' },
-    { name: 'Ana Martínez', depto: 'Valle del Cauca', avatar: 'AM', color: 4, ventas: '$ 260 M', meta: '$ 320 M', metaPct: 81, opp: 11, leads: 7, act: 16, comp: 78, tendencia: '▼ -5%' },
-    { name: 'Laura Jiménez', depto: 'Santander', avatar: 'LJ', color: 2, ventas: '$ 215 M', meta: '$ 280 M', metaPct: 77, opp: 8, leads: 6, act: 14, comp: 80, tendencia: '▲ +8%' },
-    { name: 'Carlos Rodríguez', depto: 'Cundinamarca', avatar: 'CR', color: 5, ventas: '$ 180 M', meta: '$ 300 M', metaPct: 60, opp: 6, leads: 10, act: 11, comp: 62, tendencia: '▼ -11%' },
-    { name: 'Pedro Salazar', depto: 'Atlántico', avatar: 'PS', color: 6, ventas: '$ 95 M', meta: '$ 250 M', metaPct: 38, opp: 5, leads: 4, act: 8, comp: 48, tendencia: '▼ -18%' },
+    { name: 'Diana', depto: 'Medellín', avatar: 'DI', color: 1, ventas: '$ 698 M', meta: '$ 600 M', metaPct: 116, opp: 6, leads: 3, act: 18, comp: 95, tendencia: '▲ +20%' },
+    { name: 'Paola', depto: 'Cartagena', avatar: 'PA', color: 2, ventas: '$ 419 M', meta: '$ 400 M', metaPct: 105, opp: 7, leads: 4, act: 15, comp: 88, tendencia: '▲ +12%' },
+    { name: 'Alvaro', depto: 'Tocancipa', avatar: 'AL', color: 3, ventas: '$ 187 M', meta: '$ 200 M', metaPct: 94, opp: 1, leads: 1, act: 8, comp: 82, tendencia: '▲ +5%' },
+    { name: 'Gonzalo', depto: 'Bucaramanga', avatar: 'GO', color: 4, ventas: '$ 44 M', meta: '$ 80 M', metaPct: 55, opp: 1, leads: 2, act: 6, comp: 60, tendencia: '▼ -8%' },
+    { name: 'Alexis', depto: 'Santa Rosa de Cabal', avatar: 'AX', color: 5, ventas: '$ 28 M', meta: '$ 60 M', metaPct: 47, opp: 1, leads: 1, act: 4, comp: 52, tendencia: '▼ -15%' },
   ];
 
   const cards = ejecutivos.map(e => {
@@ -74,7 +73,7 @@ function content() {
       <div class="page-head">
         <div class="page-head__title-group">
           <div class="page-head__title">Equipo comercial</div>
-          <div class="page-head__subtitle">6 ejecutivos · 4 regiones · Cumplimiento promedio 74%</div>
+          <div class="page-head__subtitle">5 ejecutivos · 3 regiones · Cumplimiento promedio 73%</div>
         </div>
         <div class="page-head__actions">
           <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
@@ -85,18 +84,18 @@ function content() {
       <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
         <div class="stat-card">
           <div class="stat-card__label">Ventas del equipo</div>
-          <div class="stat-card__value stat-card__value--accent">$ 1.555 M</div>
+          <div class="stat-card__value stat-card__value--accent">$ 1.376 M</div>
           <div class="stat-card__subtext">Mes actual</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__label">Meta del equipo</div>
-          <div class="stat-card__value">$ 1.880 M</div>
-          <div class="stat-card__subtext">83% alcanzado</div>
+          <div class="stat-card__value">$ 1.340 M</div>
+          <div class="stat-card__subtext">103% alcanzado</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__label">Sobre meta</div>
           <div class="stat-card__value stat-card__value--success">2</div>
-          <div class="stat-card__subtext">De 6 ejecutivos</div>
+          <div class="stat-card__subtext">De 5 ejecutivos</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__label">Bajo meta</div>

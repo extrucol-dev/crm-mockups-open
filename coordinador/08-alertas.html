@@ -87,11 +87,11 @@ window.modalRoot = document.getElementById('modal-root');
 const alertas = [
   {
     tipo: 'critical', icono: 'warning', prioridad: 'danger',
-    titulo: 'Lead estancado — 5 días sin contacto',
-    descripcion: '"Proyecto acueducto rural EMPAS" — Asignado a Juan Pérez. Último estado: Contactado.',
-    registro: 'LEAD-234', empresa: 'EMPAS S.A.', ejec: 'Juan Pérez', ejecColor: 1,
+    titulo: 'Lead estancado — HyM Contratistas 4 días sin contacto',
+    descripcion: '"Cotización tubería para proyecto Turbaco" — Asignado a Paola. Último estado: Contactado.',
+    registro: 'LEAD-45852', empresa: 'HyM Contratistas Sas', ejec: 'Paola', ejecColor: 1,
     estado: 'Contactado', badgeClass: 'propuesta',
-    dias: 5, umbral: 3, tiempo: 'Hace 5 min',
+    dias: 4, umbral: 3, tiempo: 'Hace 10 min',
     acciones: [
       { label: 'Ver lead', route: '../ejecutivo/10-lead-detalle.html', icon: 'view' },
       { label: 'Notificar', action: 'notificar', icon: 'bell' },
@@ -100,11 +100,11 @@ const alertas = [
   },
   {
     tipo: 'critical', icono: 'warning', prioridad: 'danger',
-    titulo: 'Oportunidad sin actividad — 7 días',
-    descripcion: '"Suministro anual Constructora Andina" — Asignado a María García. Estado: Negociación.',
-    registro: 'OPP-0038', empresa: 'Constructora Andina', ejec: 'María García', ejecColor: 3,
-    estado: 'Negociación', badgeClass: 'negociacion', valor: '$ 560 M',
-    dias: 7, umbral: 7, tiempo: 'Hace 1h',
+    titulo: 'Oportunidad sin actividad — CIVILE Hidráulicos 14 días',
+    descripcion: '"Cotización No. 1393 tubería 110mm RDE 17" — Asignado a Paola. Estado: Propuesta.',
+    registro: 'OPP-45894', empresa: 'CIVILE HIDRAULICOS', ejec: 'Paola', ejecColor: 6,
+    estado: 'Propuesta', badgeClass: 'propuesta', valor: '$ 111 M',
+    dias: 14, umbral: 7, tiempo: 'Hace 1h',
     acciones: [
       { label: 'Ver opp.', route: '../ejecutivo/04-oportunidad-detalle.html', icon: 'view' },
       { label: 'Notificar', action: 'notificar', icon: 'bell' },
@@ -113,65 +113,67 @@ const alertas = [
   },
   {
     tipo: 'critical', icono: 'warning', prioridad: 'danger',
-    titulo: 'Oportunidad sin actividad — 14 días (crítico)',
-    descripcion: '"Riego Palmales Fase 2" — Asignado a Pedro Salazar. Estado: Propuesta.',
-    registro: 'OPP-0024', empresa: 'Palmares del Sur', ejec: 'Pedro Salazar', ejecColor: 5,
-    estado: 'Propuesta', badgeClass: 'propuesta', valor: '$ 125 M',
-    dias: 14, umbral: 7, tiempo: 'Ayer 10:30',
+    titulo: 'Lead sin interés — EMSERPRE 20 días',
+    descripcion: '"Tubería HDPE San Marcos Sucre" — Asignado a Alexis. Estado: Descalificado.',
+    registro: 'LEAD-45728', empresa: 'EMSERPRE', ejec: 'Alexis', ejecColor: 3,
+    estado: 'No Interesado', badgeClass: 'perdida',
+    dias: 20, umbral: 3, tiempo: 'Ayer 10:30',
     acciones: [
-      { label: 'Ver opp.', route: '../ejecutivo/04-oportunidad-detalle.html', icon: 'view' },
-      { label: 'Notificar', action: 'notificar', icon: 'bell' },
+      { label: 'Ver lead', route: '../ejecutivo/10-lead-detalle.html', icon: 'view' },
       { label: 'Reasignar', action: 'reasignar', icon: 'users' },
     ]
   },
   {
     tipo: 'warning', icono: 'clock', prioridad: 'warning',
-    titulo: '3 leads sin contactar hace 2 días',
-    descripcion: 'Ejecutivos con múltiples leads pendientes: Carlos R. (2), Ana M. (1).',
-    ejecs: ['Carlos Rodríguez', 'Ana Martínez'],
-    ejecColors: [5, 4],
-    tiempo: 'Hace 3h',
+    titulo: 'Oportunidad sin actividad — UT Balsa 3 sin avance',
+    descripcion: '"Cotización accesorio PE para Tocancipa" — Asignado a Alvaro. Estado: Prospección.',
+    registro: 'LEAD-45825', empresa: 'UNION TEMPORAL BALSA 3', ejec: 'Alvaro', ejecColor: 2,
+    estado: 'Prospección', badgeClass: 'prospecto', valor: '$ 187 M',
+    dias: 6, umbral: 3, tiempo: 'Hace 3h',
     acciones: [
-      { label: 'Ver leads', route: '../ejecutivo/03-leads-kanban.html', icon: 'funnel' },
+      { label: 'Ver lead', route: '../ejecutivo/03-leads-kanban.html', icon: 'funnel' },
+      { label: 'Notificar', action: 'notificar', icon: 'bell' },
     ]
   },
   {
     tipo: 'warning', icono: 'clock', prioridad: 'warning',
-    titulo: 'Oportunidad próxima a vencer — 3 días',
-    descripcion: '"Ampliación red gas Hidgas Oriente" — Fecha de cierre: 25 Abr 2026.',
-    registro: 'OPP-0021', empresa: 'Hidgas Oriente', ejec: 'Pedro Salazar', ejecColor: 5,
-    estado: 'Calificación', badgeClass: 'calificacion', valor: '$ 95 M',
-    dias: 3, umbral: 7, tiempo: 'Hace 4h',
+    titulo: 'Proceso ADOS Ingeniería sin adjudicar — 3 meses',
+    descripcion: '"Oferta proceso Apartadó (licitación)" — Asignado a Diana. Estado: Negociación.',
+    registro: 'OPP-45757', empresa: 'ADOS INGENIERIA', ejec: 'Diana', ejecColor: 4,
+    estado: 'Negociación', badgeClass: 'negociacion', valor: '$ 98 M',
+    dias: 45, umbral: 7, tiempo: 'Ayer 14:00',
     acciones: [
       { label: 'Ver opp.', route: '../ejecutivo/04-oportunidad-detalle.html', icon: 'view' },
       { label: 'Notificar', action: 'notificar', icon: 'bell' },
     ]
   },
   {
-    tipo: 'info', icono: 'bell', prioridad: 'info',
-    titulo: '12 oportunidades próximas a cerrar',
-    descripcion: 'Fecha estimada de cierre en los próximos 7 días. Revisar estado y seguimiento.',
-    cantidad: 12, tiempo: 'Hoy 08:00',
-    acciones: [
-      { label: 'Ver pipeline', route: '../director/02-pipeline-global.html', icon: 'funnel' },
-    ]
-  },
-  {
     tipo: 'info', icono: 'trophy', prioridad: 'info',
-    titulo: 'María García superó la meta mensual',
+    titulo: 'Diana superó la meta del mes',
     descripcion: 'Cumplimiento del 92% — 3er mes consecutivo superando objetivos.',
-    ejec: 'María García', ejecColor: 3, tiempo: 'Ayer 17:00',
+    ejec: 'Diana', ejecColor: 3, tiempo: 'Ayer 17:00',
     acciones: [
       { label: 'Ver cumplimiento', route: '04-cumplimiento.html', icon: 'clipboardCheck' },
     ]
   },
   {
-    tipo: 'success', icono: 'check', prioridad: 'info',
-    titulo: 'Alerta resuelta — Lead contactado',
-    descripcion: '"Cotización tubería PE Constructora XYZ" fue contactado por Carlos Rodríguez.',
-    registro: 'LEAD-231', empresa: 'Constructora XYZ', ejec: 'Carlos Rodríguez', ejecColor: 5,
-    estado: 'Contactado', badgeClass: 'propuesta',
-    tiempo: 'Hace 2h',
+    tipo: 'info', icono: 'bell', prioridad: 'info',
+    titulo: 'Oportunidad ganada — FIRELINE',
+    descripcion: 'Lead cerrado. Cliente compró a través de COSERINCO. Paola.',
+    registro: 'LEAD-45833', empresa: 'FIRELINE', ejec: 'Paola', ejecColor: 2,
+    estado: 'Trasladado a distribuidor', badgeClass: 'ganada', valor: '$ 44 M',
+    tiempo: 'Ayer 14:00',
+    acciones: [
+      { label: 'Ver lead', route: '../ejecutivo/10-lead-detalle.html', icon: 'view' },
+    ]
+  },
+  {
+    tipo: 'warning', icono: 'clock', prioridad: 'warning',
+    titulo: 'GMOS INGENIEROS SAS — Lead cerrado sin interés',
+    descripcion: '"Tubería AC Clase 10 proyecto Yumbo" — Asignado a Alexis. Estado: No Interesado.',
+    registro: 'LEAD-45832', empresa: 'GMOS INGENIEROS SAS', ejec: 'Alexis', ejecColor: 5,
+    estado: 'No Interesado', badgeClass: 'perdida',
+    dias: 15, umbral: 3, tiempo: 'Hace 2 días',
     acciones: [
       { label: 'Ver lead', route: '../ejecutivo/10-lead-detalle.html', icon: 'view' },
     ]

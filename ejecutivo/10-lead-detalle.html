@@ -87,47 +87,47 @@ function editarLeadModal() {
           <div class="modal-header__icon modal-header__icon--primary">${Icons.pencil}</div>
           <div>
             <div style="font-weight: 700; font-size: 16px;">Editar lead</div>
-            <div style="font-size: 12.5px; color: var(--text-muted);">LEAD-2026-0234</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">LEAD-2025-033</div>
           </div>
           <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
         </div>
         <div class="modal-body">
           <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Nombre del lead <span class="req">*</span></label>
-            <input class="input" value="Suministro anual de tubería" />
+            <label class="form-field__label">Título del lead <span class="req">*</span></label>
+            <input class="input" value="Cotización proyecto RCI Seren del Mar" />
           </div>
           <div class="form-field" style="margin-bottom: 14px;">
             <label class="form-field__label">Empresa</label>
-            <input class="input" value="Constructora Bolívar" />
+            <input class="input" value="FIRELINE" />
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
-              <label class="form-field__label">Contacto</label>
-              <input class="input" value="Pedro Bolívar" />
+              <label class="form-field__label">Ciudad</label>
+              <input class="input" value="Cartagena" />
             </div>
             <div class="form-field">
-              <label class="form-field__label">Cargo</label>
-              <input class="input" value="Gerente de Compras" />
+              <label class="form-field__label">Sector de interés</label>
+              <input class="input" value="Tubería" />
             </div>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
               <label class="form-field__label">Teléfono</label>
-              <input class="input" value="+57 315 789 0123" />
+              <input class="input" value="+57 317 745 9833" />
             </div>
             <div class="form-field">
               <label class="form-field__label">Email</label>
-              <input class="input" value="p.bolivar@cbolivar.co" />
+              <input class="input" value="ventas@fireline.com.co" />
             </div>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
               <label class="form-field__label">Origen</label>
               <select class="select">
-                <option selected>Página Web</option>
-                <option>Referido</option>
-                <option>Ferias</option>
-                <option>Otro</option>
+                <option>WhatsApp</option>
+                <option>Instagram</option>
+                <option selected>Facebook</option>
+                <option>Página Web</option>
               </select>
             </div>
             <div class="form-field">
@@ -141,7 +141,7 @@ function editarLeadModal() {
           </div>
           <div class="form-field">
             <label class="form-field__label">Observaciones</label>
-            <textarea class="textarea" rows="2">Requirió información sobre tubería PE100 para proyecto de acueducto.</textarea>
+            <textarea class="textarea" rows="2">Cliente solicita cotización No. 20250626 para proyecto RCI en Seren del Mar, Cartagena. Enviada información técnica de sello FM.</textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -161,14 +161,14 @@ function descalificarLeadModal() {
           <div class="modal-header__icon modal-header__icon--error">${Icons.xCircle}</div>
           <div>
             <div style="font-weight: 700; font-size: 16px;">Descalificar lead</div>
-            <div style="font-size: 12.5px; color: var(--text-muted);">Lead: LEAD-2026-0234</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Lead: LEAD-2025-033</div>
           </div>
           <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
         </div>
         <div class="modal-body">
           <div style="padding: 14px; background: var(--error-bg); border-radius: 8px; margin-bottom: 16px;">
-            <div style="font-weight: 700; color: var(--text-primary);">Suministro anual de tubería</div>
-            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Constructora Bolívar · Score 86</div>
+            <div style="font-weight: 700; color: var(--text-primary);">Cotización proyecto RCI Seren del Mar</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">FIRELINE · Score 100%</div>
           </div>
           <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px;">Motivo de descalificación <span style="color: var(--error);">*</span></div>
           <div class="motivo-option is-selected--error" onclick="selectMotivo(this)">
@@ -232,8 +232,8 @@ function trasladarDistribuidorModal() {
         </div>
         <div class="modal-body">
           <div style="padding: 14px; background: var(--page-bg); border-radius: 8px; margin-bottom: 16px;">
-            <div style="font-weight: 700; color: var(--text-primary);">Suministro anual de tubería</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Constructora Bolívar · LEAD-2026-0234</div>
+            <div style="font-weight: 700; color: var(--text-primary);">Cotización proyecto RCI Seren del Mar</div>
+            <div style="font-size: 12px; color: var(--text-muted);">FIRELINE · LEAD-2025-033</div>
           </div>
           <div class="form-field" style="margin-bottom: 14px;">
             <label class="form-field__label">Distribuidor destino <span class="req">*</span></label>
@@ -277,30 +277,30 @@ function conversionModal() {
             <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">
               ${Icons.funnel.replace('class="icon"','class="icon icon--xs"')} Lead origen
             </div>
-            <div style="font-weight: 700;">Suministro anual de tubería</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Constructora Bolívar · Score 86</div>
+            <div style="font-weight: 700;">Cotización proyecto RCI Seren del Mar</div>
+            <div style="font-size: 12px; color: var(--text-muted);">FIRELINE · Score 100%</div>
           </div>
           <div class="convert-arrow">${Icons.chevronDown}</div>
           <div class="form-field" style="margin-bottom: 12px;">
             <label class="form-field__label">Título de la oportunidad <span class="req">*</span></label>
-            <input class="input" value="Contrato anual - Constructora Bolívar 2026" />
+            <input class="input" value="Contrato FIRELINE - Proyecto RCI Cartagena" />
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div class="form-field">
               <label class="form-field__label">Tipo</label>
               <select class="select">
                 <option>Suministro directo</option>
-                <option>Licitación</option>
+                <option selected>Licitación</option>
                 <option>Proyecto a medida</option>
               </select>
             </div>
             <div class="form-field">
               <label class="form-field__label">Valor estimado (COP)</label>
-              <input class="input" value="$ 560.000.000" />
+              <input class="input" value="$ 44.000.000" />
             </div>
             <div class="form-field">
               <label class="form-field__label">Fecha cierre estimada</label>
-              <input class="input" type="date" value="2026-05-30" />
+              <input class="input" type="date" value="2025-09-30" />
             </div>
             <div class="form-field">
               <label class="form-field__label">Estado inicial</label>
@@ -313,7 +313,7 @@ function conversionModal() {
           <div class="alert alert--info">
             ${Icons.sparkles}
             <div>
-              Se creará una nueva oportunidad y este lead se marcará como <strong>Calificado</strong>.
+              Se creará una nueva oportunidad y este lead se marcará como <strong>Trasladado a distribuidor</strong>.
               Los intereses del lead se usarán para pre-seleccionar productos.
             </div>
           </div>
@@ -333,20 +333,20 @@ function detailContent() {
       <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
         <a style="color: var(--primary); cursor: pointer;">Leads</a>
         <span>/</span>
-        <span>LEAD-2026-0234</span>
+        <span>LEAD-2025-033</span>
       </div>
       <div style="display: flex; justify-content: space-between; gap: 16px;">
         <div style="flex: 1;">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
             <span class="badge badge--calificacion"><span class="dot"></span> Interesado</span>
-            <span class="badge badge--info">${Icons.globe.replace('class="icon"','class="icon icon--xs"')} Página Web</span>
-            <span class="badge badge--accent">${Icons.fire.replace('class="icon"','class="icon icon--xs"')} Score 86</span>
+            <span class="badge badge--info">${Icons.globe.replace('class="icon"','class="icon icon--xs"')} WhatsApp</span>
+            <span class="badge badge--accent">${Icons.fire.replace('class="icon"','class="icon icon--xs"')} Score 100%</span>
           </div>
           <div style="font-size: 22px; font-weight: 800; color: var(--text-primary); line-height: 1.2;">
-            Suministro anual de tubería
+            Cotización proyecto RCI Seren del Mar
           </div>
           <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
-            Constructora Bolívar · Recibido hace 7 días
+            FIRELINE · Recibido hace 12 días · Asesor: Paola
           </div>
         </div>
         <div style="display: flex; gap: 8px; flex-shrink: 0;">
@@ -362,12 +362,11 @@ function detailContent() {
     <div class="card">
       <div class="card__header">
         <div class="card__title">Intereses del lead</div>
-        <span class="badge badge--info">3 seleccionados</span>
+        <span class="badge badge--info">2 seleccionados</span>
       </div>
       <div class="card__body" style="display: flex; flex-wrap: wrap; gap: 8px;">
-        <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Tubería PE100</span>
+        <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Tubería PE</span>
         <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Accesorios PE</span>
-        <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Asesoría técnica</span>
       </div>
     </div>
   `;
@@ -383,25 +382,25 @@ function detailContent() {
             <div class="timeline__dot"></div>
             <div class="timeline__header">
               <div class="timeline__title">Interesado</div>
-              <span class="timeline__date">Hoy</span>
+              <span class="timeline__date">Hace 5 días</span>
             </div>
-            <div class="timeline__desc">Acordó reunión técnica para definir volúmenes</div>
+            <div class="timeline__desc">Cliente confirmado, se encuentra en revisión de oferta</div>
           </div>
           <div class="timeline__item">
             <div class="timeline__dot timeline__dot--muted"></div>
             <div class="timeline__header">
               <div class="timeline__title">Contactado</div>
-              <span class="timeline__date">Hace 3 días</span>
+              <span class="timeline__date">Hace 8 días</span>
             </div>
-            <div class="timeline__desc">Primera llamada con el departamento de compras</div>
+            <div class="timeline__desc">Primera respuesta por WhatsApp, solicita información</div>
           </div>
           <div class="timeline__item">
             <div class="timeline__dot timeline__dot--muted"></div>
             <div class="timeline__header">
               <div class="timeline__title">Nuevo</div>
-              <span class="timeline__date">Hace 7 días</span>
+              <span class="timeline__date">Hace 12 días</span>
             </div>
-            <div class="timeline__desc">Lead creado desde formulario web</div>
+            <div class="timeline__desc">Lead recibido por WhatsApp desde página web</div>
           </div>
         </div>
       </div>
@@ -412,7 +411,7 @@ function detailContent() {
     <div style="display: flex; flex-direction: column; gap: 12px;">
       <div class="card">
         <div class="card__header">
-          <div class="card__title">Contacto</div>
+          <div class="card__title">Información de contacto</div>
           <div style="display: flex; gap: 4px;">
             <button class="topbar__icon-btn" onclick="openModal(contactOptionsModal())">${Icons.dots}</button>
             <button class="btn btn--ghost btn--sm" onclick="openModal(agregarContactoModal())">${Icons.plus} Agregar</button>
@@ -420,15 +419,15 @@ function detailContent() {
         </div>
         <div class="card__body">
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-            <div class="avatar avatar--color-2">PB</div>
+            <div class="avatar avatar--color-2">SF</div>
             <div>
-              <div style="font-weight: 700;">Pedro Bolívar</div>
-              <div style="font-size: 12px; color: var(--text-muted);">Gerente de Compras</div>
+              <div style="font-weight: 700;">Santiago Triana</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Gerente comercial</div>
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
-            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.phone} +57 315 789 0123</a>
-            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.envelope} p.bolivar@cbolivar.co</a>
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.phone} +57 317 745 9833</a>
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.envelope} ventas@fireline.com.co</a>
           </div>
         </div>
       </div>
@@ -437,12 +436,13 @@ function detailContent() {
         <div class="card__header"><div class="card__title">Información</div></div>
         <div class="card__body">
           <dl class="detail-info-list">
-            <dt>Origen</dt><dd>Página Web</dd>
-            <dt>Empresa</dt><dd>Constructora Bolívar</dd>
-            <dt>Ejecutivo</dt><dd>Juan Pérez</dd>
-            <dt>Score</dt><dd style="color: var(--accent); font-weight: 700;">86 / 100</dd>
-            <dt>Edad</dt><dd>7 días</dd>
-            <dt>Próximo seguim.</dt><dd>Mañana 10am</dd>
+            <dt>Origen</dt><dd>WhatsApp</dd>
+            <dt>Empresa</dt><dd>FIRELINE</dd>
+            <dt>Ciudad</dt><dd>Cartagena</dd>
+            <dt>Asesor</dt><dd>Paola</dd>
+            <dt>Score</dt><dd style="color: var(--accent); font-weight: 700;">100%</dd>
+            <dt>Edad</dt><dd>12 días</dd>
+            <dt>Valor proyecto</dt><dd style="color: var(--accent);">$ 44.000.000</dd>
           </dl>
         </div>
       </div>
@@ -472,30 +472,30 @@ function detailContent() {
           <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
             <div class="timeline__dot timeline__dot--success"></div>
             <div class="timeline__header">
-              <div class="timeline__title">Llamada de seguimiento</div>
-              <span class="timeline__date">Hoy, 10am</span>
+              <div class="timeline__title">Envío información técnica Sello FM</div>
+              <span class="timeline__date">Hace 4 días</span>
             </div>
-            <div class="timeline__desc">Cliente confirmó interés en visita técnica</div>
+            <div class="timeline__desc">Se enviou información técnica de sello FM y fichas técnicas</div>
             <div style="display: flex; gap: 6px; margin-top: 6px;">
-              <span class="badge badge--neutral">${Icons.phone.replace('class="icon"','class="icon icon--xs"')} Llamada</span>
+              <span class="badge badge--neutral">${Icons.envelope.replace('class="icon"','class="icon icon--xs"')} Email</span>
               <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
             </div>
           </div>
           <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
             <div class="timeline__dot timeline__dot--success"></div>
             <div class="timeline__header">
-              <div class="timeline__title">Email - envío de portafolio</div>
-              <span class="timeline__date">Hace 5 días</span>
+              <div class="timeline__title">Envío cotización No. 20250626</div>
+              <span class="timeline__date">Hace 8 días</span>
             </div>
-            <div class="timeline__desc">Envío de catálogo técnico de tubería PE100</div>
+            <div class="timeline__desc">Cotización enviada para proyecto RCI en Seren del Mar, Cartagena</div>
           </div>
           <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
             <div class="timeline__dot"></div>
             <div class="timeline__header">
-              <div class="timeline__title">Primer contacto web</div>
-              <span class="timeline__date">Hace 7 días</span>
+              <div class="timeline__title">Contacto inicial por WhatsApp</div>
+              <span class="timeline__date">Hace 12 días</span>
             </div>
-            <div class="timeline__desc">Formulario de contacto en página web</div>
+            <div class="timeline__desc">Lead recibido desde WhatsApp, solicita cotización</div>
           </div>
         </div>
       </div>
@@ -527,7 +527,7 @@ function agregarContactoModal() {
           <div class="modal-header__icon" style="background: var(--primary-bg); color: var(--primary);">${Icons.user}</div>
           <div>
             <div style="font-weight: 700; font-size: 16px;">Agregar contacto</div>
-            <div style="font-size: 12.5px; color: var(--text-muted);">Nuevo contacto para Constructora Bolívar</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Nuevo contacto para FIRELINE</div>
           </div>
           <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
         </div>
@@ -579,8 +579,8 @@ function contactOptionsModal() {
         <div class="modal-header">
           <div class="modal-header__icon" style="background: var(--page-bg); color: var(--text-muted);">${Icons.user}</div>
           <div>
-            <div style="font-weight: 700; font-size: 15px;">Pedro Bolívar</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Gerente de Compras · Constructora Bolívar</div>
+            <div style="font-weight: 700; font-size: 15px;">Santiago Triana</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Gerente comercial · FIRELINE</div>
           </div>
           <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
         </div>

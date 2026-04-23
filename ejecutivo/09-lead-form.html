@@ -71,16 +71,16 @@
     letter-spacing: 0.04em; margin-bottom: 4px;
   }
   .score-card__desc { font-size: 10px; color: var(--text-muted); text-align: center; }
-  .score-card[data-score="1"]::before { background: #93C5FD; }
-  .score-card[data-score="1"] .score-card__n { background: #EEF1FA; color: #24388C; }
-  .score-card[data-score="2"]::before { background: #A5B4FC; }
-  .score-card[data-score="2"] .score-card__n { background: #EEF1FA; color: #6366F1; }
-  .score-card[data-score="3"]::before { background: #FCD34D; }
-  .score-card[data-score="3"] .score-card__n { background: #FFF4E0; color: #C7770D; }
-  .score-card[data-score="4"]::before { background: #FB923C; }
-  .score-card[data-score="4"] .score-card__n { background: #FFF4E0; color: #EA580C; }
-  .score-card[data-score="5"]::before { background: #4ADE80; }
-  .score-card[data-score="5"] .score-card__n { background: #E8F5EE; color: #1A8754; }
+  .score-card[data-score="20"]::before { background: #93C5FD; }
+  .score-card[data-score="20"] .score-card__n { background: #EEF1FA; color: #24388C; }
+  .score-card[data-score="40"]::before { background: #A5B4FC; }
+  .score-card[data-score="40"] .score-card__n { background: #EEF1FA; color: #6366F1; }
+  .score-card[data-score="60"]::before { background: #FCD34D; }
+  .score-card[data-score="60"] .score-card__n { background: #FFF4E0; color: #C7770D; }
+  .score-card[data-score="80"]::before { background: #FB923C; }
+  .score-card[data-score="80"] .score-card__n { background: #FFF4E0; color: #EA580C; }
+  .score-card[data-score="100"]::before { background: #4ADE80; }
+  .score-card[data-score="100"] .score-card__n { background: #E8F5EE; color: #1A8754; }
 </style>
 </head>
 <body>
@@ -91,24 +91,19 @@
 function content() {
   const origenes = [
     { icon: 'globe', label: 'Página Web', sel: true },
-    { icon: 'phone', label: 'Llamada' },
     { icon: 'envelope', label: 'Email' },
-    { icon: 'users', label: 'Referido' },
     { icon: 'chartBar', label: 'Facebook' },
     { icon: 'sparkles', label: 'Instagram' },
     { icon: 'clipboard', label: 'WhatsApp' },
-    { icon: 'briefcase', label: 'Licitación' },
   ];
 
   const intereses = [
     { label: 'Tubería PE100', sel: true },
-    { label: 'Sistema de riego', sel: true },
-    { label: 'Accesorios PE' },
-    { label: 'Asesoría técnica', sel: false },
-    { label: 'Válvulas y fittings' },
-    { label: 'Tubería CPVC' },
-    { label: 'Instalación' },
-    { label: 'Mantenimiento' },
+    { label: 'Tubería PVC', sel: false },
+    { label: 'Accesorios PE', sel: true },
+    { label: 'Válvulas y fittings', sel: false },
+    { label: 'Sistema de riego', sel: false },
+    { label: 'Equipos de termofusión', sel: false },
   ];
 
   return `
@@ -126,12 +121,12 @@ function content() {
           <div class="form-grid-2" style="grid-template-columns: repeat(2, 1fr);">
             <div class="form-field form-grid-full">
               <label class="form-field__label">Título del lead <span class="req">*</span></label>
-              <input class="input" value="Consulta portafolio sistema de riego" />
+              <input class="input" value="Solicitud tubería PE100 para proyecto de alcantarillado" />
               <span class="form-field__hint">Un resumen breve de la necesidad del prospecto</span>
             </div>
             <div class="form-field form-grid-full">
               <label class="form-field__label">Descripción</label>
-              <textarea class="textarea" rows="3">Cliente interesado en conocer opciones de riego por goteo para cultivo de 30 hectáreas. Solicita visita técnica y cotización preliminar.</textarea>
+              <textarea class="textarea" rows="3">Cliente solicita cotización de tubería PE100 500mm PN10 para proyecto de alcantarillado en zona rural. Requiere visita técnica y cotización formal.</textarea>
             </div>
           </div>
         </div>
@@ -155,7 +150,7 @@ function content() {
               <label class="form-field__label">Empresa</label>
               <div class="input-wrapper">
                 ${Icons.search}
-                <input class="input input--with-icon" value="Agroindustria Llanera" />
+                <input class="input input--with-icon" placeholder="Buscar empresa existente..." />
               </div>
               <span class="form-field__hint">Opcional · si ya existe</span>
             </div>
@@ -168,11 +163,11 @@ function content() {
             </div>
             <div class="form-field">
               <label class="form-field__label">Email del contacto</label>
-              <input class="input" type="email" placeholder="cliente@empresa.com" value="contacto@agrollanera.co" />
+              <input class="input" type="email" placeholder="cliente@empresa.com" />
             </div>
             <div class="form-field">
               <label class="form-field__label">Teléfono</label>
-              <input class="input" placeholder="+57 300 000 0000" value="+57 315 678 9012" />
+              <input class="input" placeholder="+57 300 000 0000" />
             </div>
           </div>
         </div>
@@ -191,28 +186,28 @@ function content() {
           <div class="form-section__title">${Icons.fire} Scoring inicial</div>
           <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Calificación prospectiva — ayuda a priorizar seguimiento</div>
           <div class="score-selector">
-            <div class="score-card" data-score="1">
-              <div class="score-card__n">1</div>
+            <div class="score-card" data-score="20">
+              <div class="score-card__n">20%</div>
               <div class="score-card__label">Frío</div>
               <div class="score-card__desc">Lead sin interés demostrado aún</div>
             </div>
-            <div class="score-card" data-score="2">
-              <div class="score-card__n">2</div>
+            <div class="score-card" data-score="40">
+              <div class="score-card__n">40%</div>
               <div class="score-card__label">Tibio</div>
               <div class="score-card__desc">Contacto inicial, sin compromiso</div>
             </div>
-            <div class="score-card is-selected" data-score="3">
-              <div class="score-card__n">3</div>
+            <div class="score-card is-selected" data-score="60">
+              <div class="score-card__n">60%</div>
               <div class="score-card__label">Cálido</div>
               <div class="score-card__desc">Interés claro, requiere seguimiento</div>
             </div>
-            <div class="score-card" data-score="4">
-              <div class="score-card__n">4</div>
+            <div class="score-card" data-score="80">
+              <div class="score-card__n">80%</div>
               <div class="score-card__label">Caliente</div>
               <div class="score-card__desc">Alto potencial, oportunidad real</div>
             </div>
-            <div class="score-card" data-score="5">
-              <div class="score-card__n">5</div>
+            <div class="score-card" data-score="100">
+              <div class="score-card__n">100%</div>
               <div class="score-card__label">Muy caliente</div>
               <div class="score-card__desc">Listo para conversión inmediata</div>
             </div>

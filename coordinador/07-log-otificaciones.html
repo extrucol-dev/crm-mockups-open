@@ -156,14 +156,14 @@ function closeModal() {
 
 function notifContent() {
   const notificaciones = [
-    { tipo: 'error', icon: 'warning', title: 'Alerta: Lead estancado', subtitle: 'Lead "Proyecto acueducto EMPAS" sin contactar hace 5 días', to: 'Juan Pérez', via: 'Email', time: 'Hace 5 min', canal: 'email' },
-    { tipo: 'warning', icon: 'clock', title: 'Recordatorio: Oportunidad estancada', subtitle: 'OPP-2025-0038 sin actividad hace 7 días', to: 'María García', via: 'Email', time: 'Hace 1h', canal: 'email' },
-    { tipo: 'info', icon: 'bell', title: 'Reporte diario enviado', subtitle: 'Resumen automático de actividades del día', to: 'Todo el equipo', via: 'Email', time: 'Ayer 18:00', canal: 'email' },
-    { tipo: 'error', icon: 'warning', title: 'Escalamiento crítico', subtitle: 'Oportunidad sin actividad hace 14 días', to: 'Carlos Muñoz (Director)', via: 'Email', time: 'Ayer 10:30', canal: 'email' },
-    { tipo: 'success', icon: 'trophy', title: 'Felicitación por meta alcanzada', subtitle: 'María García superó la meta mensual', to: 'María García', via: 'Email', time: 'Ayer 09:00', canal: 'email' },
-    { tipo: 'warning', icon: 'clock', title: 'Aviso: Actividad programada', subtitle: 'Reunión técnica en 1 hora', to: 'Ana Martínez', via: 'Email', time: 'Ayer 08:30', canal: 'email' },
-    { tipo: 'info', icon: 'bell', title: 'Nueva oportunidad asignada', subtitle: 'Se ha asignado una nueva oportunidad de $85M', to: 'Juan Pérez', via: 'Email', time: 'Hace 2 días', canal: 'email' },
-    { tipo: 'error', icon: 'warning', title: 'Alerta: 3 leads sin contactar', subtitle: 'Ejecutivo con múltiples leads estancados', to: 'Carlos Rodríguez', via: 'Email', time: 'Hace 2 días', canal: 'email' },
+    { tipo: 'error', icon: 'warning', title: 'Alerta: Lead estancado 5 días', subtitle: 'HyM Contratistas Sas sin contactar. Asesor: Paola', to: 'Paola', via: 'Email', time: 'Hace 10 min', canal: 'email' },
+    { tipo: 'warning', icon: 'clock', title: 'Oportunidad sin actividad - CIVILE Hidráulicos', subtitle: 'Cotización No. 1393 sin seguimiento hace 14 días', to: 'Paola', via: 'Email', time: 'Hace 1h', canal: 'email' },
+    { tipo: 'error', icon: 'warning', title: 'Escalamiento: UT Balsa 3 sin avance', subtitle: 'Oportunidad de $187M sin actividad hace 6 días', to: 'Alvaro', via: 'Email', time: 'Hace 2h', canal: 'email' },
+    { tipo: 'warning', icon: 'clock', title: 'GMOS INGENIEROS SAS - Sin interés', subtitle: 'Lead cerrado. El cliente requiere tubería AC Clase 10, no aplica.', to: 'Diana', via: 'Email', time: 'Hace 5h', canal: 'email' },
+    { tipo: 'info', icon: 'bell', title: 'Oportunidad ganada - FIRELINE', subtitle: 'Lead cerrado. Cliente compró a través de COSERINCO.', to: 'Paola', via: 'Email', time: 'Ayer 14:00', canal: 'email' },
+    { tipo: 'info', icon: 'bell', title: 'Seguimiento Cotización No. 584 - COL PROYECTOS', subtitle: 'Se actualizó cotización con cambio de cantidad.', to: 'Paola', via: 'Email', time: 'Ayer 10:30', canal: 'email' },
+    { tipo: 'error', icon: 'warning', title: 'Proceso ADOS Ingeniería sin adjudicar', subtitle: 'Seguimiento: el municipio aún no adjudica el proyecto.', to: 'Diana', via: 'Email', time: 'Ayer 09:00', canal: 'email' },
+    { tipo: 'warning', icon: 'clock', title: 'Lead EMSERPRE - Sin interés', subtitle: 'Cliente requiere tubería HDPE corrugada, no aplicamos.', to: 'Alexis', via: 'Email', time: 'Hace 2 días', canal: 'email' },
   ];
 
   return `

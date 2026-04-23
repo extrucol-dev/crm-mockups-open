@@ -68,24 +68,27 @@ function toggleFiltros() {
 
 const leadsData = {
   NUEVO: { color: '#3B82F6', label: 'Nuevo', badgeClass: 'prospecto', items: [
-    { titulo: 'Consulta portafolio riego', empresa: 'Agroindustria Llanera', origen: 'Página Web', intereses: ['Riego', 'Asesoría'], score: 65, age: '2d', avatar: 'AL', color: 3 },
-    { titulo: 'Solicita cotización PE100', empresa: 'Constructora XYZ', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 48, age: '1d', avatar: 'CX', color: 5 },
-    { titulo: 'Interesado en accesorios', empresa: 'Distribuidora del Sur', origen: 'Facebook', intereses: ['Accesorios'], score: 52, age: '3h', avatar: 'DS', color: 4 },
+    { titulo: 'Solicitud cotización tubería para alcantarillado', empresa: 'RB DE COLOMBIA SA', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 60, age: '1d', avatar: 'DC', color: 3 },
+    { titulo: 'Oferta tubería PE100 para proyecto VIS', empresa: 'INGEOMEGA', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 100, age: '2d', avatar: 'DI', color: 1 },
+    { titulo: 'Cotización tubería 315mm PN10 para vivienda', empresa: 'GAMO INGENIEROS SAS', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 60, age: '0d', avatar: 'GA', color: 5 },
   ]},
   CONTACTADO: { color: '#A855F7', label: 'Contactado', badgeClass: 'propuesta', items: [
-    { titulo: 'Proyecto acueducto municipal', empresa: 'Alcaldía de Piedecuesta', origen: 'Página Web', intereses: ['Tubería PE', 'Asesoría'], score: 78, age: '5d', avatar: 'AP', color: 1 },
-    { titulo: 'Ampliación red residencial', empresa: 'Urbanizadora Andina', origen: 'Instagram', intereses: ['Tubería PE'], score: 68, age: '4d', avatar: 'UA', color: 6 },
-    { titulo: 'Sistema riego invernadero', empresa: 'Floricultura San José', origen: 'Página Web', intereses: ['Riego'], score: 72, age: '3d', avatar: 'FS', color: 3 },
+    { titulo: 'Oferta equipo termofusión 160mm', empresa: 'MONTAJES JM', origen: 'WhatsApp', intereses: ['Equipos'], score: 80, age: '4d', avatar: 'MJ', color: 4 },
+    { titulo: 'Propuesta accesorios para Manizales', empresa: 'CMM', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 80, age: '5d', avatar: 'CM', color: 2 },
+    { titulo: 'Oferta tubería para proyecto Santa Elena', empresa: 'CONSORCIO ING SANTA ELENA PM', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 100, age: '3d', avatar: 'CS', color: 3 },
   ]},
   INTERESADO: { color: '#F39610', label: 'Interesado', badgeClass: 'calificacion', items: [
-    { titulo: 'Suministro anual de tubería', empresa: 'Constructora Bolívar', origen: 'Página Web', intereses: ['Tubería PE', 'Accesorios'], score: 86, age: '7d', avatar: 'CB', color: 2 },
-    { titulo: 'Red matriz barrio nuevo', empresa: 'Servientrega Colombia', origen: 'Facebook', intereses: ['Tubería PE'], score: 82, age: '6d', avatar: 'SC', color: 4 },
+    { titulo: 'Cotización No 1393 tubería 110mm RDE 17', empresa: 'CIVILE HIDRAULICOS', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 100, age: '6d', avatar: 'CH', color: 6 },
+    { titulo: 'Cotización No 1248 proyecto Imola Park', empresa: 'Promotora Imola Park S.A.S', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 100, age: '8d', avatar: 'PI', color: 1 },
+    { titulo: 'Oferta para licitador municipio Apartadó', empresa: 'ADOS INGENIERIA', origen: 'Instagram', intereses: ['Tubería PE'], score: 80, age: '7d', avatar: 'AD', color: 4 },
   ]},
-  CALIFICADO: { color: '#22C55E', label: 'Calificado', badgeClass: 'ganada', items: [
-    { titulo: 'Proyecto acueducto rural', empresa: 'EMPAS S.A.', origen: 'WhatsApp', intereses: ['Tubería PE', 'Asesoría'], score: 92, age: '10d', avatar: 'ES', color: 1 },
+  TRASLADADO: { color: '#22C55E', label: 'Trasladado a distribuidor', badgeClass: 'ganada', items: [
+    { titulo: 'Cotización No 584 proyecto Sabanalarga', empresa: 'COL PROYECTOS', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 100, age: '10d', avatar: 'CP', color: 5 },
+    { titulo: 'Cotización No 20250626 proyecto RCI Seren del Mar', empresa: 'FIRELINE', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 100, age: '12d', avatar: 'FL', color: 2 },
   ]},
   DESCALIFICADO: { color: '#EF4444', label: 'No Interesado', badgeClass: 'perdida', items: [
-    { titulo: 'Cotización menor', empresa: 'Ferretería Central', origen: 'WhatsApp', intereses: ['Accesorios'], score: 25, age: '8d', avatar: 'FC', color: 5 },
+    { titulo: 'Proyecto alcantarillado EMSERPRE', empresa: 'EMSERPRE', origen: 'Instagram', intereses: ['Tubería PE', 'Accesorios'], score: 20, age: '15d', avatar: 'EM', color: 3 },
+    { titulo: 'Tubería HDPE para San Marcos Sucre', empresa: 'GEOCOR', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 20, age: '20d', avatar: 'GE', color: 6 },
   ]}
 };
 
@@ -106,7 +109,7 @@ function renderLeadCard(l, estadoKey) {
         <div class="lead-card__footer">
           <div style="display: flex; align-items: center; gap: 8px;">
             <div class="avatar avatar--xs avatar--color-${l.color}">${l.avatar}</div>
-            <span class="lead-card__score">${Icons.fire} ${l.score}</span>
+            <span class="lead-card__score">${Icons.fire} ${l.score}%</span>
           </div>
           <span class="lead-card__age">${l.age}</span>
         </div>
@@ -139,7 +142,7 @@ function content() {
        ${renderKanbanColumn('NUEVO')}
        ${renderKanbanColumn('CONTACTADO')}
        ${renderKanbanColumn('INTERESADO')}
-       ${renderKanbanColumn('CALIFICADO')}
+       ${renderKanbanColumn('TRASLADADO')}
        ${renderKanbanColumn('DESCALIFICADO')}
      </div>`;
 
@@ -148,7 +151,7 @@ function content() {
       <div class="page-head">
         <div class="page-head__title-group">
           <div class="page-head__title">Mis Leads</div>
-          <div class="page-head__subtitle">${total} leads en seguimiento · 3 sin contactar hace +2 días</div>
+          <div class="page-head__subtitle">${total} leads en seguimiento · 2 sin contactar hace +2 días</div>
         </div>
         <div class="page-head__actions">
           <button class="btn btn--secondary btn--sm" onclick="toggleFiltros()">${Icons.filter} Filtros</button>
@@ -165,10 +168,9 @@ function content() {
         </div>
         <select class="select" style="max-width: 180px;">
           <option>Todos los orígenes</option>
-          <option>Página Web</option>
+          <option>Instagram</option>
           <option>Facebook</option>
           <option>WhatsApp</option>
-          <option>Referido</option>
         </select>
         <select class="select" style="max-width: 180px;">
           <option>Todos los intereses</option>
@@ -213,7 +215,7 @@ function content() {
       <div class="alert alert--warning" style="margin-bottom: 16px;">
         ${Icons.warning}
         <div>
-          <strong>2 leads estancados.</strong> Tienes leads en estado "Nuevo" sin contactar hace más de 2 días.
+          <strong>1 lead estancado.</strong> GAMO INGENIEROS SAS sin contactar hace 1 día.
           El sistema enviará notificación al coordinador si superan 3 días.
         </div>
       </div>

@@ -110,29 +110,29 @@ const sectores = [
     desc: 'Acueductos municipales y redes de distribución',
     color: '#24388C', bg: '#EEF1FA',
     icon: 'gps',
-    pipeline: 1446, pipelineM: '$ 1.446 M', pct: 30,
-    ganadas: 12, ventasAcum: '$ 680 M',
-    oppActivas: 22, ticketProm: '$ 65 M',
-    conversion: 38, tendencia: '+12',
+    pipeline: 698, pipelineM: '$ 698 M', pct: 40,
+    ganadas: 8, ventasAcum: '$ 698 M',
+    oppActivas: 12, ticketProm: '$ 58 M',
+    conversion: 42, tendencia: '+15',
     topClientes: [
-      { name: 'EMPAS S.A.', val: '$ 485 M', avatar: 'ES', color: 1 },
-      { name: 'Acueducto Oriental', val: '$ 340 M', avatar: 'AO', color: 2 },
-      { name: 'Aguas del Valle', val: '$ 180 M', avatar: 'AV', color: 3 },
+      { name: 'INGEOMEGA', val: '$ 397 M', avatar: 'IN', color: 1 },
+      { name: 'CONSORCIO ING SANTA ELENA', val: '$ 152 M', avatar: 'CS', color: 2 },
+      { name: 'RB DE COLOMBIA SA', val: '$ 26 M', avatar: 'RB', color: 3 },
     ]
   },
   {
-    nombre: 'Gas Natural',
-    desc: 'Redes de distribución y suministro',
-    color: '#F39610', bg: '#FFF4E0',
-    icon: 'fire',
-    pipeline: 1060, pipelineM: '$ 1.060 M', pct: 22,
-    ganadas: 8, ventasAcum: '$ 420 M',
-    oppActivas: 15, ticketProm: '$ 71 M',
-    conversion: 42, tendencia: '+8',
+    nombre: 'Construcción',
+    desc: 'Proyectos de infraestructura y construcción',
+    color: '#22C55E', bg: '#E8F5EE',
+    icon: 'building',
+    pipeline: 398, pipelineM: '$ 398 M', pct: 23,
+    ganadas: 6, ventasAcum: '$ 398 M',
+    oppActivas: 8, ticketProm: '$ 50 M',
+    conversion: 38, tendencia: '+8',
     topClientes: [
-      { name: 'Hidrogas del Oriente', val: '$ 280 M', avatar: 'HO', color: 5 },
-      { name: 'Gas Natural Fenosa', val: '$ 215 M', avatar: 'GF', color: 4 },
-      { name: 'Promigas', val: '$ 175 M', avatar: 'PM', color: 6 },
+      { name: 'CIVILE HIDRAULICOS', val: '$ 111 M', avatar: 'CH', color: 4 },
+      { name: 'Promotora Imola Park', val: '$ 92 M', avatar: 'PI', color: 5 },
+      { name: 'ADOS INGENIERIA', val: '$ 98 M', avatar: 'AD', color: 6 },
     ]
   },
   {
@@ -140,44 +140,12 @@ const sectores = [
     desc: 'Sistemas de riego tecnificado y cultivos',
     color: '#A855F7', bg: '#F3E8FF',
     icon: 'sparkles',
-    pipeline: 868, pipelineM: '$ 868 M', pct: 18,
-    ganadas: 6, ventasAcum: '$ 310 M',
-    oppActivas: 14, ticketProm: '$ 62 M',
-    conversion: 35, tendencia: '+22',
+    pipeline: 14, pipelineM: '$ 14 M', pct: 1,
+    ganadas: 1, ventasAcum: '$ 14 M',
+    oppActivas: 2, ticketProm: '$ 14 M',
+    conversion: 30, tendencia: '+5',
     topClientes: [
-      { name: 'Ingenio del Cauca', val: '$ 180 M', avatar: 'IC', color: 4 },
-      { name: 'Palmares del Sur', val: '$ 125 M', avatar: 'PS', color: 6 },
-      { name: 'Agroindustria Llanera', val: '$ 88 M', avatar: 'AL', color: 3 },
-    ]
-  },
-  {
-    nombre: 'Construcción',
-    desc: 'Proyectos residenciales y comerciales',
-    color: '#22C55E', bg: '#E8F5EE',
-    icon: 'building',
-    pipeline: 723, pipelineM: '$ 723 M', pct: 15,
-    ganadas: 5, ventasAcum: '$ 195 M',
-    oppActivas: 9, ticketProm: '$ 80 M',
-    conversion: 28, tendencia: '-5',
-    topClientes: [
-      { name: 'Constructora Andina', val: '$ 420 M', avatar: 'CA', color: 6 },
-      { name: 'Constructora Bolívar', val: '$ 180 M', avatar: 'CB', color: 2 },
-      { name: 'Urbanizadora ABC', val: '$ 95 M', avatar: 'UA', color: 1 },
-    ]
-  },
-  {
-    nombre: 'Industria',
-    desc: 'Plantas industriales y tubería especializada',
-    color: '#EF4444', bg: '#FDECEA',
-    icon: 'briefcase',
-    pipeline: 723, pipelineM: '$ 723 M', pct: 15,
-    ganadas: 4, ventasAcum: '$ 145 M',
-    oppActivas: 8, ticketProm: '$ 90 M',
-    conversion: 31, tendencia: '+3',
-    topClientes: [
-      { name: 'Ecopetrol', val: '$ 320 M', avatar: 'EC', color: 1 },
-      { name: 'Cerrejón', val: '$ 215 M', avatar: 'CJ', color: 4 },
-      { name: 'Tecnoagua SAS', val: '$ 85 M', avatar: 'TA', color: 2 },
+      { name: 'PROYECTOS MULTIPLES', val: '$ 14 M', avatar: 'PM', color: 3 },
     ]
   },
 ];
@@ -249,7 +217,7 @@ function content() {
       <div class="page-head">
         <div class="page-head__title-group">
           <div class="page-head__title">Análisis por sectores</div>
-          <div class="page-head__subtitle">Rendimiento del negocio segmentado por sector económico · 5 sectores activos</div>
+          <div class="page-head__subtitle">Rendimiento del negocio segmentado por sector económico · 3 sectores activos</div>
         </div>
         <div class="page-head__actions">
           <select class="select" style="max-width: 160px;">
@@ -330,25 +298,25 @@ function content() {
           <div class="stat-card__icon stat-card__icon--accent">${Icons.currency}</div>
           <div class="stat-card__label">Pipeline global</div>
           <div class="stat-card__value stat-card__value--accent">$ ${totalPipeline.toLocaleString()} M</div>
-          <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+12%</span> vs año anterior</div>
+          <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+15%</span> vs año anterior</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__icon stat-card__icon--green">${Icons.trophy}</div>
           <div class="stat-card__label">Ventas totales</div>
-          <div class="stat-card__value stat-card__value--success">$ 1.750 M</div>
-          <div class="stat-card__subtext">35 oportunidades ganadas</div>
+          <div class="stat-card__value stat-card__value--success">$ ${totalPipeline.toLocaleString()} M</div>
+          <div class="stat-card__subtext">15 oportunidades ganadas</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__icon">${Icons.trendingUp}</div>
           <div class="stat-card__label">Sector líder</div>
           <div class="stat-card__value" style="font-size: 20px;">Agua Potable</div>
-          <div class="stat-card__subtext">30% del pipeline total</div>
+          <div class="stat-card__subtext">40% del pipeline total</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__icon">${Icons.sparkles}</div>
           <div class="stat-card__label">Mayor crecimiento</div>
-          <div class="stat-card__value stat-card__value--success" style="font-size: 20px;">Agro / Riego</div>
-          <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+22%</span> YoY</div>
+          <div class="stat-card__value stat-card__value--success" style="font-size: 20px;">Agua Potable</div>
+          <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+15%</span> YoY</div>
         </div>
       </div>
 
@@ -380,10 +348,7 @@ function content() {
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px;">
-        ${sectores.slice(0, 3).map(sectorCard).join('')}
-      </div>
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px;">
-        ${sectores.slice(3).map(sectorCard).join('')}
+        ${sectores.map(sectorCard).join('')}
       </div>
 
       <div class="card" style="padding: 0;">
@@ -441,11 +406,11 @@ function content() {
                 <td style="color: var(--text-primary);">TOTAL</td>
                 <td style="text-align: right; color: var(--accent); font-weight: 800;">$ ${totalPipeline.toLocaleString()} M</td>
                 <td style="text-align: center;">100%</td>
-                <td style="text-align: center;">68</td>
-                <td style="text-align: center; color: var(--success);">35</td>
-                <td style="text-align: right; color: var(--success); font-weight: 800;">$ 1.750 M</td>
-                <td style="text-align: right;">$ 74 M</td>
-                <td style="text-align: center;">35%</td>
+                <td style="text-align: center;">22</td>
+                <td style="text-align: center; color: var(--success);">15</td>
+                <td style="text-align: right; color: var(--success); font-weight: 800;">$ ${totalPipeline.toLocaleString()} M</td>
+                <td style="text-align: right;">$ 54 M</td>
+                <td style="text-align: center;">38%</td>
                 <td style="text-align: center;"><span class="trend-up">▲ +12%</span></td>
               </tr>
             </tbody>
@@ -462,22 +427,22 @@ function content() {
             </div>
           </div>
           <div class="card__body" style="display: flex; flex-direction: column; gap: 12px;">
-            <div style="padding: 12px; background: #E8F5EE; border-left: 3px solid var(--success); border-radius: 4px;">
-              <div style="font-weight: 700; font-size: 13px; color: var(--success); margin-bottom: 4px;">↗ Agro / Riego en auge</div>
+            <div style="padding: 12px; background: var(--primary-bg); border-left: 3px solid var(--primary); border-radius: 4px;">
+              <div style="font-weight: 700; font-size: 13px; color: var(--primary); margin-bottom: 4px;">◆ Agua Potable lidera</div>
               <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
-                Crecimiento del +22% YoY. Oportunidad de invertir en campañas dirigidas al sector agrícola, especialmente cultivos industriales en Valle del Cauca y Meta.
+                40% del pipeline con INGEOMEGA como cliente clave ($397M). Conversion del 42% supera el promedio del equipo.
+              </div>
+            </div>
+            <div style="padding: 12px; background: #E8F5EE; border-left: 3px solid var(--success); border-radius: 4px;">
+              <div style="font-weight: 700; font-size: 13px; color: var(--success); margin-bottom: 4px;">↗ Construcción en crecimiento</div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
+                Crecimiento del +8% YoY con 6 oportunidades. CIVILE HIDRAULICOS representa el mayor valor ($111M).
               </div>
             </div>
             <div style="padding: 12px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 4px;">
-              <div style="font-weight: 700; font-size: 13px; color: #C7770D; margin-bottom: 4px;">⚠ Construcción en caída</div>
+              <div style="font-weight: 700; font-size: 13px; color: #C7770D; margin-bottom: 4px;">⚠ Diversificación necesaria</div>
               <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
-                Pérdida del -5% YoY y la conversión más baja (28%). Revisar estrategia comercial: puede ser tema de precio o ciclo económico del sector.
-              </div>
-            </div>
-            <div style="padding: 12px; background: var(--primary-bg); border-left: 3px solid var(--primary); border-radius: 4px;">
-              <div style="font-weight: 700; font-size: 13px; color: var(--primary); margin-bottom: 4px;">◆ Diversificación saludable</div>
-              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
-                Ningún sector concentra más del 30% del pipeline. Buena diversificación reduce el riesgo de dependencia.
+                Agro/Riego solo representa 1% del pipeline. Oportunidad de expandir cobertura en este sector.
               </div>
             </div>
           </div>
@@ -492,38 +457,31 @@ function content() {
           </div>
           <div class="card__body">
             <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: #A855F7; margin-top: 5px; flex-shrink: 0;"></span>
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary); margin-top: 5px; flex-shrink: 0;"></span>
               <div>
-                <div style="font-weight: 600; font-size: 13px;">Reforzar equipo en Agro</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Asignar 1-2 ejecutivos adicionales a Valle y Meta</div>
+                <div style="font-weight: 600; font-size: 13px;">Fortalecer Agua Potable</div>
+                <div style="font-size: 12px; color: var(--text-muted);">INGEOMEGA y CONSORCIO SANTA ELENA son prioridad</div>
               </div>
             </div>
             <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
               <span style="width: 10px; height: 10px; border-radius: 50%; background: #22C55E; margin-top: 5px; flex-shrink: 0;"></span>
               <div>
-                <div style="font-weight: 600; font-size: 13px;">Revisar precios en Construcción</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Analizar motivos de pérdida vs. competencia</div>
+                <div style="font-weight: 600; font-size: 13px;">Expandir Construcción</div>
+                <div style="font-size: 12px; color: var(--text-muted);">CIVILE HIDRAULICOS y Promotora Imola son clave</div>
               </div>
             </div>
             <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary); margin-top: 5px; flex-shrink: 0;"></span>
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #A855F7; margin-top: 5px; flex-shrink: 0;"></span>
               <div>
-                <div style="font-weight: 600; font-size: 13px;">Defender liderazgo en Agua</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Mantener conversión y fidelizar EMPAS, EAAB</div>
-              </div>
-            </div>
-            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0;"></span>
-              <div>
-                <div style="font-weight: 600; font-size: 13px;">Ampliar cobertura en Gas</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Mejor conversión (42%), escalar operaciones</div>
+                <div style="font-weight: 600; font-size: 13px;">Desarrollar Agro/Riego</div>
+                <div style="font-size: 12px; color: var(--text-muted);">PROYECTOS MULTIPLES es cliente actual, expandir</div>
               </div>
             </div>
             <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0;">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--error); margin-top: 5px; flex-shrink: 0;"></span>
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0;"></span>
               <div>
-                <div style="font-weight: 600; font-size: 13px;">Mantener foco en Industria</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Ticket más alto ($90M), pocos clientes pero valiosos</div>
+                <div style="font-weight: 600; font-size: 13px;">Equilibrar portfolio</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Reducir dependencia de un solo sector</div>
               </div>
             </div>
           </div>

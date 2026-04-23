@@ -51,26 +51,26 @@ function content() {
     <div class="stat-card">
       <div class="stat-card__icon stat-card__icon--accent">${Icons.currency}</div>
       <div class="stat-card__label">Pipeline total</div>
-      <div class="stat-card__value stat-card__value--accent">$ 4.820 M</div>
-      <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+12%</span> vs mes anterior</div>
+      <div class="stat-card__value stat-card__value--accent">$ 1.226 M</div>
+      <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+15%</span> vs mes anterior</div>
     </div>
     <div class="stat-card">
       <div class="stat-card__icon stat-card__icon--success">${Icons.trophy}</div>
       <div class="stat-card__label">Ventas del mes</div>
-      <div class="stat-card__value stat-card__value--success">$ 1.240 M</div>
-      <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+8%</span> 8 oportunidades</div>
+      <div class="stat-card__value stat-card__value--success">$ 26 M</div>
+      <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+1</span> 1 oportunidad ganada</div>
     </div>
     <div class="stat-card">
       <div class="stat-card__icon">${Icons.chartPie}</div>
       <div class="stat-card__label">Tasa conversión</div>
-      <div class="stat-card__value">32%</div>
-      <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--down">-2%</span> Leads → Ganadas</div>
+      <div class="stat-card__value">8%</div>
+      <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--down">-3%</span> Leads → Ganadas</div>
     </div>
     <div class="stat-card">
       <div class="stat-card__icon stat-card__icon--green">${Icons.users}</div>
       <div class="stat-card__label">Clientes nuevos</div>
-      <div class="stat-card__value stat-card__value--green">5</div>
-      <div class="stat-card__subtext">Este mes · monto ≥ $50M</div>
+      <div class="stat-card__value stat-card__value--green">2</div>
+      <div class="stat-card__subtext">Este mes · monto ≥ $10M</div>
     </div>
   `;
 
@@ -90,7 +90,7 @@ function content() {
     { label: 'Leads generados', count: 240, pct: 100 },
     { label: 'Contactados', count: 168, pct: 70 },
     { label: 'Interesados', count: 108, pct: 45 },
-    { label: 'Calificados', count: 76, pct: 32 },
+    { label: 'Trasladados a distribuidor', count: 76, pct: 32 },
     { label: 'En propuesta', count: 52, pct: 22 },
     { label: 'Ganadas', count: 32, pct: 13 },
   ];
@@ -105,11 +105,11 @@ function content() {
   `).join('');
 
   const ranking = [
-    { pos: 1, name: 'María García', ventas: '$ 420 M', opp: 9, avatar: 'MG', color: 3, trend: 'up', pct: 15 },
-    { pos: 2, name: 'Juan Pérez', ventas: '$ 385 M', opp: 12, avatar: 'JP', color: 1, trend: 'up', pct: 12 },
-    { pos: 3, name: 'Ana Martínez', ventas: '$ 260 M', opp: 11, avatar: 'AM', color: 4, trend: 'down', pct: 5 },
-    { pos: 4, name: 'Laura Jiménez', ventas: '$ 215 M', opp: 8, avatar: 'LJ', color: 2, trend: 'up', pct: 8 },
-    { pos: 5, name: 'Carlos Rodríguez', ventas: '$ 180 M', opp: 6, avatar: 'CR', color: 5, trend: 'down', pct: 11 },
+    { pos: 1, name: 'Diana', ventas: '$ 574 M', opp: 8, avatar: 'DI', color: 3, trend: 'up', pct: 18 },
+    { pos: 2, name: 'Paola', ventas: '$ 393 M', opp: 6, avatar: 'PA', color: 1, trend: 'up', pct: 12 },
+    { pos: 3, name: 'Alvaro', ventas: '$ 187 M', opp: 5, avatar: 'AL', color: 4, trend: 'down', pct: 5 },
+    { pos: 4, name: 'Gonzalo', ventas: '$ 44 M', opp: 3, avatar: 'GO', color: 2, trend: 'up', pct: 8 },
+    { pos: 5, name: 'Alexis', ventas: '$ 28 M', opp: 4, avatar: 'AX', color: 5, trend: 'down', pct: 11 },
   ];
 
   const rankingHTML = ranking.map(r => `
@@ -135,17 +135,16 @@ function content() {
     <div style="display: flex; align-items: center; gap: 20px;">
       <div class="donut">
         <div class="donut__center">
-          <div class="donut__value">$ 4.8B</div>
+          <div class="donut__value">$ 1.2B</div>
           <div class="donut__label">Pipeline</div>
         </div>
       </div>
       <div style="flex: 1; min-width: 0;">
         ${[
-          { label: 'Agua Potable', color: 'var(--primary)', val: '$ 1.446 M', pct: '30%' },
-          { label: 'Gas', color: 'var(--accent)', val: '$ 1.060 M', pct: '22%' },
-          { label: 'Agro / Riego', color: '#A855F7', val: '$ 868 M', pct: '18%' },
-          { label: 'Construcción', color: 'var(--green-bright)', val: '$ 723 M', pct: '15%' },
-          { label: 'Industria', color: 'var(--error)', val: '$ 723 M', pct: '15%' },
+          { label: 'Agua Potable', color: 'var(--primary)', val: '$ 490 M', pct: '40%' },
+          { label: 'Agro / Riego', color: 'var(--accent)', val: '$ 368 M', pct: '30%' },
+          { label: 'Construcción', color: '#A855F7', val: '$ 245 M', pct: '20%' },
+          { label: 'Gas', color: 'var(--green-bright)', val: '$ 123 M', pct: '10%' },
         ].map(s => `
           <div class="legend-item">
             <span class="legend-dot" style="background: ${s.color};"></span>

@@ -50,35 +50,35 @@ const URL_PARAMS = new URLSearchParams(window.location.search);
 const ejecutivoId = URL_PARAMS.get('id') || 'JP';
 
 const ejecutivoData = {
-  name: 'Juan Pérez',
-  depto: 'Santander',
-  avatar: 'JP',
+  name: 'Diana',
+  depto: 'Medellín',
+  avatar: 'DI',
   color: 1,
-  ventas: '$ 385 M',
-  meta: '$ 350 M',
-  metaPct: 110,
-  tendencia: '▲ +12%',
-  email: 'juan.perez@extrucol.co',
+  ventas: '$ 698 M',
+  meta: '$ 600 M',
+  metaPct: 116,
+  tendencia: '▲ +20%',
+  email: 'diana@extrucol.co',
   phone: '+57 310 555 1234',
-  joined: '12 Mar 2024',
-  comp: 85,
+  joined: '15 Ene 2024',
+  comp: 95,
   leads: [
-    { titulo: 'Suministro anual de tubería', empresa: 'Constructora Bolívar', origen: 'Página Web', score: 86, estado: 'INTERESADO' },
-    { titulo: 'Proyecto acueducto municipal', empresa: 'Alcaldía de Piedecuesta', origen: 'WhatsApp', score: 78, estado: 'CONTACTADO' },
-    { titulo: 'Consulta portafolio riego', empresa: 'Agroindustria Llanera', origen: 'Página Web', score: 65, estado: 'NUEVO' },
-    { titulo: 'Cotización menor', empresa: 'Ferretería Central', origen: 'Facebook', score: 25, estado: 'DESCALIFICADO' },
+    { titulo: 'Consulta tubería INGEOMEGA', empresa: 'INGEOMEGA', origen: 'WhatsApp', score: 100, estado: 'INTERESADO' },
+    { titulo: 'Proyecto RB de Colombia', empresa: 'RB DE COLOMBIA SA', origen: 'Instagram', score: 80, estado: 'CONTACTADO' },
+    { titulo: 'Cotización CMM Manizales', empresa: 'CMM', origen: 'Facebook', score: 80, estado: 'INTERESADO' },
+    { titulo: 'Seguimiento MONTAJES JM', empresa: 'MONTAJES JM', origen: 'WhatsApp', score: 60, estado: 'NUEVO' },
   ],
   oportunidades: [
-    { titulo: 'Licitación acueducto Bucaramanga', empresa: 'EMPAS S.A.', valor: '$ 120 M', estado: 'PROSPECTO', fecha: '15 Mar' },
-    { titulo: 'Cotización tubería PE100', empresa: 'Distriaguas SAS', valor: '$ 45 M', estado: 'CALIFICACION', fecha: '12 Mar' },
-    { titulo: 'Sistema riego cultivo', empresa: 'Agrícola El Prado', valor: '$ 78 M', estado: 'PROPUESTA', fecha: '10 Mar' },
-    { titulo: 'Ampliación red gas', empresa: 'Hidrogas SA', valor: '$ 95 M', estado: 'NEGOCIACION', fecha: '08 Mar' },
+    { titulo: 'Sistema acueducto INGEOMEGA', empresa: 'INGEOMEGA', valor: '$ 397 M', estado: 'NEGOCIACION', fecha: '20 Mar', prob: 80 },
+    { titulo: 'Obra civil MONTAJES JM', empresa: 'MONTAJES JM', valor: '$ 15 M', estado: 'NEGOCIACION', fecha: '18 Mar', prob: 80 },
+    { titulo: 'Construcción ADOS INGENIERIA', empresa: 'ADOS INGENIERIA', valor: '$ 98 M', estado: 'NEGOCIACION', fecha: '15 Mar', prob: 80 },
+    { titulo: 'Consorcio ING Santa Elena', empresa: 'CONSORCIO ING SANTA ELENA', valor: '$ 152 M', estado: 'PROPUESTA', fecha: '10 Mar', prob: 60 },
   ],
   actividades: [
-    { tipo: 'visita', iconClass: 'visita', titulo: 'Visita técnica - EMPAS S.A.', sub: 'Inspección de planta', date: '10:30 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada' },
-    { tipo: 'llamada', iconClass: 'llamada', titulo: 'Llamada seguimiento - Tecnoagua', sub: 'Seguimiento a propuesta', date: '9:00 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada' },
-    { tipo: 'reunion', iconClass: 'reunion', titulo: 'Reunión virtual - Aguas del Valle', sub: 'Presentación portafolio', date: '3:00 PM', day: 'Hoy', badge: 'prospecto', badgeText: 'Agendada' },
-    { tipo: 'email', iconClass: 'email', titulo: 'Email - Constructora Andina', sub: 'Envío de cotización', date: '8:15 AM', day: 'Ayer', badge: 'ganada', badgeText: 'Completada' },
+    { tipo: 'visita', iconClass: 'visita', titulo: 'Visita técnica - INGEOMEGA', sub: 'Revisión especificaciones técnicas', date: '10:30 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada' },
+    { tipo: 'llamada', iconClass: 'llamada', titulo: 'Llamada seguimiento - ADOS', sub: 'Negociación de términos', date: '9:00 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada' },
+    { tipo: 'reunion', iconClass: 'reunion', titulo: 'Reunión virtual - CMM', sub: 'Presentación portafolio productos', date: '3:00 PM', day: 'Hoy', badge: 'prospecto', badgeText: 'Agendada' },
+    { tipo: 'email', iconClass: 'email', titulo: 'Email - CONSORCIO ING', sub: 'Envío de propuesta técnica', date: '8:15 AM', day: 'Ayer', badge: 'ganada', badgeText: 'Completada' },
   ]
 };
 
@@ -225,7 +225,7 @@ function leadsTab() {
               <div style="font-size: 12px; color: var(--text-muted);">${l.empresa} · ${l.origen}</div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-              <span style="font-size: 12px; color: var(--accent); font-weight: 700;">${Icons.fire} ${l.score}</span>
+              <span style="font-size: 12px; color: var(--accent); font-weight: 700;">${Icons.fire} ${l.score}%</span>
               <span class="badge badge--${estadoColors[l.estado]}">${l.estado}</span>
               ${Icons.chevronRight}
             </div>
@@ -237,7 +237,7 @@ function leadsTab() {
 }
 
 function oportunidadesTab() {
-  const estadoColors = { 'PROSPECTO': 'prospecto', 'CALIFICACION': 'calificacion', 'PROPUESTA': 'propuesta', 'NEGOCIACION': 'negociacion', 'GANADA': 'ganada', 'PERDIDA': 'perdida' };
+  const oppEstadoColors = { 'PROSPECTO': 'prospecto', 'PROPUESTA': 'propuesta', 'NEGOCIACION': 'negociacion', 'GANADA': 'ganada', 'PERDIDA': 'perdida' };
   return `
     <div class="card" style="padding: 0;">
       <div class="card__header">
@@ -252,8 +252,11 @@ function oportunidadesTab() {
               <div style="font-size: 12px; color: var(--text-muted);">${o.empresa} · ${o.fecha}</div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-              <span style="font-size: 14px; font-weight: 700; color: var(--accent);">${o.valor}</span>
-              <span class="badge badge--${estadoColors[o.estado]}">${o.estado}</span>
+              <div style="text-align: right;">
+                <div style="font-size: 14px; font-weight: 700; color: var(--accent);">${o.valor}</div>
+                <div style="font-size: 11px; color: var(--text-muted);">${o.prob}% prob</div>
+              </div>
+              <span class="badge badge--${oppEstadoColors[o.estado]}">${o.estado}</span>
               ${Icons.chevronRight}
             </div>
           </a>

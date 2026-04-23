@@ -59,30 +59,30 @@
 <script src="../shared/components.js"></script>
 <script>
 function content() {
-  const statCardsHTML = `
+const statCardsHTML = `
     <div class="stat-card">
       <div class="stat-card__icon" style="background: #FDECEA; color: var(--error);">${Icons.warning}</div>
       <div class="stat-card__label">Alertas activas</div>
-      <div class="stat-card__value" style="color: var(--error);">5</div>
-      <div class="stat-card__subtext">2 críticas · 3 advertencias</div>
+      <div class="stat-card__value" style="color: var(--error);">4</div>
+      <div class="stat-card__subtext">2 críticas · 2 advertencias</div>
     </div>
     <div class="stat-card">
       <div class="stat-card__icon stat-card__icon--accent">${Icons.clock}</div>
       <div class="stat-card__label">Leads estancados</div>
-      <div class="stat-card__value stat-card__value--accent">8</div>
+      <div class="stat-card__value stat-card__value--accent">3</div>
       <div class="stat-card__subtext">+3 días sin actividad</div>
     </div>
     <div class="stat-card">
       <div class="stat-card__icon">${Icons.users}</div>
       <div class="stat-card__label">Ejecutivos monitoreados</div>
-      <div class="stat-card__value">6</div>
-      <div class="stat-card__subtext">4 con cumplimiento ≥ 80%</div>
+      <div class="stat-card__value">5</div>
+      <div class="stat-card__subtext">3 con cumplimiento ≥ 80%</div>
     </div>
     <div class="stat-card">
       <div class="stat-card__icon stat-card__icon--success">${Icons.clipboardCheck}</div>
       <div class="stat-card__label">Cumplimiento promedio</div>
-      <div class="stat-card__value stat-card__value--success">78%</div>
-      <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+4%</span> vs mes anterior</div>
+      <div class="stat-card__value stat-card__value--success">76%</div>
+      <div class="stat-card__subtext"><span class="stat-card__trend stat-card__trend--up">+5%</span> vs mes anterior</div>
     </div>
   `;
 
@@ -91,7 +91,7 @@ function content() {
       ${Icons.warning}
       <div style="flex:1;">
         <div style="font-weight:600; color: var(--error); font-size: 13.5px;">Lead estancado 5 días</div>
-        <div style="font-size: 12px; color: #8a2a1d;">"Proyecto acueducto rural EMPAS" — asignado a Juan Pérez · Estado: Contactado</div>
+        <div style="font-size: 12px; color: #8a2a1d;">"Cotización accesorio PE para Tocancipa" — UNION TEMPORAL BALSA 3 · Asesor: Alvaro</div>
       </div>
       <a href="05-estancados.html" style="text-decoration: none;"><button class="btn btn--sm" style="background: var(--error); color: #fff;">Revisar</button></a>
     </div>
@@ -100,7 +100,7 @@ function content() {
       ${Icons.warning}
       <div style="flex:1;">
         <div style="font-weight:600; color: var(--error); font-size: 13.5px;">Oportunidad sin actividad 7 días</div>
-        <div style="font-size: 12px; color: #8a2a1d;">"Suministro anual Constructora Andina" — María G. · Estado: Negociación</div>
+        <div style="font-size: 12px; color: #8a2a1d;">"Cotización No 1393 tubería 110mm RDE 17" — CIVILE HIDRAULICOS · Paola · Negociación</div>
       </div>
       <button class="btn btn--sm" style="background: var(--error); color: #fff;">Revisar</button>
     </div>
@@ -108,27 +108,26 @@ function content() {
       ${Icons.clock}
       <div style="flex:1;">
         <div style="font-weight:600; color: #B87E15; font-size: 13.5px;">3 leads sin contactar hace 2 días</div>
-        <div style="font-size: 12px; color: #8a5c0e;">Ejecutivos: Carlos R. (2), Ana M. (1)</div>
+        <div style="font-size: 12px; color: #8a5c0e;">Ejecutivos: Gonzalo (2), Alexis (1)</div>
       </div>
       <button class="btn btn--sm btn--secondary">Ver detalle</button>
     </div>
     <div class="alert-row is-info">
       ${Icons.bell}
       <div style="flex:1;">
-        <div style="font-weight:600; color: var(--primary); font-size: 13.5px;">12 oportunidades próximas a cerrar</div>
-        <div style="font-size: 12px; color: #1B2C6B;">Fecha estimada de cierre en los próximos 7 días</div>
+        <div style="font-weight:600; color: var(--primary); font-size: 13.5px;">4 oportunidades próximas a cerrar</div>
+        <div style="font-size: 12px; color: #1B2C6B;">Fecha estimada de cierre en los próximos 14 días</div>
       </div>
       <button class="btn btn--sm btn--ghost">Ver lista</button>
     </div>
   `;
 
   const ejecutivos = [
-    { nombre: 'Juan Pérez', depto: 'Santander', leads: 8, opps: 12, act: 18, compliance: 85, cls: '' },
-    { nombre: 'María García', depto: 'Antioquia', leads: 5, opps: 9, act: 22, compliance: 92, cls: '' },
-    { nombre: 'Carlos Rodríguez', depto: 'Cundinamarca', leads: 10, opps: 6, act: 11, compliance: 62, cls: 'warn' },
-    { nombre: 'Ana Martínez', depto: 'Valle del Cauca', leads: 7, opps: 11, act: 16, compliance: 78, cls: '' },
-    { nombre: 'Pedro Salazar', depto: 'Atlántico', leads: 4, opps: 5, act: 8, compliance: 48, cls: 'low' },
-    { nombre: 'Laura Jiménez', depto: 'Santander', leads: 6, opps: 8, act: 14, compliance: 80, cls: '' },
+    { nombre: 'Paola', depto: 'Costa Atlántica', leads: 9, opps: 6, act: 18, compliance: 88, cls: '' },
+    { nombre: 'Diana', depto: 'Eje Cafetero / Antioquia', leads: 7, opps: 8, act: 22, compliance: 92, cls: '' },
+    { nombre: 'Alexis', depto: 'Eje Cafetero', leads: 4, opps: 4, act: 11, compliance: 65, cls: 'warn' },
+    { nombre: 'Gonzalo', depto: 'Santander', leads: 3, opps: 3, act: 8, compliance: 55, cls: 'low' },
+    { nombre: 'Alvaro', depto: 'Cundinamarca', leads: 5, opps: 5, act: 12, compliance: 78, cls: '' },
   ];
 
   const ejecutivosHTML = ejecutivos.map(e => `
@@ -226,7 +225,7 @@ function content() {
               { label: 'Leads Nuevos', count: 40, pct: 100, badge: 'prospecto' },
               { label: 'Contactados', count: 28, pct: 70, badge: 'propuesta' },
               { label: 'Interesados', count: 18, pct: 45, badge: 'calificacion' },
-              { label: 'Calificados', count: 12, pct: 30, badge: 'ganada' },
+              { label: 'Trasladados a distribuidor', count: 12, pct: 30, badge: 'ganada' },
               { label: 'Oportunidades activas', count: 51, pct: 85, badge: 'info' },
               { label: 'Ganadas mes', count: 9, pct: 15, badge: 'ganada' },
             ].map(f => `

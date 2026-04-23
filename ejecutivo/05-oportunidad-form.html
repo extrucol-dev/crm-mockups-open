@@ -107,7 +107,7 @@ function content() {
             </select>
           </div>
           <div class="form-field">
-            <label class="form-field__label">Sector <span class="req">*</span></label>
+            <label class="form-field__label">Sector de la oportunidad <span class="req">*</span></label>
             <select class="select">
               <option>Agua potable</option>
               <option>Gas natural</option>
@@ -164,16 +164,15 @@ function content() {
             <input class="input" type="date" value="2026-04-25" />
           </div>
           <div class="form-field">
-            <label class="form-field__label">Probabilidad de cierre</label>
-            <input class="input" value="65" />
-            <span class="form-field__hint">Porcentaje estimado (0-100)</span>
+            <label class="form-field__label">Probabilidad de cierre (%) <span class="req">*</span></label>
+            <input class="input" type="number" min="0" max="100" value="65" placeholder="0-100" />
+            <span class="form-field__hint">Porcentaje estimado de cierre (0-100)</span>
           </div>
           <div class="form-field">
             <label class="form-field__label">Estado inicial</label>
             <select class="select">
               <option>Prospección</option>
-              <option selected>Calificación</option>
-              <option>Propuesta</option>
+              <option selected>Propuesta</option>
               <option>Negociación</option>
             </select>
           </div>

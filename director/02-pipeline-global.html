@@ -13,11 +13,11 @@
 <script>
 function content() {
   const pipelineData = [
-    { estado: 'Prospección', count: 18, valor: '$ 580 M', pct: 12, color: '#3B82F6' },
-    { estado: 'Calificación', count: 14, valor: '$ 820 M', pct: 17, color: '#F97316' },
-    { estado: 'Propuesta', count: 21, valor: '$ 1.580 M', pct: 33, color: '#A855F7' },
-    { estado: 'Negociación', count: 12, valor: '$ 1.240 M', pct: 26, color: '#EAB308' },
-    { estado: 'Ganadas (mes)', count: 8, valor: '$ 600 M', pct: 12, color: '#22C55E' },
+    { estado: 'Prospección', count: 8, valor: '$ 197 M', pct: 16, color: '#3B82F6' },
+    { estado: 'Calificación', count: 6, valor: '$ 63 M', pct: 5, color: '#F97316' },
+    { estado: 'Propuesta', count: 5, valor: '$ 209 M', pct: 17, color: '#A855F7' },
+    { estado: 'Negociación', count: 4, valor: '$ 249 M', pct: 20, color: '#EAB308' },
+    { estado: 'Ganadas (mes)', count: 1, valor: '$ 26 M', pct: 2, color: '#22C55E' },
   ];
 
   const rows = pipelineData.map(p => `
@@ -51,20 +51,20 @@ function content() {
       <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
         <div class="stat-card">
           <div class="stat-card__label">Total oportunidades activas</div>
-          <div class="stat-card__value">65</div>
+          <div class="stat-card__value">23</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__label">Pipeline ponderado</div>
-          <div class="stat-card__value stat-card__value--accent">$ 2.940 M</div>
+          <div class="stat-card__value stat-card__value--accent">$ 718 M</div>
           <div class="stat-card__subtext">Según probabilidad cierre</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__label">Ticket promedio</div>
-          <div class="stat-card__value">$ 74 M</div>
+          <div class="stat-card__value">$ 53 M</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__label">Ciclo promedio venta</div>
-          <div class="stat-card__value">42 <span style="font-size: 14px;">días</span></div>
+          <div class="stat-card__value">38 <span style="font-size: 14px;">días</span></div>
         </div>
       </div>
 
@@ -82,7 +82,7 @@ function content() {
         <div class="card__header">
           <div>
             <div class="card__title">Oportunidades activas</div>
-            <div class="card__subtitle">65 oportunidades · vista consolidada</div>
+            <div class="card__subtitle">23 oportunidades · vista consolidada</div>
           </div>
           <div style="display: flex; gap: 6px;">
             <button class="btn btn--secondary btn--sm" onclick="toggleFiltros()">${Icons.filter} Filtros</button>
@@ -104,16 +104,15 @@ function content() {
               <label class="form-field__label" style="font-size: 11px;">Ejecutivo</label>
               <select class="select" style="max-width: 160px;">
                 <option>Todos</option>
-                <option>María García</option>
-                <option>Juan Pérez</option>
-                <option>Ana Martínez</option>
-                <option>Laura Jiménez</option>
-                <option>Carlos Rodríguez</option>
-                <option>Pedro Salazar</option>
+                <option>Paola</option>
+                <option>Diana</option>
+                <option>Alexis</option>
+                <option>Gonzalo</option>
+                <option>Alvaro</option>
               </select>
             </div>
             <div class="form-field" style="min-width: 160px; margin-bottom: 0;">
-              <label class="form-field__label" style="font-size: 11px;">Sector</label>
+              <label class="form-field__label" style="font-size: 11px;">Sector opp.</label>
               <select class="select" style="max-width: 160px;">
                 <option>Todos los sectores</option>
                 <option>Agua Potable</option>
@@ -152,16 +151,14 @@ function content() {
             </thead>
             <tbody>
               ${[
-                { op: 'Licitación acueducto Bucaramanga', emp: 'EMPAS S.A.', exec: 'MG', execName: 'María G.', color: 3, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 560 M', prob: '75%', cierre: '30 Abr' },
-                { op: 'Suministro anual tubería', emp: 'Constructora Andina', exec: 'JP', execName: 'Juan P.', color: 1, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 420 M', prob: '65%', cierre: '15 May' },
-                { op: 'Proyecto acueducto rural', emp: 'EMPAS S.A.', exec: 'JP', execName: 'Juan P.', color: 1, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 485 M', prob: '60%', cierre: '25 Abr' },
-                { op: 'Ampliación red matriz', emp: 'Acueducto Metrop.', exec: 'AM', execName: 'Ana M.', color: 4, estado: 'calificacion', estadoL: 'Calificación', valor: '$ 340 M', prob: '40%', cierre: '10 Jun' },
-                { op: 'Línea conducción 8km', emp: 'Distriaguas Caribe', exec: 'LJ', execName: 'Laura J.', color: 2, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 380 M', prob: '70%', cierre: '05 May' },
-                { op: 'Sistema presurizado', emp: 'Ingenio del Cauca', exec: 'MG', execName: 'María G.', color: 3, estado: 'calificacion', estadoL: 'Calificación', valor: '$ 180 M', prob: '50%', cierre: '20 May' },
-                { op: 'Riego goteo 30 Ha', emp: 'Palmares del Sur', exec: 'AM', execName: 'Ana M.', color: 4, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 88 M', prob: '55%', cierre: '28 Abr' },
-                { op: 'Red gas sector norte', emp: 'Hidrogas', exec: 'LJ', execName: 'Laura J.', color: 2, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 280 M', prob: '75%', cierre: '08 May' },
-                { op: 'Gasoducto Santa Marta', emp: 'Gas Natural Fenosa', exec: 'MG', execName: 'María G.', color: 3, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 320 M', prob: '60%', cierre: '20 May' },
-                { op: 'Tubería industrial', emp: 'Ecopetrol', exec: 'CR', execName: 'Carlos R.', color: 5, estado: 'calificacion', estadoL: 'Calificación', valor: '$ 215 M', prob: '50%', cierre: '30 Jun' },
+                { op: 'Cotización No 1393 tubería 110mm RDE 17', emp: 'CIVILE HIDRAULICOS', exec: 'PA', execName: 'Paola', color: 6, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 111 M', prob: '60%', cierre: '30 Sep' },
+                { op: 'Cotización proyecto Imola Park No 1248', emp: 'Promotora Imola Park S.A.S', exec: 'PA', execName: 'Paola', color: 1, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 92 M', prob: '60%', cierre: '15 Oct' },
+                { op: 'Cotización proyecto RCI Seren del Mar', emp: 'FIRELINE', exec: 'PA', execName: 'Paola', color: 2, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 44 M', prob: '80%', cierre: '30 Sep' },
+                { op: 'Oferta proceso Apartadó (licitación)', emp: 'ADOS INGENIERIA', exec: 'DI', execName: 'Diana', color: 4, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 98 M', prob: '60%', cierre: '15 Nov' },
+                { op: 'Tubería 315mm PN10 proyecto VIS Manizales', emp: 'CMM', exec: 'DI', execName: 'Diana', color: 3, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 10 M', prob: '40%', cierre: '30 Nov' },
+                { op: 'Oferta accesorio PE Tocancipa', emp: 'UNION TEMPORAL BALSA 3', exec: 'AL', execName: 'Alvaro', color: 2, estado: 'prospecto', estadoL: 'Prospección', valor: '$ 187 M', prob: '40%', cierre: '15 Dic' },
+                { op: 'Cotización Sabanalarga No 584', emp: 'COL PROYECTOS', exec: 'PA', execName: 'Paola', color: 5, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 48 M', prob: '60%', cierre: '30 Oct' },
+                { op: 'Oferta alcantarillado Quibdó', emp: 'RB DE COLOMBIA SA', exec: 'DI', execName: 'Diana', color: 1, estado: 'ganada', estadoL: 'Ganada', valor: '$ 26 M', prob: '100%', cierre: '27 Feb' },
               ].map(r => `
                 <tr>
                   <td>

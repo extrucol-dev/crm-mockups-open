@@ -6,6 +6,33 @@
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/components.css">
 <style>
+    .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 60px 24px; z-index: 10000;
+  }
+  .modal-content {
+    background: var(--surface); border-radius: 12px;
+    max-width: 580px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    gap: 12px;
+  }
+  .modal-header > :first-child { flex-shrink: 0; }
+  .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
+  .modal-header__icon--success { background: var(--success-bg); color: var(--success); }
+  .modal-header__icon--error { background: var(--error-bg); color: var(--error); }
+  .modal-header__icon--primary { background: var(--primary-bg); color: var(--primary); }
+  .modal-header__icon--accent { background: var(--accent-bg); color: var(--accent); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
+  }
   .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
   .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 24px; }
   .canvas-section-title { font: 700 15px 'Roboto'; color: #24388C; margin: 40px 0 20px; padding: 8px 14px; background: #fff; border: 1px solid #E5E5E5; border-radius: 6px; display: inline-block; }
@@ -60,26 +87,17 @@ function editarClienteModal() {
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
-              <label class="form-field__label">Sector</label>
-              <select class="select">
-                <option selected>Agua Potable</option>
-                <option>Gas Natural</option>
-                <option>Agro / Riego</option>
-              </select>
-            </div>
-            <div class="form-field">
               <label class="form-field__label">Estado</label>
               <select class="select">
                 <option selected>Activo</option>
                 <option>Inactivo</option>
               </select>
             </div>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
               <label class="form-field__label">Departamento</label>
               <input class="input" value="Santander" />
             </div>
+          </div>
             <div class="form-field">
               <label class="form-field__label">Municipio</label>
               <input class="input" value="Piedecuesta" />
@@ -145,16 +163,6 @@ function nuevoClienteModal() {
             <input class="input" placeholder="Nombre comercial (opcional)" />
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-            <div class="form-field">
-              <label class="form-field__label">Sector <span class="req">*</span></label>
-              <select class="select">
-                <option>Agua Potable</option>
-                <option>Gas Natural</option>
-                <option>Agro / Riego</option>
-                <option>Construcción</option>
-                <option>Industrial</option>
-              </select>
-            </div>
             <div class="form-field">
               <label class="form-field__label">País</label>
               <select class="select">
@@ -268,12 +276,12 @@ function contactOptionsModal() {
 }
 
 const clientes = [
-  { name: 'EMPAS S.A.', company: 'Empresa Pública de Alcantarillado', sector: 'Agua Potable', badge: 'info', city: 'Piedecuesta', phone: '+57 607 655 8842', email: 'contacto@empas.gov.co', registered: '12 Ene 2024', avatar: 'ES', color: 1, recurrente: true },
-  { name: 'Tecnoagua SAS', company: 'Tecnologías del Agua SAS', sector: 'Agua Potable', badge: 'info', city: 'Bucaramanga', phone: '+57 310 555 2201', email: 'ventas@tecnoagua.co', registered: '05 Feb 2024', avatar: 'TA', color: 2, recurrente: false },
-  { name: 'Aguas del Valle', company: 'Aguas del Valle SA', sector: 'Agua Potable', badge: 'info', city: 'Cali', phone: '+57 602 422 7788', email: 'compras@aguasdelvalle.co', registered: '20 Feb 2024', avatar: 'AV', color: 3, recurrente: true },
-  { name: 'Ingenio del Cauca', company: 'Ingenio del Cauca SA', sector: 'Agro/Riego', badge: 'accent', city: 'Candelaria', phone: '+57 602 841 0023', email: 'logistica@ingeniocauca.co', registered: '10 Mar 2024', avatar: 'IC', color: 4, recurrente: false },
-  { name: 'Hidrogas del Oriente', company: 'Hidrogas SA ESP', sector: 'Gas', badge: 'ganada', city: 'Bucaramanga', phone: '+57 607 612 3345', email: 'proyectos@hidrogas.co', registered: '18 Mar 2024', avatar: 'HO', color: 5, recurrente: true },
-  { name: 'Constructora Andina', company: 'Constructora Andina Ltda', sector: 'Construcción', badge: 'propuesta', city: 'Bogotá', phone: '+57 601 623 4456', email: 'info@canda.co', registered: '22 Mar 2024', avatar: 'CA', color: 6, recurrente: false },
+{ name: 'EMPAS S.A.', company: 'Empresa Pública de Alcantarillado', badge: 'info', city: 'Piedecuesta', phone: '+57 607 655 8842', email: 'contacto@empas.gov.co', registered: '12 Ene 2024', avatar: 'ES', color: 1, recurrente: true },
+    { name: 'Tecnoagua SAS', company: 'Tecnologías del Agua SAS', badge: 'info', city: 'Bucaramanga', phone: '+57 310 555 2201', email: 'ventas@tecnoagua.co', registered: '05 Feb 2024', avatar: 'TA', color: 2, recurrente: false },
+    { name: 'Aguas del Valle', company: 'Aguas del Valle SA', badge: 'info', city: 'Cali', phone: '+57 602 422 7788', email: 'compras@aguasdelvalle.co', registered: '20 Feb 2024', avatar: 'AV', color: 3, recurrente: true },
+    { name: 'Ingenio del Cauca', company: 'Ingenio del Cauca SA', badge: 'accent', city: 'Candelaria', phone: '+57 602 841 0023', email: 'logistica@ingeniocauca.co', registered: '10 Mar 2024', avatar: 'IC', color: 4, recurrente: false },
+    { name: 'Hidrogas del Oriente', company: 'Hidrogas SA ESP', badge: 'ganada', city: 'Bucaramanga', phone: '+57 607 612 3345', email: 'proyectos@hidrogas.co', registered: '18 Mar 2024', avatar: 'HO', color: 5, recurrente: true },
+    { name: 'Constructora Andina', company: 'Constructora Andina Ltda', badge: 'propuesta', city: 'Bogotá', phone: '+57 601 623 4456', email: 'info@canda.co', registered: '22 Mar 2024', avatar: 'CA', color: 6, recurrente: false },
 ];
 
 function clienteCard(c) {
@@ -285,7 +293,7 @@ function clienteCard(c) {
           <div class="cliente-card__name">${c.name}</div>
           <div class="cliente-card__company">${c.company}</div>
         </div>
-        <span class="badge badge--${c.badge}">${c.sector}</span>
+        <span class="badge badge--${c.badge}">${c.recurrente ? 'Recurrente' : 'Nuevo'}</span>
       </div>
       <div class="cliente-card__info">
         <div class="cliente-card__info-row">${Icons.mapPin}<span>${c.city}</span></div>
@@ -382,7 +390,6 @@ function detailContent() {
         <div class="avatar avatar--lg avatar--color-1" style="width: 64px; height: 64px; font-size: 20px;">ES</div>
         <div style="flex: 1;">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
-            <span class="badge badge--info">Agua Potable</span>
             <span class="badge badge--ganada"><span class="dot"></span> Cliente activo</span>
             <span class="badge badge--accent">Recurrente</span>
           </div>
@@ -443,18 +450,37 @@ function detailContent() {
           </div>
           <button class="btn btn--ghost btn--sm" onclick="openModal(editarClienteModal())">${Icons.pencil} Editar</button>
         </div>
-        <div class="card__body">
-          <dl class="detail-info-list" style="grid-template-columns: 160px 1fr;">
-            <dt>Tipo de documento</dt><dd>NIT</dd>
-            <dt>Número documento</dt><dd>890.200.341-2</dd>
-            <dt>País</dt><dd>Colombia</dd>
-            <dt>Departamento</dt><dd>Santander</dd>
-            <dt>Municipio</dt><dd>Piedecuesta</dd>
-            <dt>Modalidad</dt><dd>Interior</dd>
-            <dt>Sector económico</dt><dd>Agua Potable y Saneamiento</dd>
-            <dt>Fecha de registro</dt><dd>12 Ene 2024</dd>
-            <dt>Estado</dt><dd><span class="badge badge--ganada"><span class="dot"></span> Activo</span></dd>
-          </dl>
+        <div class="card__body" style="padding: 20px 24px;">
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 32px;">
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Tipo de documento</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">NIT</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Número documento</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">890.200.341-2</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Fecha de registro</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">12 Ene 2024</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Estado</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--success);"><span class="badge badge--ganada"><span class="dot"></span> Activo</span></div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Ubicación</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Piedecuesta, Santander</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Modalidad</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Interior</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">País</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Colombia</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

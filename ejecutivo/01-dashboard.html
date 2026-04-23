@@ -301,11 +301,11 @@ function dashboardContent() {
   `).join('');
 
   const actividades = [
-    { type: 'success', title: 'Llamada con Tecnoagua SAS', desc: 'Seguimiento a propuesta técnica de tubería PE100', date: 'Hace 2h', badge: 'completada' },
-    { type: 'success', title: 'Reunión virtual — Aguas del Valle', desc: 'Presentación inicial del portafolio de riego', date: 'Hoy, 9:30am', badge: 'completada' },
-    { type: 'blue', title: 'Visita programada — Ingenio del Cauca', desc: 'Cita para inspección técnica en planta', date: 'Mañana, 2:00pm', badge: 'agendada' },
-    { type: 'success', title: 'Email enviado — Constructora Andina', desc: 'Cotización revisada según última reunión', date: 'Ayer', badge: 'completada' },
-    { type: 'blue', title: 'Actividad programada — EAAB', desc: 'Seguimiento telefónico a licitação', date: 'Viernes', badge: 'agendada' },
+    { type: 'success', title: 'Email — FIRELINE Cartagena', desc: 'Envío información técnica Sello FM y fichas técnicas', date: 'Hace 2h', badge: 'completada' },
+    { type: 'success', title: 'Llamada seguimiento — CIVILE Hidráulicos', desc: 'Oferta en revisión por el cliente', date: 'Hoy, 9:30am', badge: 'completada' },
+    { type: 'blue', title: 'Email — COL PROYECTOS Sabanalarga', desc: 'Cotización No. 584 enviada con actualización de cantidades', date: 'Hoy, 10:30am', badge: 'completada' },
+    { type: 'success', title: 'Llamada — ADOS Ingeniería Apartadó', desc: 'Seguimiento proceso licitatorio municipio', date: 'Ayer', badge: 'completada' },
+    { type: 'blue', title: 'Email — GMOS Ing. La Ceja', desc: 'Lista de precios enviada para presupuesto', date: 'Viernes', badge: 'completada' },
   ];
 
   const actividadesHTML = actividades.map(a => `
@@ -328,9 +328,9 @@ function dashboardContent() {
   `).join('');
 
   const leadsCalientes = [
-    { name: 'Acueducto Metropolitano', company: 'ACUAMET SA', score: 92, interes: 'Tubería PE100' },
-    { name: 'Distriaguas del Caribe', company: 'DAC LTDA', score: 84, interes: 'Sistema de riego' },
-    { name: 'Hidrogas del Oriente', company: 'HIDROGAS SA', score: 78, interes: 'Accesorios PE' },
+    { name: 'Acueducto Metropolitano', company: 'ACUAMET SA', score: 100, interes: 'Tubería PE100' },
+    { name: 'Distriaguas del Caribe', company: 'DAC LTDA', score: 80, interes: 'Sistema de riego' },
+    { name: 'Hidrogas del Oriente', company: 'HIDROGAS SA', score: 80, interes: 'Accesorios PE' },
   ];
 
   const leadsHTML = leadsCalientes.map(l => `
@@ -342,7 +342,7 @@ function dashboardContent() {
       </div>
       <div style="display: flex; align-items: center; gap: 4px;">
         ${Icons.fire}
-        <span style="font-weight: 700; color: var(--accent); font-size: 13px;">${l.score}</span>
+        <span style="font-weight: 700; color: var(--accent); font-size: 13px;">${l.score}%</span>
       </div>
     </div>
   `).join('');

@@ -48,41 +48,36 @@ const oportunidades = {
   PROSPECTO: {
     color: '#3B82F6',
     items: [
-      { titulo: 'Licitación acueducto Bucaramanga', empresa: 'EMPAS S.A.', valor: '$ 120 M', fecha: '15 Mar', avatar: 'ES', color: 2 },
-      { titulo: 'Cotización tubería PE100', empresa: 'Distriaguas SAS', valor: '$ 45 M', fecha: '12 Mar', avatar: 'DS', color: 3 },
-      { titulo: 'Sistema riego cultivo', empresa: 'Agrícola El Prado', valor: '$ 78 M', fecha: '10 Mar', avatar: 'AP', color: 4 },
-      { titulo: 'Ampliación red gas', empresa: 'Hidrogas SA', valor: '$ 95 M', fecha: '08 Mar', avatar: 'HS', color: 1 },
+      { titulo: 'Cotización accesorio PE para Tocancipa', empresa: 'UNION TEMPORAL BALSA 3', sector: 'Agua Potable', valor: '$ 187 M', prob: 40, fecha: '17 Jun', avatar: 'UT', color: 2 },
+      { titulo: 'Tubería 315mm PN10 para proyecto VIS', empresa: 'CMM', sector: 'Agua Potable', valor: '$ 10 M', prob: 40, fecha: '15 Jun', avatar: 'CM', color: 4 },
     ]
   },
   CALIFICACION: {
     color: '#F97316',
     items: [
-      { titulo: 'Proyecto alcantarillado', empresa: 'EAAB', valor: '$ 340 M', fecha: '18 Mar', avatar: 'EA', color: 5 },
-      { titulo: 'Sistema presurizado', empresa: 'Ingenio del Cauca', valor: '$ 180 M', fecha: '16 Mar', avatar: 'IC', color: 6 },
-      { titulo: 'Accesorios PE industrial', empresa: 'Tecnoagua SAS', valor: '$ 52 M', fecha: '14 Mar', avatar: 'TS', color: 2 },
+      { titulo: 'Oferta equipo termofusión 160mm La Dorada', empresa: 'MONTAJES JM', sector: 'Agua Potable', valor: '$ 15 M', prob: 60, fecha: '20 Jun', avatar: 'MJ', color: 3 },
+      { titulo: 'Cotización proyecto Sabanalarga', empresa: 'COL PROYECTOS', sector: 'Agua Potable', valor: '$ 48 M', prob: 60, fecha: '18 Jun', avatar: 'CP', color: 5 },
     ]
   },
   PROPUESTA: {
     color: '#A855F7',
     items: [
-      { titulo: 'Ampliación planta trat.', empresa: 'Aguas del Valle', valor: '$ 215 M', fecha: '20 Mar', avatar: 'AV', color: 3 },
-      { titulo: 'Reposición red matriz', empresa: 'Acueducto Metrop.', valor: '$ 420 M', fecha: '19 Mar', avatar: 'AM', color: 1 },
-      { titulo: 'Riego por goteo 30 Ha', empresa: 'Palmares del Sur', valor: '$ 88 M', fecha: '17 Mar', avatar: 'PS', color: 4 },
+      { titulo: 'Cotización No 1393 tubería 110mm RDE 17', empresa: 'CIVILE HIDRAULICOS', sector: 'Agro/Riego', valor: '$ 111 M', prob: 60, fecha: '25 Ago', avatar: 'CH', color: 6 },
+      { titulo: 'Oferta proceso licitatorio Apartadó', empresa: 'ADOS INGENIERIA', sector: 'Agua Potable', valor: '$ 98 M', prob: 60, fecha: '21 Abr', avatar: 'AD', color: 1 },
     ]
   },
   NEGOCIACION: {
     color: '#EAB308',
     items: [
-      { titulo: 'Suministro anual tubería', empresa: 'Constructora Andina', valor: '$ 560 M', fecha: '22 Mar', avatar: 'CA', color: 6 },
-      { titulo: 'Línea conducción 8km', empresa: 'Distriaguas Caribe', valor: '$ 380 M', fecha: '21 Mar', avatar: 'DC', color: 5 },
+      { titulo: 'Cotización No 1248 proyecto Imola Park', empresa: 'Promotora Imola Park S.A.S', sector: 'Construcción', valor: '$ 92 M', prob: 60, fecha: '19 Ago', avatar: 'PI', color: 4 },
+      { titulo: 'Cotización proyecto RCI Seren del Mar', empresa: 'FIRELINE', sector: 'Agua Potable', valor: '$ 44 M', prob: 80, fecha: '26 Jun', avatar: 'FL', color: 2 },
     ]
   },
   GANADA: { color: '#22C55E', items: [
-    { titulo: 'Proyecto Acueducto Norte', empresa: 'Tecnoagua SAS', valor: '$ 410 M', fecha: '05 Mar', avatar: 'TS', color: 2 },
-    { titulo: 'Riego Palmales Fase 2', empresa: 'Palmares Sur', valor: '$ 125 M', fecha: '28 Feb', avatar: 'PS', color: 3 },
+    { titulo: 'Oferta alcantarillado Quibdó', empresa: 'RB DE COLOMBIA SA', sector: 'Agua Potable', valor: '$ 26 M', prob: 100, fecha: '27 Feb', avatar: 'RB', color: 3 },
   ]},
   PERDIDA: { color: '#EF4444', items: [
-    { titulo: 'Licitación menor', empresa: 'Municipio de X', valor: '$ 65 M', fecha: '01 Mar', avatar: 'MX', color: 5 },
+    { titulo: 'Tubería HDPE San Marcos Sucre', empresa: 'EMSERPRE', sector: 'Agua Potable', valor: '$ 28 M', prob: 100, fecha: '06 May', avatar: 'EM', color: 5 },
   ]}
 };
 
@@ -100,10 +95,16 @@ function renderKanbanCard(op, estadoKey) {
   return `
     <a href="04-oportunidad-detalle.html" style="text-decoration: none; color: inherit;">
       <div class="kanban-card">
-        <span class="badge badge--${s.badgeClass}"><span class="dot"></span> ${s.label}</span>
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
+          <span class="badge badge--${s.badgeClass}"><span class="dot"></span> ${s.label}</span>
+          <span class="badge badge--info" style="font-size: 10px;">${op.sector}</span>
+        </div>
         <div class="kanban-card__title">${op.titulo}</div>
         <div class="kanban-card__company">${op.empresa}</div>
-        <div class="kanban-card__value">${op.valor}</div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="kanban-card__value">${op.valor}</div>
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">${op.prob}%</span>
+        </div>
         <div class="kanban-card__footer">
           <span class="kanban-card__date">${Icons.calendar} ${op.fecha}</span>
           <div class="avatar avatar--xs avatar--color-${op.color}">${op.avatar}</div>
@@ -140,7 +141,7 @@ function kanbanContent() {
           <div class="page-head__title">Mis Oportunidades</div>
           <div class="page-head__subtitle">
             ${Object.values(oportunidades).reduce((a,b)=>a+b.items.length,0)} oportunidades
-            · $ 2.920 M en pipeline
+            · $ 531 M en pipeline
           </div>
         </div>
         <div class="page-head__actions">
@@ -161,6 +162,8 @@ function kanbanContent() {
           <option>Agua potable</option>
           <option>Gas</option>
           <option>Agro/Riego</option>
+          <option>Construcción</option>
+          <option>Licitación</option>
         </select>
         <select class="select" style="max-width: 180px;">
           <option>Todos los tipos</option>
@@ -184,8 +187,11 @@ function kanbanContent() {
           <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Ejecutivo</div>
           <select class="select">
             <option>Todos</option>
-            <option>Juan Pérez</option>
-            <option>Ana Gómez</option>
+            <option>Paola</option>
+            <option>Diana</option>
+            <option>Alexis</option>
+            <option>Gonzalo</option>
+            <option>Alvaro</option>
           </select>
         </div>
         <div style="flex: 1; min-width: 200px;">

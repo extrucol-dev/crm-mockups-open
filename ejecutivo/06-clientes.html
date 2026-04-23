@@ -81,17 +81,12 @@ function nuevoClienteModal() {
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
-              <label class="form-field__label">Sector <span class="req">*</span></label>
-              <select class="select">
-                <option>Agua Potable</option>
-                <option>Gas Natural</option>
-                <option>Agro / Riego</option>
-                <option>Construcción</option>
-              </select>
-            </div>
-            <div class="form-field">
               <label class="form-field__label">País</label>
               <select class="select"><option selected>Colombia</option><option>Otro</option></select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Estado</label>
+              <select class="select"><option selected>Todos</option><option>Activo</option><option>Inactivo</option></select>
             </div>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
@@ -192,12 +187,12 @@ function agregarContactoModal() {
 }
 
 const clientes = [
-  { name: 'EMPAS S.A.', company: 'Empresa Pública de Alcantarillado', sector: 'Agua Potable', badge: 'info', city: 'Piedecuesta', phone: '+57 607 655 8842', email: 'contacto@empas.gov.co', registered: '12 Ene 2024', avatar: 'ES', color: 1, recurrente: true },
-  { name: 'Tecnoagua SAS', company: 'Tecnologías del Agua SAS', sector: 'Agua Potable', badge: 'info', city: 'Bucaramanga', phone: '+57 310 555 2201', email: 'ventas@tecnoagua.co', registered: '05 Feb 2024', avatar: 'TA', color: 2, recurrente: false },
-  { name: 'Aguas del Valle', company: 'Aguas del Valle SA', sector: 'Agua Potable', badge: 'info', city: 'Cali', phone: '+57 602 422 7788', email: 'compras@aguasdelvalle.co', registered: '20 Feb 2024', avatar: 'AV', color: 3, recurrente: true },
-  { name: 'Ingenio del Cauca', company: 'Ingenio del Cauca SA', sector: 'Agro/Riego', badge: 'accent', city: 'Candelaria', phone: '+57 602 841 0023', email: 'logistica@ingeniocauca.co', registered: '10 Mar 2024', avatar: 'IC', color: 4, recurrente: false },
-  { name: 'Hidrogas del Oriente', company: 'Hidrogas SA ESP', sector: 'Gas', badge: 'ganada', city: 'Bucaramanga', phone: '+57 607 612 3345', email: 'proyectos@hidrogas.co', registered: '18 Mar 2024', avatar: 'HO', color: 5, recurrente: true },
-  { name: 'Constructora Andina', company: 'Constructora Andina Ltda', sector: 'Construcción', badge: 'propuesta', city: 'Bogotá', phone: '+57 601 623 4456', email: 'info@canda.co', registered: '22 Mar 2024', avatar: 'CA', color: 6, recurrente: false },
+{ name: 'RB DE COLOMBIA SA', company: 'RB DE COLOMBIA SA ESP', badge: 'ganada', city: 'Quibdó', phone: '+57 310 758 7157', email: 'notificaciones@rbdecolombia.com', registered: '27 Feb 2025', avatar: 'RB', color: 1, recurrente: true },
+    { name: 'INGEOMEGA', company: 'Ingeomega SAS', badge: 'info', city: 'Medellín', phone: '+57 318 394 1635', email: 'mceballos@ingeomegasas.com', registered: '15 May 2025', avatar: 'IG', color: 2, recurrente: false },
+    { name: 'CIVILE HIDRAULICOS', company: 'Civile Hidráulicos SAS', badge: 'accent', city: 'Magangué', phone: '+57 318 266 8393', email: 'civileshidraulicosavp@gmail.com', registered: '25 Ago 2025', avatar: 'CH', color: 3, recurrente: false },
+    { name: 'FIRELINE', company: 'Fireline SAS', badge: 'info', city: 'Cartagena', phone: '+57 317 745 9833', email: 'ventas@fireline.com.co', registered: '26 Jun 2025', avatar: 'FL', color: 4, recurrente: false },
+    { name: 'ADOS INGENIERIA', company: 'ADOS Ingeniería SAS', badge: 'info', city: 'Apartadó', phone: '+57 301 703 1093', email: 'adospresupuestos@gmail.com', registered: '21 Abr 2025', avatar: 'AD', color: 5, recurrente: false },
+    { name: 'Promotora Imola Park S.A.S', company: 'Promotora Imola Park S.A.S', badge: 'propuesta', city: 'Cartagena', phone: '+57 310 569 5671', email: 'Comprasimola@pradoverde.co', registered: '19 Ago 2025', avatar: 'PI', color: 6, recurrente: false },
 ];
 
 function clienteCard(c) {
@@ -210,7 +205,7 @@ function clienteCard(c) {
             <div class="cliente-card__name">${c.name}</div>
             <div class="cliente-card__company">${c.company}</div>
           </div>
-          <span class="badge badge--${c.badge}">${c.sector}</span>
+          <span class="badge badge--${c.badge}">${c.recurrente ? 'Recurrente' : 'Nuevo'}</span>
         </div>
         <div class="cliente-card__info">
           <div class="cliente-card__info-row">${Icons.mapPin}<span>${c.city}</span></div>
@@ -235,7 +230,7 @@ function gridContent() {
       <div class="page-head">
         <div class="page-head__title-group">
           <div class="page-head__title">Mis Clientes</div>
-          <div class="page-head__subtitle">${clientes.length} empresas en tu cartera · 3 clientes recurrentes</div>
+          <div class="page-head__subtitle">${clientes.length} empresas en tu cartera · 1 cliente recurrente</div>
         </div>
         <div class="page-head__actions">
           <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
@@ -250,16 +245,18 @@ function gridContent() {
           <input class="input input--with-icon" placeholder="Buscar empresa, NIT, contacto...">
         </div>
         <select class="select" style="max-width: 180px;">
-          <option>Todos los sectores</option>
+          <option>Todos</option>
           <option>Agua Potable</option>
           <option>Gas</option>
           <option>Agro/Riego</option>
         </select>
         <select class="select" style="max-width: 180px;">
           <option>Todas las ciudades</option>
-          <option>Bucaramanga</option>
-          <option>Cali</option>
-          <option>Bogotá</option>
+          <option>Cartagena</option>
+          <option>Medellín</option>
+          <option>Quibdó</option>
+          <option>Apartadó</option>
+          <option>Magangué</option>
         </select>
         <button class="btn btn--secondary btn--sm" style="margin-left:auto;">${Icons.filter} Más filtros</button>
       </div>

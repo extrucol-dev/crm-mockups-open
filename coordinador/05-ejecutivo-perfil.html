@@ -71,14 +71,14 @@ const ejecutivoData = {
     { label: 'Valor cerrado (M)', actual: 425, meta: 500, pct: 85, color: 'var(--accent)' },
   ],
   leads: [
-    { titulo: 'Suministro anual de tubería', empresa: 'Constructora Bolívar', origen: 'Página Web', score: 86, estado: 'INTERESADO' },
-    { titulo: 'Proyecto acueducto municipal', empresa: 'Alcaldía de Piedecuesta', origen: 'WhatsApp', score: 78, estado: 'CONTACTADO' },
-    { titulo: 'Consulta portafolio riego', empresa: 'Agroindustria Llanera', origen: 'Página Web', score: 65, estado: 'NUEVO' },
+    { titulo: 'Suministro anual de tubería', empresa: 'Constructora Bolívar', origen: 'Página Web', score: 80, estado: 'INTERESADO' },
+    { titulo: 'Proyecto acueducto municipal', empresa: 'Alcaldía de Piedecuesta', origen: 'WhatsApp', score: 80, estado: 'CONTACTADO' },
+    { titulo: 'Consulta portafolio riego', empresa: 'Agroindustria Llanera', origen: 'Página Web', score: 60, estado: 'NUEVO' },
   ],
   oportunidades: [
-    { titulo: 'Licitación acueducto Bucaramanga', empresa: 'EMPAS S.A.', valor: '$ 120 M', estado: 'PROSPECTO', fecha: '15 Mar' },
-    { titulo: 'Cotización tubería PE100', empresa: 'Distriaguas SAS', valor: '$ 45 M', estado: 'CALIFICACION', fecha: '12 Mar' },
-    { titulo: 'Sistema riego cultivo', empresa: 'Agrícola El Prado', valor: '$ 78 M', estado: 'PROPUESTA', fecha: '10 Mar' },
+    { titulo: 'Licitación acueducto Bucaramanga', empresa: 'EMPAS S.A.', valor: '$ 120 M', estado: 'PROSPECTO', fecha: '15 Mar', prob: 40 },
+    { titulo: 'Cotización tubería PE100', empresa: 'Distriaguas SAS', valor: '$ 45 M', estado: 'PROPUESTA', fecha: '12 Mar', prob: 60 },
+    { titulo: 'Sistema riego cultivo', empresa: 'Agrícola El Prado', valor: '$ 78 M', estado: 'PROPUESTA', fecha: '10 Mar', prob: 60 },
   ],
   actividades: [
     { tipo: 'visita', iconClass: 'visita', titulo: 'Visita técnica - EMPAS S.A.', sub: 'Inspección de planta', date: '10:30 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada' },
@@ -195,7 +195,7 @@ function leadsTab() {
               <div style="font-size: 12px; color: var(--text-muted);">${l.empresa} · ${l.origen}</div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-              <span style="font-size: 12px; color: var(--accent); font-weight: 700;">${Icons.fire} ${l.score}</span>
+              <span style="font-size: 12px; color: var(--accent); font-weight: 700;">${Icons.fire} ${l.score}%</span>
               <span class="badge badge--${estadoColors[l.estado]}">${l.estado}</span>
               ${Icons.chevronRight}
             </div>
@@ -207,7 +207,7 @@ function leadsTab() {
 }
 
 function oportunidadesTab() {
-  const estadoColors = { 'PROSPECTO': 'prospecto', 'CALIFICACION': 'calificacion', 'PROPUESTA': 'propuesta', 'NEGOCIACION': 'negociacion', 'GANADA': 'ganada', 'PERDIDA': 'perdida' };
+  const oppEstadoColors = { 'PROSPECTO': 'prospecto', 'PROPUESTA': 'propuesta', 'NEGOCIACION': 'negociacion', 'GANADA': 'ganada', 'PERDIDA': 'perdida' };
   return `
     <div class="card" style="padding: 0;">
       <div class="card__header">
@@ -222,8 +222,11 @@ function oportunidadesTab() {
               <div style="font-size: 12px; color: var(--text-muted);">${o.empresa} · ${o.fecha}</div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-              <span style="font-size: 14px; font-weight: 700; color: var(--accent);">${o.valor}</span>
-              <span class="badge badge--${estadoColors[o.estado]}">${o.estado}</span>
+              <div style="text-align: right;">
+                <div style="font-size: 14px; font-weight: 700; color: var(--accent);">${o.valor}</div>
+                <div style="font-size: 11px; color: var(--text-muted);">${o.prob}% prob</div>
+              </div>
+              <span class="badge badge--${oppEstadoColors[o.estado]}">${o.estado}</span>
               ${Icons.chevronRight}
             </div>
           </a>

@@ -171,17 +171,17 @@ function detailContent() {
       <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
         <a href="07-actividades.html" style="color: var(--primary); cursor: pointer;">Actividades</a>
         <span>/</span>
-        <span>ACT-2026-0089</span>
+        <span>ACT-2025-0156</span>
       </div>
       <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
         <div style="flex: 1;">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
             <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
-            <span class="badge badge--info">${Icons.mapPin.replace('class="icon"','class="icon icon--xs"')} Visita</span>
-            <span class="badge badge--neutral">Presencial</span>
+            <span class="badge badge--info">${Icons.envelope.replace('class="icon"','class="icon icon--xs"')} Email</span>
+            <span class="badge badge--neutral">No presencial</span>
           </div>
-          <div class="activity-detail-header__title">Inspección técnica para dimensionamiento</div>
-          <div class="activity-detail-header__sub">EMPAS S.A. · Hoy 22 Abr 2026 · 10:30 AM</div>
+          <div class="activity-detail-header__title">Envío información técnica Sello FM - FIRELINE</div>
+          <div class="activity-detail-header__sub">FIRELINE · 15 Jul 2025 · 3:00 PM</div>
         </div>
         <div style="display: flex; gap: 8px; flex-shrink: 0;">
           <button class="btn btn--secondary btn--sm">${Icons.pencil} Editar</button>
@@ -190,27 +190,19 @@ function detailContent() {
       <div class="activity-detail-meta">
         <div class="activity-detail-meta__item">
           <span class="activity-detail-meta__label">Fecha</span>
-          <span class="activity-detail-meta__value">22 Abr 2026</span>
+          <span class="activity-detail-meta__value">15 Jul 2025</span>
         </div>
         <div class="activity-detail-meta__item">
           <span class="activity-detail-meta__label">Hora</span>
-          <span class="activity-detail-meta__value">10:30 AM</span>
+          <span class="activity-detail-meta__value">3:00 PM</span>
         </div>
         <div class="activity-detail-meta__item">
           <span class="activity-detail-meta__label">Tipo</span>
-          <span class="activity-detail-meta__value">Visita presencial</span>
-        </div>
-        <div class="activity-detail-meta__item">
-          <span class="activity-detail-meta__label">Duración</span>
-          <span class="activity-detail-meta__value">1h 15min</span>
+          <span class="activity-detail-meta__value">Email</span>
         </div>
         <div class="activity-detail-meta__item">
           <span class="activity-detail-meta__label">Ejecutivo</span>
-          <span class="activity-detail-meta__value">Juan Pérez</span>
-        </div>
-        <div class="activity-detail-meta__item">
-          <span class="activity-detail-meta__label">GPS</span>
-          <span class="activity-detail-meta__value" style="color: var(--success);">Capturado</span>
+          <span class="activity-detail-meta__value">Paola</span>
         </div>
       </div>
     </div>
@@ -226,36 +218,14 @@ function detailContent() {
         <div class="card__body" style="display: flex; flex-direction: column; gap: 12px;">
           <dl class="detail-info-list">
             <dt>Relacionado con</dt>
-            <dd>Oportunidad</dd>
-            <dt>Oportunidad</dt>
-            <dd><a style="color: var(--primary); cursor: pointer;">OPP-2025-0042 - Proyecto acueducto rural</a></dd>
+            <dd>Lead</dd>
+            <dt>Lead</dt>
+            <dd><a style="color: var(--primary); cursor: pointer;">Cotización proyecto RCI Seren del Mar</a></dd>
             <dt>Empresa</dt>
-            <dd>EMPAS S.A.</dd>
+            <dd>FIRELINE</dd>
             <dt>Asunto</dt>
-            <dd>Inspección técnica para dimensionamiento de red de distribución</dd>
+            <dd>Envío información técnica de sello FM y fichas técnicas</dd>
           </dl>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card__header">
-          <div class="card__title">Ubicación</div>
-          <span class="badge badge--ganada"><span class="dot"></span> Calle 29 #28-32, Piedecuesta</span>
-        </div>
-        <div style="padding: 16px;">
-          <div class="big-map">
-            <div class="gps-indicator">GPS activo</div>
-            <div class="pulse-ring"></div>
-            <div class="map-main-pin"></div>
-            <div style="position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(255,255,255,0.95); backdrop-filter: blur(6px); padding: 10px 14px; border-radius: 8px; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 10px;">
-              ${Icons.mapPin}
-              <div style="flex:1; min-width: 0;">
-                <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary);">Calle 29 #28-32, Piedecuesta</div>
-                <div style="font-size: 11px; color: var(--text-muted);">Lat: 6.9831°, Lng: -73.0483°</div>
-              </div>
-              <button class="btn btn--ghost btn--sm">${Icons.gps}</button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -266,9 +236,8 @@ function detailContent() {
         </div>
         <div class="card__body">
           <div style="font-size: 14px; color: var(--text-primary); line-height: 1.6;">
-            Se realizó la inspección técnica en planta junto con el ingeniero residente y director técnico.
-            Se revisaron las especificaciones de la red de distribución y se acordó enviar propuesta
-            comercial actualizada antes del 25 de marzo con los volúmenes requeridos para el proyecto.
+            Se envió información técnica de sello FM y fichas técnicas al cliente FIRELINE.
+            Cliente en proceso de revisión de documentación para decisión de compra.
           </div>
         </div>
       </div>
@@ -281,22 +250,22 @@ function detailContent() {
           <div class="timeline-row">
             <div class="timeline-row__dot"></div>
             <div style="flex: 1; min-width: 0;">
-              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">Email - Cotización revisada enviada</div>
-              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Hace 3 días · Completada</div>
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">Email - Cotización No. 20250626 enviada</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">26 Jun 2025 · Completada</div>
             </div>
           </div>
           <div class="timeline-row">
             <div class="timeline-row__dot"></div>
             <div style="flex: 1; min-width: 0;">
-              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">Llamada - Seguimiento a propuesta</div>
-              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Hace 5 días · Completada</div>
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">Llamada - Seguimiento: compraron vía COSERINCO</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">24 Sep 2025 · Completada · LEAD CERRADO</div>
             </div>
           </div>
           <div class="timeline-row">
             <div class="timeline-row__dot timeline-row__dot--muted"></div>
             <div style="flex: 1; min-width: 0;">
-              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-disabled);">Primer contacto - Presentación del portafolio</div>
-              <div style="font-size: 12px; color: var(--text-disabled); margin-top: 2px;">Hace 8 días · Completada</div>
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-disabled);">Lead creado desde WhatsApp</div>
+              <div style="font-size: 12px; color: var(--text-disabled); margin-top: 2px;">26 Jun 2025 · Completada</div>
             </div>
           </div>
         </div>
@@ -309,12 +278,12 @@ function detailContent() {
     <div style="display: flex; flex-direction: column; gap: 12px; width: 300px; flex-shrink: 0;">
 
       <div class="card">
-        <div class="card__header"><div class="card__title">Oportunidad</div></div>
+        <div class="card__header"><div class="card__title">Lead</div></div>
         <div class="card__body">
-          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">OPP-2025-0042</div>
-          <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px;">Proyecto acueducto rural Piedecuesta</div>
-          <a href="04-oportunidad-detalle.html" style="text-decoration: none;">
-            <button class="btn btn--secondary btn--sm btn--block">${Icons.arrowRight} Ver oportunidad</button>
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Cotización proyecto RCI Seren del Mar</div>
+          <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px;">FIRELINE · LEAD-2025-033</div>
+          <a href="10-lead-detalle.html" style="text-decoration: none;">
+            <button class="btn btn--secondary btn--sm btn--block">${Icons.arrowRight} Ver lead</button>
           </a>
         </div>
       </div>
@@ -323,15 +292,15 @@ function detailContent() {
         <div class="card__header"><div class="card__title">Contacto</div></div>
         <div class="card__body">
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-            <div class="avatar avatar--color-3">CR</div>
+            <div class="avatar avatar--color-2">ST</div>
             <div>
-              <div style="font-weight: 700; font-size: 13.5px;">Carlos Rodríguez</div>
-              <div style="font-size: 12px; color: var(--text-muted);">Ingeniero Residente</div>
+              <div style="font-weight: 700; font-size: 13.5px;">Santiago Triana</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Gerente comercial</div>
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
-            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.phone} +57 310 456 7890</a>
-            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.envelope} c.rodriguez@empas.com.co</a>
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.phone} +57 317 745 9833</a>
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.envelope} ventas@fireline.com.co</a>
           </div>
         </div>
       </div>
@@ -339,11 +308,11 @@ function detailContent() {
       <div class="card">
         <div class="card__header"><div class="card__title">Información</div></div>
         <div class="card__body">
-          <dl class="detail-info-list">
-            <dt>Creada</dt><dd>22 Abr 2026</dd>
-            <dt>Registrada por</dt><dd>Juan Pérez</dd>
-            <dt>ID</dt><dd>ACT-2026-0089</dd>
-            <dt>Duración</dt><dd>1h 15min</dd>
+<dl class="detail-info-list">
+            <dt>Creada</dt><dd>15 Jul 2025</dd>
+            <dt>Registrada por</dt><dd>Paola</dd>
+            <dt>ID</dt><dd>ACT-2025-0156</dd>
+            <dt>Canal</dt><dd>Email</dd>
           </dl>
         </div>
       </div>

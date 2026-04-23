@@ -384,7 +384,7 @@ function editarOportunidadModal() {
               </select>
             </div>
             <div class="form-field">
-              <label class="form-field__label">Sector</label>
+              <label class="form-field__label">Sector de la oportunidad</label>
               <select class="select">
                 <option selected>Agua potable</option>
                 <option>Gas natural</option>
@@ -400,6 +400,10 @@ function editarOportunidadModal() {
             <div class="form-field">
               <label class="form-field__label">Fecha cierre estimada</label>
               <input class="input" type="date" value="2026-04-25" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Probabilidad de cierre (%)</label>
+              <input class="input" type="number" min="0" max="100" value="65" />
             </div>
           </div>
           <div class="form-field">
@@ -446,6 +450,10 @@ function avanzarEstadoModal() {
           <div class="form-field" style="margin-bottom: 14px;">
             <label class="form-field__label">Fecha del cambio</label>
             <input class="input" type="date" value="2026-04-22" />
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Probabilidad de cierre (%)</label>
+            <input class="input" type="number" min="0" max="100" value="65" placeholder="Ej: 75" />
           </div>
           <div class="form-field">
             <label class="form-field__label">Comentario (opcional)</label>
@@ -702,9 +710,10 @@ function content() {
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
             <span class="badge badge--propuesta"><span class="dot"></span> Propuesta</span>
             <span class="badge badge--accent">Licitación</span>
+            <span class="badge badge--info">Agua Potable</span>
           </div>
           <div class="detail-title">Proyecto acueducto rural - Piedecuesta</div>
-          <div class="detail-subtitle">EMPAS S.A. · Piedecuesta, Santander · Sector Agua Potable</div>
+          <div class="detail-subtitle">EMPAS S.A. · Piedecuesta, Santander</div>
         </div>
         <div style="display: flex; gap: 8px; flex-shrink: 0;">
           <button class="btn btn--secondary btn--sm" onclick="openModal(editarOportunidadModal())">${Icons.pencil} Editar</button>
@@ -787,19 +796,27 @@ function content() {
           <a href="14-cliente-detalle.html" style="text-decoration: none;"><button class="btn btn--ghost btn--sm">${Icons.view}</button></a>
         </div>
         <div class="card__body">
-          <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+          <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
             <div class="avatar avatar--lg avatar--color-1">ES</div>
             <div>
               <div style="font-weight:700; color: var(--text-primary);">EMPAS S.A.</div>
               <div style="font-size: 12px; color: var(--text-muted);">NIT 890.200.341-2</div>
             </div>
           </div>
-          <dl class="detail-info-list">
-            <dt>Sector</dt><dd>Agua Potable</dd>
-            <dt>Municipio</dt><dd>Piedecuesta</dd>
-            <dt>Modalidad</dt><dd>Interior</dd>
-            <dt>Cliente</dt><dd><span class="badge badge--info">Recurrente</span></dd>
-          </dl>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Municipio</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Piedecuesta</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Modalidad</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Interior</div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Cliente</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);"><span class="badge badge--info">Recurrente</span></div>
+            </div>
+          </div>
         </div>
       </div>
 
