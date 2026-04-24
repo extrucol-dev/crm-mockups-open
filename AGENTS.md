@@ -4,8 +4,6 @@
 
 Pure HTML/CSS/JS mockups at 1440px desktop width. No build system, no package manager. Open `index.html` in a browser to navigate all screens.
 
-Each HTML file renders **3 breakpoints side by side** (Desktop 1440, Tablet 768, Mobile 375) as artboards on a gray background.
-
 ## Design system
 
 - **Design tokens**: `shared/tokens.css` (CSS custom properties — colors, typography, radii, shadows)
@@ -15,13 +13,13 @@ Each HTML file renders **3 breakpoints side by side** (Desktop 1440, Tablet 768,
 
 ## Role directories
 
-| Directory | Role | HTML files |
-|-----------|------|------------|
-| `ejecutivo/` | Ejecutivo Comercial | 18 |
-| `coordinador/` | Coordinador de Seguimiento | 10 |
-| `director/` | Director Comercial | 8 |
-| `admin/` | Administrador | 3 |
-| `auth/` | Auth (Login/Reset) | 3 |
+| Directory | Role | Files |
+|-----------|------|-------|
+| `ejecutivo/` | Ejecutivo Comercial | 17 |
+| `coordinador/` | Coordinador de Seguimiento | 7 |
+| `director/` | Director Comercial | 6 |
+| `admin/` | Administrador | 2 |
+| `auth/` | Auth (Login/Reset) | 2 |
 
 ## Sidebar path resolution
 
@@ -37,4 +35,5 @@ Each HTML file renders **3 breakpoints side by side** (Desktop 1440, Tablet 768,
 
 ## Local skills
 
-- `.skills/crm-ui-builder/SKILL.md` — comprehensive page and modal patterns, templates, component examples, and workflow guides for all roles. **Use this for any UI work.**
+- `.skills/crm-page-builder/SKILL.md` — design and implement new pages/components. Load with `/skill crm-page-builder`.
+- `.skills/crm-modal-builder/SKILL.md` — create standalone modal mockups. Load with `/skill crm-modal-builder`.

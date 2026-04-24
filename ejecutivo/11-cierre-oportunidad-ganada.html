@@ -23,11 +23,15 @@
   }
   .modal-header {
     padding: 20px 24px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px;
+    display: flex; align-items: center;
+    gap: 12px;
   }
+  .modal-header > :first-child { flex-shrink: 0; }
+  .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
   .modal-header__icon--success {
-    width: 44px; height: 44px; background: var(--success-bg); color: var(--success);
+    width: 40px; height: 40px; background: var(--success-bg); color: var(--success);
     border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
   }
   .modal-body { padding: 20px 24px; }
   .modal-footer {
@@ -80,12 +84,20 @@
 </style>
 </head>
 <body>
-<div class="app-shell" id="shell"></div>
+<div style="display: flex; justify-content: center; background: #F4F4F5; padding: 40px;">
+  <div style="width: 1440px;">
+    <div class="app-shell" id="shell"></div>
   </div>
 </div>
 
 <script src="../shared/components.js"></script>
 <script>
+window.modalRoot = document.getElementById('shell');
+function openModal(html) { modalRoot.innerHTML += html; }
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
 function wonModal() {
   return `
     ${renderSidebar('oportunidades','ejecutivo')}
@@ -145,8 +157,8 @@ function wonModal() {
 
         </div>
         <div class="modal-footer">
-          <button class="btn btn--secondary">Cancelar</button>
-          <button class="btn btn--primary" style="background: var(--success);">${Icons.check} Confirmar cierre</button>
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" style="background: var(--success);" onclick="closeModal()">${Icons.check} Confirmar cierre</button>
         </div>
       </div>
     </div>

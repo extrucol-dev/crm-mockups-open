@@ -6,173 +6,341 @@
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/components.css">
 <style>
-  .variables-group {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 14px;
-    overflow: hidden;
-  }
-  .variables-group__header {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px;
-    background: linear-gradient(180deg, #fff 0%, #fafafa 100%);
-  }
-  .variables-group__icon {
-    width: 38px; height: 38px;
-    border-radius: 8px;
-    background: var(--primary-bg);
-    color: var(--primary);
-    display: flex; align-items: center; justify-content: center;
-  }
+  .tab-bar { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+  .tab { padding: 10px 16px; font-size: 13.5px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 150ms; }
+  .tab:hover { color: var(--primary); }
+  .tab.is-active { color: var(--primary); border-bottom-color: var(--primary); }
+
+  .catalog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .catalog-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; cursor: pointer; transition: all 180ms; }
+  .catalog-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+  .catalog-card__icon { width: 40px; height: 40px; border-radius: 8px; background: var(--primary-bg); color: var(--primary); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .catalog-card__title { font-weight: 700; font-size: 14px; color: var(--text-primary); margin-bottom: 4px; }
+  .catalog-card__desc { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .catalog-card__footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); }
+  .catalog-card__count { font-size: 20px; font-weight: 800; color: var(--primary); }
+  .catalog-card__label { font-size: 10.5px; color: var(--text-muted); }
+
+  .variables-group { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .variables-group__header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: linear-gradient(180deg, #fff 0%, #fafafa 100%); }
+  .variables-group__icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
   .variables-group__icon--error { background: #FDECEA; color: var(--error); }
   .variables-group__icon--accent { background: var(--accent-bg); color: var(--accent); }
   .variables-group__icon--success { background: #E8F5EE; color: var(--success); }
-  .variable-row {
-    display: grid;
-    grid-template-columns: 1fr 180px 100px 44px;
-    gap: 16px; align-items: center;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-  }
+  .variables-group__icon--primary { background: var(--primary-bg); color: var(--primary); }
+  .variable-row { display: grid; grid-template-columns: 1fr 180px 100px 44px; gap: 16px; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--border); }
   .variable-row:last-child { border-bottom: none; }
   .variable-row:hover { background: var(--page-bg); }
-  .variable-name {
-    font-weight: 600; font-size: 13.5px; color: var(--text-primary);
-  }
-  .variable-desc {
-    font-size: 12px; color: var(--text-muted); margin-top: 2px;
-  }
-  .variable-key {
-    font-family: 'SF Mono', Consolas, monospace;
-    font-size: 11px;
-    background: var(--page-bg);
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--text-muted);
-    display: inline-block;
-    margin-top: 4px;
-  }
-  .variable-value-input {
-     text-align: right;
-     font-weight: 700 !important;
-     color: var(--primary) !important;
-   }
-  .modal-overlay {
-    position: absolute; inset: 0;
-    background: rgba(26,26,26,0.5);
-    display: flex; align-items: flex-start; justify-content: center;
-    padding: 60px 24px;
-    z-index: 100;
-  }
-  .modal-content {
-    background: var(--surface);
-    border-radius: 12px;
-    max-width: 520px; width: 100%;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-    overflow: hidden;
-  }
-  .modal-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .modal-body { padding: 20px 24px; }
-  .modal-footer {
-    padding: 16px 24px; border-top: 1px solid var(--border);
-    display: flex; justify-content: flex-end; gap: 10px;
-    background: var(--page-bg);
-  }
+  .variable-name { font-weight: 600; font-size: 13.5px; color: var(--text-primary); }
+  .variable-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .variable-key { font-family: 'SF Mono', Consolas, monospace; font-size: 11px; background: var(--page-bg); padding: 2px 6px; border-radius: 4px; color: var(--text-muted); display: inline-block; margin-top: 4px; }
+  .variable-value-input { text-align: right; font-weight: 700 !important; color: var(--primary) !important; }
+  .modal-overlay { position: absolute; inset: 0; background: rgba(26,26,26,0.5); display: flex; align-items: flex-start; justify-content: center; padding: 60px 24px; z-index: 100; }
+  .modal-content { background: var(--surface); border-radius: 12px; max-width: 580px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden; }
+  .modal-content--wide { max-width: 800px; }
+  .modal-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .modal-header > :first-child { flex-shrink: 0; }
+  .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
+  .modal-header__icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .modal-header__icon--primary { background: var(--primary-bg); color: var(--primary); }
+  .modal-header__icon--success { background: #E8F5EE; color: var(--success); }
+  .modal-header__icon--error { background: #FDECEA; color: var(--error); }
+  .modal-header__icon--accent { background: var(--accent-bg); color: var(--accent); }
+  .modal-body { padding: 20px 24px; max-height: 480px; overflow-y: auto; }
+  .modal-footer { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg); }
+  .catalog-table { width: 100%; border-collapse: collapse; }
+  .catalog-table th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+  .catalog-table td { padding: 10px 12px; font-size: 13px; color: var(--text-primary); border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .catalog-table tr:last-child td { border-bottom: none; }
+  .catalog-table tr:hover td { background: var(--page-bg); }
+  .catalog-table .badge-cell { display: flex; align-items: center; gap: 6px; }
+  .catalog-table .actions { display: flex; gap: 4px; justify-content: flex-end; }
+  .catalog-table .badge--active { background: #E8F5EE; color: var(--success); }
+  .catalog-table .badge--inactive { background: var(--page-bg); color: var(--text-muted); }
+  .tipo-ganada { color: var(--success); font-weight: 600; }
+  .tipo-perdida { color: var(--error); font-weight: 600; }
+  .tag-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 12px; font-size: 11.5px; font-weight: 600; }
+  .tag-chip--success { background: #E8F5EE; color: var(--success); }
+  .tag-chip--error { background: #FDECEA; color: var(--error); }
+  .tag-chip--info { background: var(--primary-bg); color: var(--primary); }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+  .empty-state__icon { width: 48px; height: 48px; border-radius: 50%; background: var(--page-bg); color: var(--text-disabled); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .empty-state__title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .empty-state__desc { font-size: 12.5px; }
+  .search-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
 </style>
 </head>
 <body>
 <div class="app-shell" id="shell"></div>
-  </div>
-</div>
 
 <script src="../shared/components.js"></script>
 <script>
-window.modalRoot = document.getElementById('modal-root');
+window.modalRoot = document.getElementById('modal-root') || document.body;
 
-function guardarModal() {
-  modalRoot.innerHTML = `
-    <div class="modal-overlay">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div style="display: flex; align-items: center;">
-            <div style="width:40px;height:40px;border-radius:10px;background:var(--success-bg);color:var(--success);display:flex;align-items:center;justify-content:center;margin-right:12px;">${Icons.check}</div>
-            <div>
-              <div style="font-weight:700;font-size:16px;">Guardar cambios</div>
-              <div style="font-size:12.5px;color:var(--text-muted);">Confirmar modificaciones al sistema</div>
-            </div>
-          </div>
-          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
-        </div>
-        <div class="modal-body">
-          <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:16px;">Se han modificado <strong>4 variables</strong>. Estos cambios afectarán el comportamiento del sistema en tiempo real:</p>
-          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
-            ${['dias_alerta_lead_sin_contactar: 3 → 2 días','dias_alerta_opp_estancada: 7 → 5 días','dias_critico_sin_actividad: 14 → 10 días','meta_actividades_semana: 20 → 15'].map(v=>`
-              <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--page-bg);border-radius:6px;font-size:12.5px;">
-                <span style="color:var(--success);">${Icons.check}</span>
-                <span style="font-family:'SF Mono',monospace;color:var(--text-primary);">${v}</span>
-              </div>
-            `).join('')}
-          </div>
-          <div class="alert alert--warning">
-            ${Icons.warning}
-            <div>Las alertas existentes se recalcularán automáticamente al guardar.</div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
-          <button class="btn btn--primary">${Icons.check} Confirmar y guardar</button>
-        </div>
-      </div>
-    </div>
-  `;
+function openModal(html) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = html;
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.body.appendChild(overlay);
+}
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
 }
 
-function historialModal(varName) {
-  modalRoot.innerHTML = `
-    <div class="modal-overlay">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div style="display:flex;align-items:center;">
-            <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-bg);color:var(--primary);display:flex;align-items:center;justify-content:center;margin-right:12px;">${Icons.clock}</div>
-            <div>
-              <div style="font-weight:700;font-size:16px;">Historial de cambios</div>
-              <div style="font-size:12.5px;color:var(--text-muted);">${varName}</div>
-            </div>
-          </div>
-          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+function guardarModal() {
+  openModal(`
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header__icon modal-header__icon--success">${Icons.check}</div>
+        <div>
+          <div style="font-weight:700;font-size:16px;">Guardar cambios</div>
+          <div style="font-size:12.5px;color:var(--text-muted);">Confirmar modificaciones al sistema</div>
         </div>
-        <div class="modal-body" style="max-height:360px;overflow-y:auto;">
-          ${[
-            {date:'22 Abr 2026 · 14:30',user:'Diana Ruiz',old:'5',new:'3'},
-            {date:'15 Mar 2026 · 09:15',user:'Carlos Muñoz',old:'7',new:'5'},
-            {date:'28 Ene 2026 · 11:00',user:'Diana Ruiz',old:'—',new:'7'},
-          ].map(h=>`
-            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
-              <div class="avatar avatar--xs avatar--accent">${h.user.split(' ').map(x=>x[0]).join('')}</div>
-              <div style="flex:1;">
-                <div style="font-weight:600;font-size:12.5px;">${h.user}</div>
-                <div style="font-size:11.5px;color:var(--text-muted);">${h.date}</div>
-              </div>
-              <div style="font-size:12px;color:var(--text-muted);font-family:monospace;">${h.old} → <strong style="color:var(--success);">${h.new}</strong></div>
+        <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:16px;">Se han modificado <strong>4 variables</strong>. Estos cambios afectarán el comportamiento del sistema en tiempo real:</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+          ${['dias_alerta_lead_sin_contactar: 3 → 2 días','dias_alerta_opp_estancada: 7 → 5 días','dias_critico_sin_actividad: 14 → 10 días','meta_actividades_semana: 20 → 15'].map(v=>`
+            <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--page-bg);border-radius:6px;font-size:12.5px;">
+              <span style="color:var(--success);">${Icons.check}</span>
+              <span style="font-family:'SF Mono',monospace;color:var(--text-primary);">${v}</span>
             </div>
           `).join('')}
         </div>
-        <div class="modal-footer">
-          <button class="btn btn--secondary" onclick="closeModal()">Cerrar</button>
-        </div>
+        <div class="alert alert--warning">${Icons.warning}<div>Las alertas existentes se recalcularán automáticamente al guardar.</div></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn--primary">${Icons.check} Confirmar y guardar</button>
       </div>
     </div>
-  `;
+  `);
 }
 
-function closeModal() {
-  modalRoot.innerHTML = '';
+function historialModal(varName) {
+  openModal(`
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header__icon modal-header__icon--primary">${Icons.clock}</div>
+        <div>
+          <div style="font-weight:700;font-size:16px;">Historial de cambios</div>
+          <div style="font-size:12.5px;color:var(--text-muted);">${varName}</div>
+        </div>
+        <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+      </div>
+      <div class="modal-body" style="max-height:360px;overflow-y:auto;">
+        ${[
+          {date:'22 Abr 2026 · 14:30',user:'Diana Ruiz',old:'5',new:'3'},
+          {date:'15 Mar 2026 · 09:15',user:'Carlos Muñoz',old:'7',new:'5'},
+          {date:'28 Ene 2026 · 11:00',user:'Diana Ruiz',old:'—',new:'7'},
+        ].map(h=>`
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <div class="avatar avatar--xs avatar--accent">${h.user.split(' ').map(x=>x[0]).join('')}</div>
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:12.5px;">${h.user}</div>
+              <div style="font-size:11.5px;color:var(--text-muted);">${h.date}</div>
+            </div>
+            <div style="font-size:12px;color:var(--text-muted);font-family:monospace;">${h.old} → <strong style="color:var(--success);">${h.new}</strong></div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="modal-footer"><button class="btn btn--secondary" onclick="closeModal()">Cerrar</button></div>
+    </div>
+  `);
+}
+
+function nuevoItemModal(key) {
+  const cat = catalogosData[key];
+  let fieldsHtml = '';
+  if (key === 'sectores') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del sector <span class="req">*</span></label>
+      <input class="input" id="new-nombre" placeholder="Ej: Energía" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" id="new-desc" placeholder="Descripción breve del sector" />
+    </div>`;
+  } else if (key === 'motivosCierre') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del motivo <span class="req">*</span></label>
+      <input class="input" id="new-nombre" placeholder="Ej: Mejor precio" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Tipo</label>
+      <select class="select" id="new-tipo">
+        <option value="ganada">Ganada</option>
+        <option value="perdida">Perdida</option>
+      </select>
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" id="new-desc" placeholder="Descripción breve" />
+    </div>`;
+  } else if (key === 'motivosDescalificacion') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del motivo <span class="req">*</span></label>
+      <input class="input" id="new-nombre" placeholder="Ej: No responde" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" id="new-desc" placeholder="Descripción breve" />
+    </div>`;
+  } else if (key === 'origenesLead') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del origen <span class="req">*</span></label>
+      <input class="input" id="new-nombre" placeholder="Ej: TikTok" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Color distintivo</label>
+      <input class="input" type="color" id="new-color" value="#3B82F6" style="height:36px;padding:2px;" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" id="new-desc" placeholder="Descripción breve" />
+    </div>`;
+  } else if (key === 'estadosOportunidad' || key === 'estadosLead') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del estado <span class="req">*</span></label>
+      <input class="input" id="new-nombre" placeholder="Ej: Negociación" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Orden en pipeline</label>
+      <input class="input" type="number" id="new-orden" value="5" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Color</label>
+      <input class="input" type="color" id="new-color" value="#22C55E" style="height:36px;padding:2px;" />
+    </div>`;
+  }
+  openModal(`
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header__icon modal-header__icon--primary">${Icons[cat.icon]}</div>
+        <div>
+          <div style="font-weight:700;font-size:16px;">Nuevo registro</div>
+          <div style="font-size:12.5px;color:var(--text-muted);">${cat.title}</div>
+        </div>
+        <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+      </div>
+      <div class="modal-body">
+        ${fieldsHtml}
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Agregar</button>
+      </div>
+    </div>
+  `);
+}
+
+function editarItemModal(key, itemId, title, iconHtml) {
+  let fieldsHtml = '';
+  if (key === 'sectores') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del sector <span class="req">*</span></label>
+      <input class="input" id="edit-nombre" value="${title}" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" id="edit-desc" placeholder="Descripción breve del sector" />
+    </div>`;
+  } else if (key === 'motivosCierre') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del motivo <span class="req">*</span></label>
+      <input class="input" id="edit-nombre" value="${title}" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Tipo</label>
+      <select class="select" id="edit-tipo">
+        <option value="ganada">Ganada</option>
+        <option value="perdida">Perdida</option>
+      </select>
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" id="edit-desc" placeholder="Descripción breve" />
+    </div>`;
+  } else if (key === 'motivosDescalificacion') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del motivo <span class="req">*</span></label>
+      <input class="input" id="edit-nombre" value="${title}" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" id="edit-desc" placeholder="Descripción breve" />
+    </div>`;
+  } else if (key === 'origenesLead') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del origen <span class="req">*</span></label>
+      <input class="input" id="edit-nombre" value="${title}" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Color distintivo</label>
+      <input class="input" type="color" id="edit-color" value="#3B82F6" style="height:36px;padding:2px;" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" id="edit-desc" placeholder="Descripción breve" />
+    </div>`;
+  } else if (key === 'estadosOportunidad' || key === 'estadosLead') {
+    fieldsHtml = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del estado <span class="req">*</span></label>
+      <input class="input" id="edit-nombre" value="${title}" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Orden en pipeline</label>
+      <input class="input" type="number" id="edit-orden" value="5" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Color</label>
+      <input class="input" type="color" id="edit-color" value="#22C55E" style="height:36px;padding:2px;" />
+    </div>`;
+  }
+  openModal(`
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header__icon modal-header__icon--accent">${Icons.pencil}</div>
+        <div>
+          <div style="font-weight:700;font-size:16px;">Editar registro</div>
+          <div style="font-size:12.5px;color:var(--text-muted);">${title}</div>
+        </div>
+        <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+      </div>
+      <div class="modal-body">
+        ${fieldsHtml}
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Guardar cambios</button>
+      </div>
+    </div>
+  `);
+}
+
+function confirmarEliminarModal(nombre, tipo) {
+  openModal(`
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header__icon modal-header__icon--error">${Icons.trash}</div>
+        <div>
+          <div style="font-weight:700;font-size:16px;">Eliminar registro</div>
+          <div style="font-size:12.5px;color:var(--text-muted);">${tipo}</div>
+        </div>
+        <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13.5px;color:var(--text-secondary);">¿Estás seguro de eliminar <strong>"${nombre}"</strong>? Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn--primary" style="background:var(--error);" onclick="closeModal()">${Icons.trash} Eliminar</button>
+      </div>
+    </div>
+  `);
 }
 
 const grupos = [
@@ -201,7 +369,6 @@ const grupos = [
 ];
 
 function renderVarRow(v) {
-  const isToggle = v.unit === 'toggle';
   return `
     <div class="variable-row">
       <div>
@@ -209,13 +376,7 @@ function renderVarRow(v) {
         <div class="variable-desc">${v.desc}</div>
         <span class="variable-key">${v.key}</span>
       </div>
-      ${isToggle ? `
-        <div style="display: flex; justify-content: center;">
-          <label class="switch"><input type="checkbox" ${v.value === 'true' ? 'checked' : ''}><span class="switch__slider"></span></label>
-        </div>
-      ` : `
-        <input class="input variable-value-input" value="${v.value}" />
-      `}
+      <input class="input variable-value-input" value="${v.value}" />
       <span style="font-size: 11.5px; color: var(--text-muted); text-align: center;">${v.unit}</span>
       <button class="topbar__icon-btn" title="Historial" onclick="historialModal('${v.name}')">${Icons.clock}</button>
     </div>
@@ -238,50 +399,386 @@ function renderGrupo(g) {
   `;
 }
 
+const catalogosData = {
+  sectores: {
+    title: 'Sectores económicos',
+    desc: '5 sectores registrados',
+    count: 5,
+    icon: 'building',
+    table: 'CRM_SECTOR',
+    items: [
+      { id: 1, nombre: 'Agua Potable', desc: 'Sistemas de distribución de agua y saneamiento', color: '#3B82F6', activo: true },
+      { id: 2, nombre: 'Gas Natural', desc: 'Redes de distribución de gas', color: '#F97316', activo: true },
+      { id: 3, nombre: 'Agro / Riego', desc: 'Sistemas de riego y proyectos agrícolas', color: '#22C55E', activo: true },
+      { id: 4, nombre: 'Construcción', desc: 'Obras civiles y construcción en general', color: '#A855F7', activo: true },
+      { id: 5, nombre: 'Industrial', desc: 'Procesos industriales y manufactura', color: '#EAB308', activo: true },
+    ]
+  },
+  motivosCierre: {
+    title: 'Motivos de cierre',
+    desc: 'Razones para ganadas y perdidas',
+    count: 12,
+    icon: 'flag',
+    table: 'CRM_MOTIVO_CIERRE',
+    items: [
+      { id: 1, nombre: 'Adjudicación directa', tipo: 'ganada', desc: 'Cliente seleccionó a Extrucol directamente', activo: true },
+      { id: 2, nombre: 'Licitación ganada', tipo: 'ganada', desc: 'Proceso competitivo ganado', activo: true },
+      { id: 3, nombre: 'Mejor precio', tipo: 'ganada', desc: 'Ganado por competitividad en precio', activo: true },
+      { id: 4, nombre: 'Calidad / Technical spec', tipo: 'ganada', desc: 'Especificaciones técnicas cumplidas', activo: true },
+      { id: 5, nombre: 'Relación larga data', tipo: 'ganada', desc: 'Cliente histórico con relación establecida', activo: true },
+      { id: 6, nombre: 'Precio no competitivo', tipo: 'perdida', desc: 'Competencia ofreció mejor precio', activo: true },
+      { id: 7, nombre: 'Competencia ganó licitación', tipo: 'perdida', desc: 'Otro proveedor fue adjudicado', activo: true },
+      { id: 8, nombre: 'Cliente pospuso decisión', tipo: 'perdida', desc: 'Proyecto aplazado indefinidamente', activo: true },
+      { id: 9, nombre: 'Requerimientos técnicos no coinciden', tipo: 'perdida', desc: 'No se cumple con las especificaciones', activo: true },
+      { id: 10, nombre: 'Presupuesto insuficiente', tipo: 'perdida', desc: 'Cliente no tiene recursos suficientes', activo: true },
+      { id: 11, nombre: 'Decisión a favor de competidor existente', tipo: 'perdida', desc: 'Cliente prefirió otro proveedor conocido', activo: true },
+      { id: 12, nombre: 'Fuera de alcance geográfico', tipo: 'perdida', desc: 'Ubicación fuera del área de cobertura', activo: true },
+    ]
+  },
+  motivosDescalificacion: {
+    title: 'Motivos de descalificación',
+    desc: 'Razones para descalificar un lead',
+    count: 6,
+    icon: 'xCircle',
+    table: 'CRM_MOTIVO_DESCALIFICACION',
+    items: [
+      { id: 1, nombre: 'No responde', desc: 'Sin contacto después de múltiples intentos', activo: true },
+      { id: 2, nombre: 'Presupuesto insuficiente', desc: 'Monto menor al mínimo configurado', activo: true },
+      { id: 3, nombre: 'No es el responsable', desc: 'Contactó a alguien sin poder de decisión', activo: true },
+      { id: 4, nombre: 'Lead duplicado', desc: 'Ya existe un lead o cliente para esta empresa', activo: true },
+      { id: 5, nombre: 'Trasladado a distribuidor', desc: 'Lead derivado a red de distribuidores', activo: true },
+      { id: 6, nombre: 'Fuera del mercado objetivo', desc: 'No encaja en el perfil de cliente objetivo', activo: true },
+    ]
+  },
+  origenesLead: {
+    title: 'Orígenes de Lead',
+    desc: '8 canales de origen registrados',
+    count: 8,
+    icon: 'globe',
+    table: 'CRM_ORIGEN_LEAD',
+    items: [
+      { id: 1, nombre: 'WhatsApp', desc: 'Contacto vía WhatsApp Business', color: '#25D366', activo: true },
+      { id: 2, nombre: 'Facebook', desc: 'Mensajes y publicaciones en Facebook', color: '#1877F2', activo: true },
+      { id: 3, nombre: 'Instagram', desc: 'Mensajes directos desde Instagram', color: '#E4405F', activo: true },
+      { id: 4, nombre: 'Página Web', desc: 'Formulario de contacto del sitio web', color: '#3B82F6', activo: true },
+      { id: 5, nombre: 'Llamada saliente', desc: 'Contacto telefónico saliente del ejecutiva', color: '#A855F7', activo: true },
+      { id: 6, nombre: 'Referido', desc: 'Recomendación de cliente existente', color: '#22C55E', activo: true },
+      { id: 7, nombre: 'Feria / Evento', desc: 'Contacto en ferias y eventos comerciales', color: '#F97316', activo: true },
+      { id: 8, nombre: 'Email', desc: 'Respuesta a campañas de email marketing', color: '#EA4335', activo: true },
+    ]
+  },
+  estadosOportunidad: {
+    title: 'Estados de Oportunidad',
+    desc: '6 estados del pipeline comercial',
+    count: 6,
+    icon: 'flag',
+    table: 'CRM_ESTADO_OPORTUNIDAD',
+    items: [
+      { id: 1, nombre: 'Prospección', desc: 'Lead convertido, oportunidad identificada', color: '#3B82F6', orden: 1, activo: true },
+      { id: 2, nombre: 'Calificación', desc: 'Oportunidad validada y cualificada', color: '#F97316', orden: 2, activo: true },
+      { id: 3, nombre: 'Propuesta', desc: 'Cotización o propuesta enviada', color: '#A855F7', orden: 3, activo: true },
+      { id: 4, nombre: 'Negociación', desc: 'En proceso de negociación y cierre', color: '#EAB308', orden: 4, activo: true },
+      { id: 5, nombre: 'Ganada', desc: 'Oportunidad cerrada exitosamente', color: '#22C55E', orden: 5, activo: true },
+      { id: 6, nombre: 'Perdida', desc: 'Oportunidad cerrada sin éxito', color: '#EF4444', orden: 6, activo: true },
+    ]
+  },
+  estadosLead: {
+    title: 'Estados de Lead',
+    desc: '4 estados del ciclo de vida del lead',
+    count: 4,
+    icon: 'flag',
+    table: 'CRM_ESTADO_LEAD',
+    items: [
+      { id: 1, nombre: 'Nuevo', desc: 'Lead recién recibido sin contactar', color: '#3B82F6', orden: 1, activo: true },
+      { id: 2, nombre: 'Contactado', desc: 'Contacto inicial realizado', color: '#A855F7', orden: 2, activo: true },
+      { id: 3, nombre: 'Interesado', desc: 'Lead con interés demostrado y cualificado', color: '#F39610', orden: 3, activo: true },
+      { id: 4, nombre: 'No Interesado', desc: 'Lead descalificado o sin respuesta', color: '#EF4444', orden: 4, activo: true },
+    ]
+  }
+};
+
+function abrirCatalogo(key) {
+  const cat = catalogosData[key];
+  let tableBody = '';
+  let modalIcon = '';
+  let nameField = '';
+
+  if (key === 'sectores') {
+    modalIcon = Icons.building;
+    nameField = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del sector <span class="req">*</span></label>
+      <input class="input" placeholder="Ej: Energía" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" placeholder="Descripción breve del sector" />
+    </div>`;
+    tableBody = cat.items.map(item => `
+      <tr>
+        <td><span class="tag-chip tag-chip--info" style="background:${item.color}20;color:${item.color};border:1px solid ${item.color}40">${item.nombre}</span></td>
+        <td style="color:var(--text-muted);font-size:12px;">${item.desc}</td>
+        <td><span class="badge badge--active">Activo</span></td>
+        <td class="actions">
+          <button class="topbar__icon-btn" onclick="editarItemModal('sectores', '${item.id}', '${item.nombre}', Icons.building)">${Icons.pencil}</button>
+          <button class="topbar__icon-btn" onclick="confirmarEliminarModal('${item.nombre}', 'Sector')">${Icons.trash}</button>
+        </td>
+      </tr>
+    `).join('');
+  } else if (key === 'motivosCierre') {
+    modalIcon = Icons.flag;
+    nameField = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del motivo <span class="req">*</span></label>
+      <input class="input" placeholder="Ej: Mejor precio" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Tipo</label>
+      <select class="select">
+        <option value="ganada">Ganada</option>
+        <option value="perdida">Perdida</option>
+      </select>
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" placeholder="Descripción breve" />
+    </div>`;
+    tableBody = cat.items.map(item => `
+      <tr>
+        <td><span class="${item.tipo === 'ganada' ? 'tipo-ganada' : 'tipo-perdida'}">${item.nombre}</span></td>
+        <td style="color:var(--text-muted);font-size:12px;">${item.desc}</td>
+        <td><span class="tag-chip ${item.tipo === 'ganada' ? 'tag-chip--success' : 'tag-chip--error'}">${item.tipo === 'ganada' ? Icons.check : Icons.xCircle} ${item.tipo}</span></td>
+        <td><span class="badge badge--active">Activo</span></td>
+        <td class="actions">
+          <button class="topbar__icon-btn" onclick="editarItemModal('motivosCierre', '${item.id}', '${item.nombre}', Icons.flag)">${Icons.pencil}</button>
+          <button class="topbar__icon-btn" onclick="confirmarEliminarModal('${item.nombre}', 'Motivo de cierre')">${Icons.trash}</button>
+        </td>
+      </tr>
+    `).join('');
+  } else if (key === 'motivosDescalificacion') {
+    modalIcon = Icons.xCircle;
+    nameField = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del motivo <span class="req">*</span></label>
+      <input class="input" placeholder="Ej: No responde" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" placeholder="Descripción breve" />
+    </div>`;
+    tableBody = cat.items.map(item => `
+      <tr>
+        <td style="font-weight:600;">${item.nombre}</td>
+        <td style="color:var(--text-muted);font-size:12px;">${item.desc}</td>
+        <td><span class="badge badge--active">Activo</span></td>
+        <td class="actions">
+          <button class="topbar__icon-btn" onclick="editarItemModal('motivosDescalificacion', '${item.id}', '${item.nombre}', Icons.xCircle)">${Icons.pencil}</button>
+          <button class="topbar__icon-btn" onclick="confirmarEliminarModal('${item.nombre}', 'Motivo de descalificación')">${Icons.trash}</button>
+        </td>
+      </tr>
+    `).join('');
+  } else if (key === 'origenesLead') {
+    modalIcon = Icons.globe;
+    nameField = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del origen <span class="req">*</span></label>
+      <input class="input" placeholder="Ej: TikTok" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Color distintivo</label>
+      <input class="input" type="color" value="#3B82F6" style="height:36px;padding:2px;" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Descripción</label>
+      <input class="input" placeholder="Descripción breve" />
+    </div>`;
+    tableBody = cat.items.map(item => `
+      <tr>
+        <td><span class="tag-chip tag-chip--info" style="background:${item.color}20;color:${item.color};border:1px solid ${item.color}40">${item.nombre}</span></td>
+        <td style="color:var(--text-muted);font-size:12px;">${item.desc}</td>
+        <td><span class="badge badge--active">Activo</span></td>
+        <td class="actions">
+          <button class="topbar__icon-btn" onclick="editarItemModal('origenesLead', '${item.id}', '${item.nombre}', Icons.globe)">${Icons.pencil}</button>
+          <button class="topbar__icon-btn" onclick="confirmarEliminarModal('${item.nombre}', 'Origen de lead')">${Icons.trash}</button>
+        </td>
+      </tr>
+    `).join('');
+  } else if (key === 'estadosOportunidad') {
+    modalIcon = Icons.flag;
+    nameField = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del estado <span class="req">*</span></label>
+      <input class="input" placeholder="Ej: Negociación" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Orden en pipeline</label>
+      <input class="input" type="number" value="5" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Color</label>
+      <input class="input" type="color" value="#22C55E" style="height:36px;padding:2px;" />
+    </div>`;
+    tableBody = cat.items.map(item => `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:10px;height:10px;border-radius:50%;background:${item.color};display:inline-block;"></span>
+            <span style="font-weight:600;">${item.nombre}</span>
+          </div>
+        </td>
+        <td style="color:var(--text-muted);font-size:12px;">${item.desc}</td>
+        <td style="font-size:12px;color:var(--text-muted);">#${item.orden}</td>
+        <td><span class="badge badge--active">Activo</span></td>
+        <td class="actions">
+          <button class="topbar__icon-btn" onclick="editarItemModal('estadosOportunidad', '${item.id}', '${item.nombre}', Icons.flag)">${Icons.pencil}</button>
+        </td>
+      </tr>
+    `).join('');
+  } else if (key === 'estadosLead') {
+    modalIcon = Icons.flag;
+    nameField = `<div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Nombre del estado <span class="req">*</span></label>
+      <input class="input" placeholder="Ej: Interesado" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Orden en funnel</label>
+      <input class="input" type="number" value="3" />
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-field__label">Color</label>
+      <input class="input" type="color" value="#F39610" style="height:36px;padding:2px;" />
+    </div>`;
+    tableBody = cat.items.map(item => `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:10px;height:10px;border-radius:50%;background:${item.color};display:inline-block;"></span>
+            <span style="font-weight:600;">${item.nombre}</span>
+          </div>
+        </td>
+        <td style="color:var(--text-muted);font-size:12px;">${item.desc}</td>
+        <td style="font-size:12px;color:var(--text-muted);">#${item.orden}</td>
+        <td><span class="badge badge--active">Activo</span></td>
+        <td class="actions">
+          <button class="topbar__icon-btn" onclick="editarItemModal('estadosLead', '${item.id}', '${item.nombre}', Icons.flag)">${Icons.pencil}</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  openModal(`
+    <div class="modal-content modal-content--wide">
+      <div class="modal-header">
+        <div class="modal-header__icon modal-header__icon--primary">${modalIcon}</div>
+        <div>
+          <div style="font-weight:700;font-size:16px;">${cat.title}</div>
+          <div style="font-size:12.5px;color:var(--text-muted);">${cat.desc} · <span style="font-family:monospace;font-size:11px;">${cat.table}</span></div>
+        </div>
+        <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+      </div>
+      <div class="modal-body">
+        <div class="search-row">
+          <div class="input-wrapper" style="flex:1;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar..." /></div>
+          <button class="btn btn--primary btn--sm" onclick="nuevoItemModal('${key}', '${cat.title}', '${key}')">${Icons.plus} Nuevo</button>
+        </div>
+        <table class="catalog-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Tipo/Orden</th>
+              <th>Estado</th>
+              <th style="width:80px;"></th>
+            </tr>
+          </thead>
+          <tbody>${tableBody}</tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" onclick="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  `);
+}
+
+function renderCatalogCard(key) {
+  const cat = catalogosData[key];
+  return `
+    <div class="catalog-card" onclick="abrirCatalogo('${key}')">
+      <div class="catalog-card__icon">${Icons[cat.icon]}</div>
+      <div class="catalog-card__title">${cat.title}</div>
+      <div class="catalog-card__desc">${cat.desc}</div>
+      <div class="catalog-card__footer">
+        <div>
+          <span class="catalog-card__count">${cat.count}</span>
+          <span class="catalog-card__label"> registros</span>
+        </div>
+        <button class="btn btn--ghost btn--sm" onclick="event.stopPropagation(); abrirCatalogo('${key}')">${Icons.view} Ver</button>
+      </div>
+      <div style="margin-top:8px;font-family:monospace;font-size:10px;color:var(--text-disabled);background:var(--page-bg);padding:3px 6px;border-radius:4px;display:inline-block;">${cat.table}</div>
+    </div>
+  `;
+}
+
 function content() {
   return `
     <div class="content">
       <div class="page-head">
         <div class="page-head__title-group">
-          <div class="page-head__title">Variables del sistema</div>
-          <div class="page-head__subtitle">14 variables organizadas en 4 categorías · Última actualización: hace 2 días</div>
+          <div class="page-head__title">Variables y catálogos</div>
+          <div class="page-head__subtitle">Configuración del sistema · Coordinador puede editar todos los valores</div>
         </div>
-        
       </div>
 
-      <!-- Alerta de advertencia -->
       <div class="alert alert--warning" style="margin-bottom: 20px;">
         ${Icons.warning}
-        <div>
-          <strong>Cambios con impacto operacional.</strong> Las variables afectan el funcionamiento del sistema en tiempo real.
-        </div>
+        <div><strong>Área sensibles.</strong> Los cambios en variables y catálogos afectan el comportamiento del sistema en tiempo real.</div>
       </div>
 
-      <div class="filter-bar">
-        <div class="input-wrapper" style="flex:1; max-width: 340px;">
-          ${Icons.search}
-          <input class="input input--with-icon" placeholder="Buscar variable por nombre o clave...">
-        </div>
-        <select class="select" style="max-width: 220px;">
-          <option>Todas las categorías</option>
-          <option>Alertas y notificaciones</option>
-          <option>Reglas comerciales</option>
-        </select>
-        <div style="margin-left: auto; display: flex; gap: 8px;">
-          <button class="btn btn--primary btn--sm" onclick="guardarModal()">${Icons.check} Guardar cambios</button>
-        </div>
+      <div class="tab-bar">
+        <div class="tab is-active" onclick="switchTab('variables', this)">Variables del sistema</div>
+        <div class="tab" onclick="switchTab('catalogos', this)">Catálogos</div>
       </div>
 
-      ${grupos.map(g => renderGrupo(g)).join('')}
+      <div id="tab-variables">
+        <div class="filter-bar" style="margin-bottom:16px;">
+          <div class="input-wrapper" style="flex:1; max-width: 340px;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar variable por nombre o clave..."></div>
+          <select class="select" style="max-width: 220px;">
+            <option>Todas las categorías</option>
+            <option>Alertas y notificaciones</option>
+            <option>Reglas comerciales</option>
+          </select>
+          <div style="margin-left: auto; display: flex; gap: 8px;">
+            <button class="btn btn--primary btn--sm" onclick="guardarModal()">${Icons.check} Guardar cambios</button>
+          </div>
+        </div>
+        ${grupos.map(g => renderGrupo(g)).join('')}
+      </div>
 
+      <div id="tab-catalogos" style="display:none;">
+        <div class="filter-bar" style="margin-bottom:16px;">
+          <div class="input-wrapper" style="flex:1; max-width: 340px;">${Icons.search}<input class="input input--with-icon" placeholder="Buscar catálogo..."></div>
+          <select class="select" style="max-width: 200px;">
+            <option>Todos</option>
+            <option>Comercial</option>
+            <option>Estados</option>
+            <option>Operacional</option>
+          </select>
+        </div>
+        <div class="catalog-grid">
+          ${['sectores', 'motivosCierre', 'motivosDescalificacion', 'origenesLead', 'estadosOportunidad', 'estadosLead'].map(k => renderCatalogCard(k)).join('')}
+        </div>
+      </div>
     </div>
   `;
 }
 
+window.switchTab = function(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('is-active'));
+  el.classList.add('is-active');
+  document.getElementById('tab-variables').style.display = tab === 'variables' ? '' : 'none';
+  document.getElementById('tab-catalogos').style.display = tab === 'catalogos' ? '' : 'none';
+};
+
 document.getElementById('shell').innerHTML = `
   ${renderSidebar('variables', 'coordinador')}
   <div class="main-area">
-    ${renderTopbar({ title: 'Variables del sistema' })}
+    ${renderTopbar({ title: 'Variables y catálogos' })}
     ${content()}
   </div>
 `;

@@ -69,22 +69,16 @@ function toggleFiltros() {
 const leadsData = {
   NUEVO: { color: '#3B82F6', label: 'Nuevo', badgeClass: 'prospecto', items: [
     { titulo: 'Solicitud cotización tubería para alcantarillado', empresa: 'RB DE COLOMBIA SA', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 60, age: '1d', avatar: 'DC', color: 3 },
-    { titulo: 'Oferta tubería PE100 para proyecto VIS', empresa: 'INGEOMEGA', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 100, age: '2d', avatar: 'DI', color: 1 },
+    { titulo: 'Oferta tubería PE100 para proyecto VIS', empresa: 'INGEOMEGA', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 40, age: '2d', avatar: 'DI', color: 1 },
     { titulo: 'Cotización tubería 315mm PN10 para vivienda', empresa: 'GAMO INGENIEROS SAS', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 60, age: '0d', avatar: 'GA', color: 5 },
   ]},
   CONTACTADO: { color: '#A855F7', label: 'Contactado', badgeClass: 'propuesta', items: [
-    { titulo: 'Oferta equipo termofusión 160mm', empresa: 'MONTAJES JM', origen: 'WhatsApp', intereses: ['Equipos'], score: 80, age: '4d', avatar: 'MJ', color: 4 },
-    { titulo: 'Propuesta accesorios para Manizales', empresa: 'CMM', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 80, age: '5d', avatar: 'CM', color: 2 },
-    { titulo: 'Oferta tubería para proyecto Santa Elena', empresa: 'CONSORCIO ING SANTA ELENA PM', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 100, age: '3d', avatar: 'CS', color: 3 },
+    { titulo: 'Cotización accesorio PE para Tocancipa', empresa: 'UNION TEMPORAL BALSA 3', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 60, age: '4d', avatar: 'UT', color: 2 },
+    { titulo: 'Oferta tubería 315mm para proyecto VIS', empresa: 'GAMO INGENIEROS', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 40, age: '5d', avatar: 'GM', color: 5 },
   ]},
   INTERESADO: { color: '#F39610', label: 'Interesado', badgeClass: 'calificacion', items: [
-    { titulo: 'Cotización No 1393 tubería 110mm RDE 17', empresa: 'CIVILE HIDRAULICOS', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 100, age: '6d', avatar: 'CH', color: 6 },
-    { titulo: 'Cotización No 1248 proyecto Imola Park', empresa: 'Promotora Imola Park S.A.S', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 100, age: '8d', avatar: 'PI', color: 1 },
-    { titulo: 'Oferta para licitador municipio Apartadó', empresa: 'ADOS INGENIERIA', origen: 'Instagram', intereses: ['Tubería PE'], score: 80, age: '7d', avatar: 'AD', color: 4 },
-  ]},
-  TRASLADADO: { color: '#22C55E', label: 'Trasladado a distribuidor', badgeClass: 'ganada', items: [
-    { titulo: 'Cotización No 584 proyecto Sabanalarga', empresa: 'COL PROYECTOS', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 100, age: '10d', avatar: 'CP', color: 5 },
-    { titulo: 'Cotización No 20250626 proyecto RCI Seren del Mar', empresa: 'FIRELINE', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 100, age: '12d', avatar: 'FL', color: 2 },
+    { titulo: 'Solicitud tubería industrial para planta', empresa: 'SOLUCIONES HIDRAULICAS', origen: 'WhatsApp', intereses: ['Tubería PE', 'Válvulas'], score: 100, age: '5d', avatar: 'SH', color: 4 },
+    { titulo: 'Cotización manifold para estación', empresa: 'INGENIERIA DEL OCCIDENTE', origen: 'Instagram', intereses: ['Accesorios PE'], score: 80, age: '3d', avatar: 'IO', color: 2 },
   ]},
   DESCALIFICADO: { color: '#EF4444', label: 'No Interesado', badgeClass: 'perdida', items: [
     { titulo: 'Proyecto alcantarillado EMSERPRE', empresa: 'EMSERPRE', origen: 'Instagram', intereses: ['Tubería PE', 'Accesorios'], score: 20, age: '15d', avatar: 'EM', color: 3 },
@@ -138,12 +132,11 @@ function renderKanbanColumn(estadoKey) {
 
 function content() {
   const total = Object.values(leadsData).reduce((a,b)=>a+b.items.length, 0);
-  const columnasKanban = `<div class="kanban" style="grid-template-columns: repeat(5, 1fr);">
+  const columnasKanban = `<div class="kanban" style="grid-template-columns: repeat(4, 1fr);">
        ${renderKanbanColumn('NUEVO')}
        ${renderKanbanColumn('CONTACTADO')}
-       ${renderKanbanColumn('INTERESADO')}
-       ${renderKanbanColumn('TRASLADADO')}
-       ${renderKanbanColumn('DESCALIFICADO')}
+${renderKanbanColumn('INTERESADO')}
+        ${renderKanbanColumn('DESCALIFICADO')}
      </div>`;
 
   return `
@@ -151,7 +144,7 @@ function content() {
       <div class="page-head">
         <div class="page-head__title-group">
           <div class="page-head__title">Mis Leads</div>
-          <div class="page-head__subtitle">${total} leads en seguimiento · 2 sin contactar hace +2 días</div>
+          <div class="page-head__subtitle">${total} leads en seguimiento · 1 sin contactar hace +2 días</div>
         </div>
         <div class="page-head__actions">
           <button class="btn btn--secondary btn--sm" onclick="toggleFiltros()">${Icons.filter} Filtros</button>

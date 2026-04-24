@@ -33,6 +33,18 @@
     padding: 16px 24px; border-top: 1px solid var(--border);
     display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
   }
+  .dropdown-item {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 10px 12px;
+    background: none; border: none;
+    font-family: inherit; font-size: 13.5px; font-weight: 500;
+    color: var(--text-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 150ms;
+  }
+  .dropdown-item:hover { background: var(--page-bg); }
   .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
   .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 24px; }
   .canvas-section-title { font: 700 15px 'Roboto'; color: #24388C; margin: 40px 0 20px; padding: 8px 14px; background: #fff; border: 1px solid #E5E5E5; border-radius: 6px; display: inline-block; }
@@ -209,7 +221,7 @@ function agregarContactoModal() {
     <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
       <div class="modal-content" style="max-width: 520px;">
         <div class="modal-header">
-          <div class="modal-header__icon" style="background: var(--primary-bg); color: var(--primary);">${Icons.userCircle}</div>
+          <div class="modal-header__icon modal-header__icon--primary">${Icons.userPlus}</div>
           <div>
             <div style="font-weight: 700; font-size: 16px;">Agregar contacto</div>
             <div style="font-size: 12.5px; color: var(--text-muted);">Nuevo contacto para EMPAS S.A.</div>

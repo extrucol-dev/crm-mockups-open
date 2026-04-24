@@ -39,15 +39,16 @@
     overflow: hidden;
   }
   .modal-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    gap: 12px;
   }
+  .modal-header > :first-child { flex-shrink: 0; }
+  .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
   .modal-header__icon {
-    width: 40px; height: 40px;
-    background: var(--error-bg); color: var(--error);
+    width: 40px; height: 40px; background: var(--error-bg); color: var(--error);
     border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    margin-right: 12px;
+    flex-shrink: 0;
   }
   .modal-header__icon--accent { background: var(--accent-bg); color: #C7770D; }
   .modal-header__icon--success { background: var(--success-bg); color: var(--success); }
@@ -60,23 +61,29 @@
 </style>
 </head>
 <body>
-<div class="app-shell" id="shell"></div>
+<div>
+  <div >
+    <div class="app-shell" id="shell"></div>
   </div>
 </div>
 
 <script src="../shared/components.js"></script>
 <script>
+window.modalRoot = document.getElementById('shell');
+function openModal(html) { modalRoot.innerHTML += html; }
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
 function notificarModal(registro) {
   return `
     <div class="modal-overlay" id="modal-notificar">
       <div class="modal-content">
         <div class="modal-header">
-          <div style="display: flex; align-items: center;">
-            <div class="modal-header__icon">${Icons.bell}</div>
-            <div>
-              <div style="font-weight: 700; font-size: 16px;">Notificar ejecutivo</div>
-              <div style="font-size: 12.5px; color: var(--text-muted);">Enviar alerta inmediata por email y push</div>
-            </div>
+          <div class="modal-header__icon">${Icons.bell}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Notificar ejecutivo</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Enviar alerta inmediata por email y push</div>
           </div>
           <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
         </div>
@@ -182,13 +189,13 @@ function reasignarModal(registro) {
 }
 
 window.openNotificar = function(registro) {
-  document.getElementById('modal-root').innerHTML = notificarModal(registro);
+  modalRoot.innerHTML = notificarModal(registro);
 };
 window.openReasignar = function(registro) {
-  document.getElementById('modal-root').innerHTML = reasignarModal(registro);
+  modalRoot.innerHTML = reasignarModal(registro);
 };
 window.closeModal = function() {
-  document.getElementById('modal-root').innerHTML = '';
+  modalRoot.innerHTML = '';
 };
 
 function content() {
@@ -293,7 +300,6 @@ function content() {
               <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 3px;">Umbral: ${r.umbral}d</div>
             </div>
             <div style="text-align: right; display: flex; gap: 4px; justify-content: flex-end;">
-              <button class="btn btn--ghost btn--sm" title="Notificar" onclick='openNotificar(${JSON.stringify(r).replace(/'/g, "\\'")})'>${Icons.bell}</button>
               <button class="btn btn--ghost btn--sm" title="Reasignar" onclick='openReasignar(${JSON.stringify(r).replace(/'/g, "\\'")})'>${Icons.users}</button>
               <a href="../ejecutivo/04-oportunidad-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
                 <button class="btn btn--ghost btn--sm" title="Ver">${Icons.chevronRight}</button>

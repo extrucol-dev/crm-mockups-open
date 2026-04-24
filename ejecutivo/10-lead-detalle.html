@@ -29,28 +29,29 @@
   .modal-header > :first-child { flex-shrink: 0; }
   .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
   .modal-body { padding: 20px 24px; }
-  .modal-footer {
-    padding: 16px 24px; border-top: 1px solid var(--border);
-    display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
-  }
-
   .motivo-option {
     display: flex; align-items: center; gap: 10px;
     padding: 12px 14px; border: 1px solid var(--border);
-    border-radius: 8px; cursor: pointer; transition: all 180ms; margin-bottom: 8px;
+    border-radius: 8px; cursor: pointer;
+    transition: all 180ms;
+    margin-bottom: 8px;
   }
   .motivo-option:hover { border-color: var(--primary); background: var(--primary-bg); }
-  .motivo-option.is-selected--error { border-color: var(--error); background: var(--error-bg); }
   .motivo-option__radio {
     width: 18px; height: 18px; border-radius: 50%;
-    border: 2px solid var(--border-input); flex-shrink: 0;
+    border: 2px solid var(--border-input);
+    flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
   }
+  .motivo-option.is-selected--error { border-color: var(--error); background: var(--error-bg); }
   .motivo-option.is-selected--error .motivo-option__radio { border-color: var(--error); }
   .motivo-option.is-selected--error .motivo-option__radio::after {
     content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--error);
   }
-
+.modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
+  }
   .convert-preview {
     background: var(--page-bg);
     border: 1px dashed var(--primary);
@@ -64,6 +65,55 @@
     color: var(--primary);
   }
   .convert-arrow svg { width: 24px; height: 24px; }
+  .interes-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px; border: 1px solid var(--border);
+    border-radius: 20px; font-size: 12px; cursor: pointer;
+    transition: all 150ms;
+  }
+  .interes-chip:hover { border-color: var(--primary); }
+  .interes-chip.is-selected { border-color: var(--primary); background: var(--primary-bg); color: var(--primary); }
+  .interes-chip.is-selected::before { content: '✓'; font-weight: 700; }
+  .score-selector {
+    display: flex; gap: 10px; align-items: stretch;
+  }
+  .score-card {
+    position: relative; flex: 1; min-width: 80px;
+    padding: 10px 8px 8px; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; text-align: center;
+    transition: all 150ms; background: var(--surface);
+  }
+  .score-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; border-radius: 8px 8px 0 0;
+  }
+  .score-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .score-card.is-selected { border-color: var(--primary); background: var(--primary-bg); }
+  .score-card__n { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+  .score-card__label { font-size: 10px; font-weight: 600; color: var(--text-muted); }
+  .score-card__desc { font-size: 10px; color: var(--text-muted); text-align: center; }
+  .score-card[data-score="20"]::before { background: #93C5FD; }
+  .score-card[data-score="20"] .score-card__n { background: #EEF1FA; color: #24388C; }
+  .score-card[data-score="40"]::before { background: #A5B4FC; }
+  .score-card[data-score="40"] .score-card__n { background: #EEF1FA; color: #6366F1; }
+  .score-card[data-score="60"]::before { background: #FCD34D; }
+  .score-card[data-score="60"] .score-card__n { background: #FFF4E0; color: #C7770D; }
+  .score-card[data-score="80"]::before { background: #FB923C; }
+  .score-card[data-score="80"] .score-card__n { background: #FFF4E0; color: #EA580C; }
+  .score-card[data-score="100"]::before { background: #4ADE80; }
+  .score-card[data-score="100"] .score-card__n { background: #E8F5EE; color: #1A8754; }
+  .dropdown-item {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 10px 12px;
+    background: none; border: none;
+    font-family: inherit; font-size: 13.5px; font-weight: 500;
+    color: var(--text-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 150ms;
+  }
+  .dropdown-item:hover { background: var(--page-bg); }
 </style>
 </head>
 <body>
@@ -125,8 +175,8 @@ function editarLeadModal() {
               <label class="form-field__label">Origen</label>
               <select class="select">
                 <option>WhatsApp</option>
-                <option>Instagram</option>
                 <option selected>Facebook</option>
+                <option>Instagram</option>
                 <option>Página Web</option>
               </select>
             </div>
@@ -137,6 +187,44 @@ function editarLeadModal() {
                 <option>Contactado</option>
                 <option selected>Interesado</option>
               </select>
+            </div>
+          </div>
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <span class="icon" style="color: var(--primary);">${Icons.fire}</span> Score
+            </div>
+            <div class="score-selector">
+              <div class="score-card" data-score="20">
+                <div class="score-card__n">20%</div>
+                <div class="score-card__label">Frío</div>
+              </div>
+              <div class="score-card" data-score="40">
+                <div class="score-card__n">40%</div>
+                <div class="score-card__label">Tibio</div>
+              </div>
+              <div class="score-card" data-score="60">
+                <div class="score-card__n">60%</div>
+                <div class="score-card__label">Cálido</div>
+              </div>
+              <div class="score-card" data-score="80">
+                <div class="score-card__n">80%</div>
+                <div class="score-card__label">Caliente</div>
+              </div>
+              <div class="score-card is-selected" data-score="100">
+                <div class="score-card__n">100%</div>
+                <div class="score-card__label">Muy caliente</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-bottom: 6px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <span class="icon" style="color: var(--primary);">${Icons.tag}</span> Intereses
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <span class="interes-chip is-selected">Tubería PE100</span>
+              <span class="interes-chip is-selected">Accesorios PE</span>
+              <span class="interes-chip">Válvulas y fittings</span>
+              <span class="interes-chip">Sistema de riego</span>
             </div>
           </div>
           <div class="form-field">
@@ -190,6 +278,13 @@ function descalificarLeadModal() {
             <div>
               <div style="font-weight: 600; font-size: 13.5px;">No es el responsable</div>
               <div style="font-size: 11.5px; color: var(--text-muted);">Contactó a alguien sin poder de decisión</div>
+            </div>
+          </div>
+          <div class="motivo-option" onclick="selectMotivo(this)">
+            <div class="motivo-option__radio"></div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px;">Trasladado a distribuidor</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Lead derivado a red de distribuidores</div>
             </div>
           </div>
           <div class="motivo-option" onclick="selectMotivo(this)">
@@ -350,7 +445,7 @@ function detailContent() {
           </div>
         </div>
         <div style="display: flex; gap: 8px; flex-shrink: 0;">
-          <button class="btn btn--secondary btn--sm" onclick="openModal(editarLeadModal())">${Icons.pencil} Editar</button>
+<button class="btn btn--secondary btn--sm" onclick="openModal(editarLeadModal())">${Icons.pencil} Editar</button>
           <button class="btn btn--secondary btn--sm" onclick="openModal(descalificarLeadModal())">${Icons.xCircle} Descalificar</button>
           <button class="btn btn--primary btn--sm" style="background: var(--success);" onclick="openModal(conversionModal())">${Icons.arrowRight} Convertir a oportunidad</button>
         </div>
@@ -518,6 +613,17 @@ function detailContent() {
 }
 
 document.getElementById('shell').innerHTML = `${renderSidebar('leads','ejecutivo')}<div class="main-area">${renderTopbar({breadcrumb:['Leads','Detalle']})}${detailContent()}</div>`;
+
+document.querySelectorAll('.score-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.score-card').forEach(c => c.classList.remove('is-selected'));
+    card.classList.add('is-selected');
+  });
+});
+
+document.querySelectorAll('.interes-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('is-selected'));
+});
 
 function agregarContactoModal() {
   return `
