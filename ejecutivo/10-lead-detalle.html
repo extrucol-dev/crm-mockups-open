@@ -147,20 +147,53 @@ function editarLeadModal() {
             <input class="input" value="Cotización proyecto RCI Seren del Mar" />
           </div>
           <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Empresa</label>
-            <input class="input" value="FIRELINE" />
+            <label class="form-field__label">Descripción</label>
+            <textarea class="textarea" rows="3">Cliente solicita cotización No. 20250626 para proyecto RCI en Seren del Mar, Cartagena. Enviada información técnica de sello FM.</textarea>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Ejecutivo</label>
+              <select class="select">
+                <option selected>Paola Martínez</option>
+                <option>Juan Pérez</option>
+                <option>Carolina Gómez</option>
+                <option>Andrés Rojas</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Estado</label>
+              <select class="select">
+                ${renderLeadEstadoSelect('Interesado')}
+              </select>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Empresa</label>
+              <input class="input" value="FIRELINE" />
+            </div>
             <div class="form-field">
               <label class="form-field__label">Ciudad</label>
-              <input class="input" value="Cartagena" />
+              <select class="select">
+                <option selected>Cartagena</option>
+                <option>Medellín</option>
+                <option>Barranquilla</option>
+                <option>Bogotá</option>
+                <option>Cali</option>
+                <option>Bucaramanga</option>
+                <option>Piedecuesta</option>
+              </select>
             </div>
             <div class="form-field">
-              <label class="form-field__label">Sector de interés</label>
-              <input class="input" value="Tubería" />
+              <label class="form-field__label">Nombre del contacto</label>
+              <input class="input" value="Santiago Triana" />
             </div>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Origen</label>
+              <select class="select">
+                ${renderLeadOrigenSelect('whatsapp')}
+              </select>
+            </div>
             <div class="form-field">
               <label class="form-field__label">Teléfono</label>
               <input class="input" value="+57 317 745 9833" />
@@ -170,50 +203,12 @@ function editarLeadModal() {
               <input class="input" value="ventas@fireline.com.co" />
             </div>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-            <div class="form-field">
-              <label class="form-field__label">Origen</label>
-              <select class="select">
-                <option>WhatsApp</option>
-                <option selected>Facebook</option>
-                <option>Instagram</option>
-                <option>Página Web</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Estado</label>
-              <select class="select">
-                <option>Nuevo</option>
-                <option>Contactado</option>
-                <option selected>Interesado</option>
-              </select>
-            </div>
-          </div>
           <div style="margin-bottom: 14px;">
             <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
               <span class="icon" style="color: var(--primary);">${Icons.fire}</span> Score
             </div>
             <div class="score-selector">
-              <div class="score-card" data-score="20">
-                <div class="score-card__n">20%</div>
-                <div class="score-card__label">Frío</div>
-              </div>
-              <div class="score-card" data-score="40">
-                <div class="score-card__n">40%</div>
-                <div class="score-card__label">Tibio</div>
-              </div>
-              <div class="score-card" data-score="60">
-                <div class="score-card__n">60%</div>
-                <div class="score-card__label">Cálido</div>
-              </div>
-              <div class="score-card" data-score="80">
-                <div class="score-card__n">80%</div>
-                <div class="score-card__label">Caliente</div>
-              </div>
-              <div class="score-card is-selected" data-score="100">
-                <div class="score-card__n">100%</div>
-                <div class="score-card__label">Muy caliente</div>
-              </div>
+              ${renderLeadScore(100, { compact: true })}
             </div>
           </div>
           <div style="margin-bottom: 6px;">
@@ -221,15 +216,8 @@ function editarLeadModal() {
               <span class="icon" style="color: var(--primary);">${Icons.tag}</span> Intereses
             </div>
             <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-              <span class="interes-chip is-selected">Tubería PE100</span>
-              <span class="interes-chip is-selected">Accesorios PE</span>
-              <span class="interes-chip">Válvulas y fittings</span>
-              <span class="interes-chip">Sistema de riego</span>
+              ${renderLeadInteresChips(['Tubería PE100', 'Accesorios PE'])}
             </div>
-          </div>
-          <div class="form-field">
-            <label class="form-field__label">Observaciones</label>
-            <textarea class="textarea" rows="2">Cliente solicita cotización No. 20250626 para proyecto RCI en Seren del Mar, Cartagena. Enviada información técnica de sello FM.</textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -356,7 +344,7 @@ function trasladarDistribuidorModal() {
 function conversionModal() {
   return `
     <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-content">
+      <div class="modal-content" style="max-width: 640px;">
         <div class="modal-header">
           <div style="display: flex; align-items: center;">
             <div class="modal-header__icon modal-header__icon--success">${Icons.arrowRight}</div>
@@ -376,40 +364,72 @@ function conversionModal() {
             <div style="font-size: 12px; color: var(--text-muted);">FIRELINE · Score 100%</div>
           </div>
           <div class="convert-arrow">${Icons.chevronDown}</div>
+
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">Información básica</div>
           <div class="form-field" style="margin-bottom: 12px;">
             <label class="form-field__label">Título de la oportunidad <span class="req">*</span></label>
             <input class="input" value="Contrato FIRELINE - Proyecto RCI Cartagena" />
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
             <div class="form-field">
-              <label class="form-field__label">Tipo</label>
+              <label class="form-field__label">Tipo de oportunidad <span class="req">*</span></label>
               <select class="select">
-                <option>Suministro directo</option>
-                <option selected>Licitación</option>
-                <option>Proyecto a medida</option>
+                ${renderOportunidadTipoSelect('Licitación pública')}
               </select>
             </div>
             <div class="form-field">
-              <label class="form-field__label">Valor estimado (COP)</label>
+              <label class="form-field__label">Sector <span class="req">*</span></label>
+              <select class="select">
+                ${renderOportunidadSectorSelect('Agua potable')}
+              </select>
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom: 16px;">
+            <label class="form-field__label">Descripción</label>
+            <textarea class="textarea" rows="2">Cliente solicita cotización No. 20250626 para proyecto RCI en Seren del Mar, Cartagena. Enviada información técnica de sello FM.</textarea>
+          </div>
+
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">Empresa y contacto</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div class="form-field">
+              <label class="form-field__label">Empresa <span class="req">*</span></label>
+              <input class="input" value="FIRELINE" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Contacto asignado</label>
+              <select class="select">
+                <option selected>Santiago Triana</option>
+                <option>+ Nuevo contacto</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">Valores y fechas</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div class="form-field">
+              <label class="form-field__label">Valor estimado (COP) <span class="req">*</span></label>
               <input class="input" value="$ 44.000.000" />
             </div>
             <div class="form-field">
-              <label class="form-field__label">Fecha cierre estimada</label>
+              <label class="form-field__label">Fecha estimada de cierre <span class="req">*</span></label>
               <input class="input" type="date" value="2025-09-30" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Probabilidad de cierre (%) <span class="req">*</span></label>
+              <input class="input" type="number" min="0" max="100" value="65" />
             </div>
             <div class="form-field">
               <label class="form-field__label">Estado inicial</label>
               <select class="select">
-                <option selected>Prospección</option>
-                <option>Calificación</option>
+                ${renderOportunidadEstadoSelect('Prospección')}
               </select>
             </div>
           </div>
+
           <div class="alert alert--info">
             ${Icons.sparkles}
             <div>
-              Se creará una nueva oportunidad y este lead se marcará como <strong>Trasladado a distribuidor</strong>.
-              Los intereses del lead se usarán para pre-seleccionar productos.
+              Se creará una nueva oportunidad y este lead pasará a estado <strong>Interesado</strong>.
             </div>
           </div>
         </div>
@@ -453,15 +473,22 @@ function detailContent() {
     </div>
   `;
 
-  const interesesHTML = `
+  const descripcionHTML = `
     <div class="card">
       <div class="card__header">
-        <div class="card__title">Intereses del lead</div>
-        <span class="badge badge--info">2 seleccionados</span>
+        <div class="card__title">Descripción e intereses</div>
       </div>
-      <div class="card__body" style="display: flex; flex-wrap: wrap; gap: 8px;">
-        <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Tubería PE</span>
-        <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Accesorios PE</span>
+      <div class="card__body">
+        <div style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px;">
+          Cliente solicita cotización No. 20250626 para proyecto RCI en Seren del Mar, Cartagena. Enviada información técnica de sello FM.
+        </div>
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Intereses</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Tubería PE100</span>
+            <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Accesorios PE</span>
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -507,18 +534,11 @@ function detailContent() {
       <div class="card">
         <div class="card__header">
           <div class="card__title">Información de contacto</div>
-          <div style="display: flex; gap: 4px;">
-            <button class="topbar__icon-btn" onclick="openModal(contactOptionsModal())">${Icons.dots}</button>
-            <button class="btn btn--ghost btn--sm" onclick="openModal(agregarContactoModal())">${Icons.plus} Agregar</button>
-          </div>
         </div>
         <div class="card__body">
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-            <div class="avatar avatar--color-2">SF</div>
-            <div>
-              <div style="font-weight: 700;">Santiago Triana</div>
-              <div style="font-size: 12px; color: var(--text-muted);">Gerente comercial</div>
-            </div>
+            <div class="avatar avatar--color-2">ST</div>
+            <div style="font-weight: 700;">Santiago Triana</div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
             <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.phone} +57 317 745 9833</a>
@@ -537,7 +557,6 @@ function detailContent() {
             <dt>Asesor</dt><dd>Paola</dd>
             <dt>Score</dt><dd style="color: var(--accent); font-weight: 700;">100%</dd>
             <dt>Edad</dt><dd>12 días</dd>
-            <dt>Valor proyecto</dt><dd style="color: var(--accent);">$ 44.000.000</dd>
           </dl>
         </div>
       </div>
@@ -546,7 +565,6 @@ function detailContent() {
         <div class="card__header"><div class="card__title">Acciones</div></div>
         <div class="card__body" style="display: flex; flex-direction: column; gap: 8px;">
           <button class="btn btn--primary btn--sm" style="background: var(--success); width: 100%;" onclick="openModal(conversionModal())">${Icons.arrowRight} Convertir a oportunidad</button>
-          <button class="btn btn--secondary btn--block" onclick="openModal(trasladarDistribuidorModal())">${Icons.arrowRight} Trasladar a distribuidor</button>
           <button class="btn btn--secondary btn--block" style="color: var(--error); border-color: var(--error-border);" onclick="openModal(descalificarLeadModal())">${Icons.xCircle} Descalificar lead</button>
         </div>
       </div>
@@ -602,7 +620,7 @@ function detailContent() {
       ${header}
       <div style="display: grid; gap: 16px; grid-template-columns: 1fr 320px;">
         <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
-          ${interesesHTML}
+          ${descripcionHTML}
           ${actividadesHTML}
           ${historialHTML}
         </div>
@@ -625,80 +643,12 @@ document.querySelectorAll('.interes-chip').forEach(chip => {
   chip.addEventListener('click', () => chip.classList.toggle('is-selected'));
 });
 
-function agregarContactoModal() {
-  return `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-content" style="max-width: 520px;">
-        <div class="modal-header">
-          <div class="modal-header__icon" style="background: var(--primary-bg); color: var(--primary);">${Icons.user}</div>
-          <div>
-            <div style="font-weight: 700; font-size: 16px;">Agregar contacto</div>
-            <div style="font-size: 12.5px; color: var(--text-muted);">Nuevo contacto para FIRELINE</div>
-          </div>
-          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
-        </div>
-        <div class="modal-body">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-            <div class="form-field">
-              <label class="form-field__label">Nombre completo <span class="req">*</span></label>
-              <input class="input" placeholder="Nombre del contacto" />
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Cargo</label>
-              <input class="input" placeholder="Ej: Gerente de Compras" />
-            </div>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-            <div class="form-field">
-              <label class="form-field__label">Teléfono</label>
-              <input class="input" placeholder="+57 XXX XXX XXXX" />
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Email</label>
-              <input class="input" type="email" placeholder="contacto@empresa.com" />
-            </div>
-          </div>
-          <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Área / Departamento</label>
-            <input class="input" placeholder="Ej: Compras, Proyectos, Dirección" />
-          </div>
-          <div class="form-field" style="margin-bottom: 6px;">
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
-              <input type="checkbox" style="width: 15px; height: 15px;" />
-              <span>Marcar como contacto principal</span>
-            </label>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
-          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Agregar contacto</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function contactOptionsModal() {
-  return `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-content" style="max-width: 380px;">
-        <div class="modal-header">
-          <div class="modal-header__icon" style="background: var(--page-bg); color: var(--text-muted);">${Icons.user}</div>
-          <div>
-            <div style="font-weight: 700; font-size: 15px;">Santiago Triana</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Gerente comercial · FIRELINE</div>
-          </div>
-          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
-        </div>
-        <div class="modal-body" style="padding: 8px;">
-          <button class="dropdown-item" onclick="closeModal()">${Icons.phone} Llamar ahora</button>
-          <button class="dropdown-item" onclick="closeModal()">${Icons.pencil} Editar contacto</button>
-          <button class="dropdown-item" style="color: var(--error);" onclick="closeModal()">${Icons.trash} Eliminar contacto</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
+document.querySelectorAll('.origen-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.origen-option').forEach(o => o.classList.remove('is-selected'));
+    opt.classList.add('is-selected');
+  });
+});
 </script>
 </body>
 </html>

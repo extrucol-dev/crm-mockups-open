@@ -93,10 +93,6 @@ function editarClienteModal() {
             <label class="form-field__label">Nombre / Razón social</label>
             <input class="input" value="EMPAS S.A." />
           </div>
-          <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Nombre comercial</label>
-            <input class="input" value="EMPAS S.A." />
-          </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
               <label class="form-field__label">Estado</label>
@@ -117,16 +113,6 @@ function editarClienteModal() {
           <div class="form-field" style="margin-bottom: 14px;">
             <label class="form-field__label">Dirección</label>
             <input class="input" placeholder="Dirección comercial" />
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="form-field">
-              <label class="form-field__label">Teléfono</label>
-              <input class="input" value="+57 607 655 8842" />
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Email</label>
-              <input class="input" type="email" value="contacto@empas.gov.co" />
-            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -169,10 +155,6 @@ function nuevoClienteModal() {
             <label class="form-field__label">Nombre / Razón social <span class="req">*</span></label>
             <input class="input" placeholder="Nombre de la empresa o persona" />
           </div>
-          <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Nombre comercial</label>
-            <input class="input" placeholder="Nombre comercial (opcional)" />
-          </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
               <label class="form-field__label">País</label>
@@ -195,16 +177,6 @@ function nuevoClienteModal() {
           <div class="form-field" style="margin-bottom: 14px;">
             <label class="form-field__label">Dirección</label>
             <input class="input" placeholder="Dirección comercial" />
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="form-field">
-              <label class="form-field__label">Teléfono</label>
-              <input class="input" placeholder="+57 XXX XXX XXXX" />
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Email</label>
-              <input class="input" type="email" placeholder="contacto@empresa.com" />
-            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -233,16 +205,7 @@ function agregarContactoModal() {
             <label class="form-field__label">Nombre completo <span class="req">*</span></label>
             <input class="input" placeholder="Nombre y apellido" />
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-            <div class="form-field">
-              <label class="form-field__label">Cargo</label>
-              <input class="input" placeholder="Ej: Gerente de Compras" />
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Área / Departamento</label>
-              <input class="input" placeholder="Ej: Compras" />
-            </div>
-          </div>
+
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
               <label class="form-field__label">Teléfono</label>
@@ -287,12 +250,12 @@ function contactOptionsModal() {
 }
 
 const clientes = [
-{ name: 'EMPAS S.A.', company: 'Empresa Pública de Alcantarillado', badge: 'info', city: 'Piedecuesta', phone: '+57 607 655 8842', email: 'contacto@empas.gov.co', registered: '12 Ene 2024', avatar: 'ES', color: 1, recurrente: true },
-    { name: 'Tecnoagua SAS', company: 'Tecnologías del Agua SAS', badge: 'info', city: 'Bucaramanga', phone: '+57 310 555 2201', email: 'ventas@tecnoagua.co', registered: '05 Feb 2024', avatar: 'TA', color: 2, recurrente: false },
-    { name: 'Aguas del Valle', company: 'Aguas del Valle SA', badge: 'info', city: 'Cali', phone: '+57 602 422 7788', email: 'compras@aguasdelvalle.co', registered: '20 Feb 2024', avatar: 'AV', color: 3, recurrente: true },
-    { name: 'Ingenio del Cauca', company: 'Ingenio del Cauca SA', badge: 'accent', city: 'Candelaria', phone: '+57 602 841 0023', email: 'logistica@ingeniocauca.co', registered: '10 Mar 2024', avatar: 'IC', color: 4, recurrente: false },
-    { name: 'Hidrogas del Oriente', company: 'Hidrogas SA ESP', badge: 'ganada', city: 'Bucaramanga', phone: '+57 607 612 3345', email: 'proyectos@hidrogas.co', registered: '18 Mar 2024', avatar: 'HO', color: 5, recurrente: true },
-    { name: 'Constructora Andina', company: 'Constructora Andina Ltda', badge: 'propuesta', city: 'Bogotá', phone: '+57 601 623 4456', email: 'info@canda.co', registered: '22 Mar 2024', avatar: 'CA', color: 6, recurrente: false },
+{ name: 'EMPAS S.A.', company: 'Empresa Pública de Alcantarillado', badge: 'info', city: 'Piedecuesta', registered: '12 Ene 2024', avatar: 'ES', color: 1, recurrente: true },
+    { name: 'Tecnoagua SAS', company: 'Tecnologías del Agua SAS', badge: 'info', city: 'Bucaramanga', registered: '05 Feb 2024', avatar: 'TA', color: 2, recurrente: false },
+    { name: 'Aguas del Valle', company: 'Aguas del Valle SA', badge: 'info', city: 'Cali', registered: '20 Feb 2024', avatar: 'AV', color: 3, recurrente: true },
+    { name: 'Ingenio del Cauca', company: 'Ingenio del Cauca SA', badge: 'accent', city: 'Candelaria', registered: '10 Mar 2024', avatar: 'IC', color: 4, recurrente: false },
+    { name: 'Hidrogas del Oriente', company: 'Hidrogas SA ESP', badge: 'ganada', city: 'Bucaramanga', registered: '18 Mar 2024', avatar: 'HO', color: 5, recurrente: true },
+    { name: 'Constructora Andina', company: 'Constructora Andina Ltda', badge: 'propuesta', city: 'Bogotá', registered: '22 Mar 2024', avatar: 'CA', color: 6, recurrente: false },
 ];
 
 function clienteCard(c) {
@@ -308,8 +271,6 @@ function clienteCard(c) {
       </div>
       <div class="cliente-card__info">
         <div class="cliente-card__info-row">${Icons.mapPin}<span>${c.city}</span></div>
-        <div class="cliente-card__info-row">${Icons.phone}<span>${c.phone}</span></div>
-        <div class="cliente-card__info-row">${Icons.envelope}<span style="overflow: hidden; text-overflow: ellipsis;">${c.email}</span></div>
       </div>
       <div class="cliente-card__footer">
         <span>${Icons.calendar} Desde ${c.registered}</span>
@@ -326,9 +287,9 @@ function detailContent() {
   const contactosHTML = `
     <div style="display: flex; flex-direction: column; gap: 12px;">
       ${[
-        { name: 'Andrés Rodríguez', role: 'Gerente de Proyectos', phone: '+57 310 555 8842', email: 'a.rodriguez@empas.gov.co', color: 2, avatar: 'AR', principal: true },
-        { name: 'María López', role: 'Compradora', phone: '+57 310 555 8843', email: 'm.lopez@empas.gov.co', color: 3, avatar: 'ML', principal: false },
-        { name: 'Carlos Muñoz', role: 'Director Técnico', phone: '+57 310 555 8844', email: 'c.munoz@empas.gov.co', color: 4, avatar: 'CM', principal: false },
+        { name: 'Andrés Rodríguez', phone: '+57 310 555 8842', email: 'a.rodriguez@empas.gov.co', color: 2, avatar: 'AR', principal: true },
+        { name: 'María López', phone: '+57 310 555 8843', email: 'm.lopez@empas.gov.co', color: 3, avatar: 'ML', principal: false },
+        { name: 'Carlos Muñoz', phone: '+57 310 555 8844', email: 'c.munoz@empas.gov.co', color: 4, avatar: 'CM', principal: false },
       ].map(c => `
         <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: var(--page-bg); border-radius: 8px;">
           <div class="avatar avatar--color-${c.color}">${c.avatar}</div>
@@ -337,7 +298,6 @@ function detailContent() {
               <div style="font-weight:600; color: var(--text-primary); font-size: 13.5px;">${c.name}</div>
               ${c.principal ? '<span class="badge badge--accent" style="font-size: 9.5px; padding: 1px 6px;">Principal</span>' : ''}
             </div>
-            <div style="font-size: 12px; color: var(--text-muted);">${c.role}</div>
             <div style="display: flex; gap: 12px; margin-top: 6px; font-size: 12px;">
               <a style="color: var(--primary); display: inline-flex; align-items: center; gap: 3px;">${Icons.phone.replace('icon"','icon icon--xs"')} ${c.phone}</a>
             </div>
@@ -395,6 +355,57 @@ function detailContent() {
     </div>
   `;
 
+  const actividadesHTML = `
+    <div class="timeline">
+      <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
+        <div class="timeline__dot timeline__dot--success"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Reunión técnica en planta</div>
+          <span class="timeline__date">Hoy, 10:30 AM</span>
+        </div>
+        <div class="timeline__desc">Visita con el ingeniero residente para revisar especificaciones del acueducto rural.</div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--info">${Icons.mapPin.replace('class="icon"','class="icon icon--xs"')} Visita</span>
+          <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
+        </div>
+      </div>
+      <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
+        <div class="timeline__dot timeline__dot--success"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Envío de cotización formal</div>
+          <span class="timeline__date">15 Mar, 3:20 PM</span>
+        </div>
+        <div class="timeline__desc">Propuesta económica por $ 485 M enviada al comité técnico de EMPAS.</div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--neutral">${Icons.envelope.replace('class="icon"','class="icon icon--xs"')} Email</span>
+          <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
+        </div>
+      </div>
+      <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
+        <div class="timeline__dot"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Llamada de seguimiento</div>
+          <span class="timeline__date">10 Mar, 11:00 AM</span>
+        </div>
+        <div class="timeline__desc">Coordinación de visita técnica con el gerente de proyectos.</div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--neutral">${Icons.phone.replace('class="icon"','class="icon icon--xs"')} Llamada</span>
+        </div>
+      </div>
+      <div class="timeline__item" style="cursor: pointer;" onclick="location.href='18-actividad-detalle.html'">
+        <div class="timeline__dot timeline__dot--muted"></div>
+        <div class="timeline__header">
+          <div class="timeline__title">Primer contacto con compras</div>
+          <span class="timeline__date">5 Mar, 9:15 AM</span>
+        </div>
+        <div class="timeline__desc">Llamada inicial con Andrés Rodríguez para conocer requerimiento.</div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span class="badge badge--neutral">${Icons.phone.replace('class="icon"','class="icon icon--xs"')} Llamada</span>
+        </div>
+      </div>
+    </div>
+  `;
+
   const headerHTML = `
     <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 16px;">
       <div style="display: flex; align-items: flex-start; gap: 16px;">
@@ -405,11 +416,9 @@ function detailContent() {
             <span class="badge badge--accent">Recurrente</span>
           </div>
           <div style="font-size: 22px; font-weight: 800; color: var(--text-primary); line-height: 1.2;">EMPAS S.A.</div>
-          <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Empresa Pública de Alcantarillado · NIT 890.200.341-2</div>
+          <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;"> NIT 890.200.341-2</div>
           <div style="display: flex; gap: 16px; margin-top: 12px; font-size: 13px; color: var(--text-secondary); flex-wrap: wrap;">
             <span style="display: inline-flex; align-items: center; gap: 6px;">${Icons.mapPin} Piedecuesta, Santander</span>
-            <span style="display: inline-flex; align-items: center; gap: 6px;">${Icons.phone} +57 607 655 8842</span>
-            <span style="display: inline-flex; align-items: center; gap: 6px;">${Icons.envelope} contacto@empas.gov.co</span>
           </div>
         </div>
         <div style="display: flex; gap: 8px;">
@@ -451,6 +460,17 @@ function detailContent() {
             <span class="badge badge--info">3 totales</span>
           </div>
           ${oportunidadesHTML}
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card__header">
+          <div class="card__title">Actividades recientes</div>
+          <a href="07-actividades.html" style="text-decoration: none;"><button class="btn btn--ghost btn--sm">Ver todas</button></a>
+        </div>
+        <div class="card__body">${actividadesHTML}</div>
+        <div class="card__footer" style="justify-content: center;">
+          <button class="btn btn--secondary btn--sm btn--block">${Icons.plus} Registrar actividad</button>
         </div>
       </div>
 

@@ -213,10 +213,106 @@ function renderMobileBottomNav(active = 'dashboard', role = 'ejecutivo') {
   return `<nav class="mobile-bottom-nav">${items}</nav>`;
 }
 
+/* ==========================================================================
+   LEAD — catálogos compartidos y componentes
+   Fuente única para origen, intereses y score, usados por
+   el form de "Nuevo Lead" y el modal de "Editar Lead".
+   ========================================================================== */
+
+const LeadCatalog = {
+  origenes: [
+    { id: 'web',       label: 'Página Web', icon: 'globe' },
+    { id: 'email',     label: 'Email',      icon: 'envelope' },
+    { id: 'facebook',  label: 'Facebook',   icon: 'chartBar' },
+    { id: 'instagram', label: 'Instagram',  icon: 'sparkles' },
+    { id: 'whatsapp',  label: 'WhatsApp',   icon: 'clipboard' },
+  ],
+  intereses: [
+    'Tubería PE100',
+    'Tubería PVC',
+    'Accesorios PE',
+    'Válvulas y fittings',
+    'Sistema de riego',
+    'Equipos de termofusión',
+  ],
+  estados: ['Nuevo', 'Contactado', 'Interesado', 'Calificado', 'Descalificado'],
+  scores: [
+    { value: 20,  label: 'Frío',        desc: 'Sin interés demostrado aún' },
+    { value: 40,  label: 'Tibio',       desc: 'Contacto inicial, sin compromiso' },
+    { value: 60,  label: 'Cálido',      desc: 'Interés claro, requiere seguimiento' },
+    { value: 80,  label: 'Caliente',    desc: 'Alto potencial, oportunidad real' },
+    { value: 100, label: 'Muy caliente', desc: 'Listo para conversión inmediata' },
+  ],
+};
+
+function renderLeadOrigenOptions(selectedId) {
+  return LeadCatalog.origenes.map(o => `
+    <div class="origen-option ${o.id === selectedId ? 'is-selected' : ''}" data-origen="${o.id}">
+      <div class="origen-option__icon">${Icons[o.icon]}</div>
+      <div class="origen-option__label">${o.label}</div>
+    </div>
+  `).join('');
+}
+
+function renderLeadOrigenSelect(selectedId) {
+  return LeadCatalog.origenes.map(o =>
+    `<option value="${o.id}" ${o.id === selectedId ? 'selected' : ''}>${o.label}</option>`
+  ).join('');
+}
+
+function renderLeadInteresChips(selectedLabels = []) {
+  const set = new Set(selectedLabels);
+  return LeadCatalog.intereses.map(label => `
+    <span class="interes-chip ${set.has(label) ? 'is-selected' : ''}">${label}</span>
+  `).join('');
+}
+
+function renderLeadEstadoSelect(selectedLabel) {
+  return LeadCatalog.estados.map(e =>
+    `<option ${e === selectedLabel ? 'selected' : ''}>${e}</option>`
+  ).join('');
+}
+
+function renderLeadScore(selectedValue, { compact = false } = {}) {
+  return LeadCatalog.scores.map(s => `
+    <div class="score-card ${s.value === selectedValue ? 'is-selected' : ''}" data-score="${s.value}">
+      <div class="score-card__n">${s.value}%</div>
+      <div class="score-card__label">${s.label}</div>
+      ${compact ? '' : `<div class="score-card__desc">${s.desc}</div>`}
+    </div>
+  `).join('');
+}
+
+/* ==========================================================================
+   OPORTUNIDAD — catálogos compartidos
+   Fuente única para tipo, sector y estado inicial, usados por
+   el form de "Nueva oportunidad" y el modal de "Convertir a oportunidad".
+   ========================================================================== */
+
+const OportunidadCatalog = {
+  tipos:    ['Licitación pública', 'Suministro directo', 'Proyecto a medida', 'Contrato marco'],
+  sectores: ['Agua potable', 'Gas natural', 'Agricultura / Riego', 'Industria'],
+  estados:  ['Prospección', 'Propuesta', 'Negociación'],
+};
+
+function renderOportunidadTipoSelect(selected)   { return OportunidadCatalog.tipos   .map(v => `<option ${v === selected ? 'selected' : ''}>${v}</option>`).join(''); }
+function renderOportunidadSectorSelect(selected) { return OportunidadCatalog.sectores.map(v => `<option ${v === selected ? 'selected' : ''}>${v}</option>`).join(''); }
+function renderOportunidadEstadoSelect(selected) { return OportunidadCatalog.estados .map(v => `<option ${v === selected ? 'selected' : ''}>${v}</option>`).join(''); }
+
 /* On DOM ready - auto-inject shared components */
 if (typeof window !== 'undefined') {
   window.Icons = Icons;
   window.renderSidebar = renderSidebar;
   window.renderTopbar = renderTopbar;
   window.renderMobileBottomNav = renderMobileBottomNav;
+  window.LeadCatalog = LeadCatalog;
+  window.renderLeadOrigenOptions = renderLeadOrigenOptions;
+  window.renderLeadOrigenSelect = renderLeadOrigenSelect;
+  window.renderLeadInteresChips = renderLeadInteresChips;
+  window.renderLeadEstadoSelect = renderLeadEstadoSelect;
+  window.renderLeadScore = renderLeadScore;
+  window.OportunidadCatalog = OportunidadCatalog;
+  window.renderOportunidadTipoSelect = renderOportunidadTipoSelect;
+  window.renderOportunidadSectorSelect = renderOportunidadSectorSelect;
+  window.renderOportunidadEstadoSelect = renderOportunidadEstadoSelect;
 }

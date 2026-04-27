@@ -498,40 +498,6 @@ function content() {
             </div>
           </div>
         </div>
-
-        <div class="card">
-          <div class="card__header">
-            <div>
-              <div class="card__title">🎯 Acciones recomendadas</div>
-              <div class="card__subtitle">Basado en tu progreso actual</div>
-            </div>
-          </div>
-          <div class="card__body">
-            ${[
-              { priority: 'Alta', action: 'Cerrar Oportunidad EMPAS ($485 M)', detail: 'Tienes 60% de probabilidad y vence en 5 días', icon: 'fire', iconColor: 'var(--error)', bg: '#FDECEA' },
-              { priority: 'Alta', action: 'Agendar 5 visitas sector Agro', detail: 'Meta personal atrasada · Valle y Meta son prioridad', icon: 'mapPin', iconColor: 'var(--accent)', bg: '#FFF4E0' },
-              { priority: 'Media', action: 'Contactar lead Agroindustria Llanera', detail: 'Score 65/100 · Sin contacto hace 2 días', icon: 'phone', iconColor: 'var(--primary)', bg: 'var(--primary-bg)' },
-              { priority: 'Media', action: 'Completar 2 actividades pendientes', detail: 'Para cumplir meta semanal de 20 actividades', icon: 'clipboardCheck', iconColor: 'var(--primary)', bg: 'var(--primary-bg)' },
-            ].map(a => `
-              <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px; background: ${a.bg}; border-radius: 6px; margin-bottom: 8px;">
-                <div style="width: 32px; height: 32px; border-radius: 6px; background: #fff; color: ${a.iconColor}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                  ${Icons[a.icon]}
-                </div>
-                <div style="flex: 1;">
-                  <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
-                    <span style="font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 1px 6px; background: ${a.iconColor}; color: #fff; border-radius: 8px;">${a.priority}</span>
-                    <strong style="font-size: 12.5px; color: var(--text-primary);">${a.action}</strong>
-                  </div>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">${a.detail}</div>
-                </div>
-              </div>
-            `).join('')}
-            <button class="btn btn--secondary btn--block" style="margin-top: 6px;">Ver todas las recomendaciones</button>
-          </div>
-        </div>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
         <div class="card">
           <div class="card__header">
             <div>
@@ -570,78 +536,7 @@ function content() {
             </div>
           </div>
         </div>
-
-        <div class="card">
-          <div class="card__header">
-            <div>
-              <div class="card__title">🏆 Mis logros</div>
-              <div class="card__subtitle">Reconocimientos ganados este año</div>
-            </div>
-            <span class="badge badge--accent">4 de 9</span>
-          </div>
-          <div class="card__body">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <div class="achievement-card achievement-card--unlocked">
-                <div class="achievement-card__icon" style="background: #FFF4CC;">🥇</div>
-                <div>
-                  <div style="font-weight: 700; font-size: 12.5px; color: var(--text-primary);">Top 3 del mes</div>
-                  <div style="font-size: 10.5px; color: var(--text-muted);">Marzo 2026</div>
-                </div>
-              </div>
-              <div class="achievement-card achievement-card--unlocked">
-                <div class="achievement-card__icon" style="background: #FFF4CC;">🔥</div>
-                <div>
-                  <div style="font-weight: 700; font-size: 12.5px; color: var(--text-primary);">Racha 3 meses</div>
-                  <div style="font-size: 10.5px; color: var(--text-muted);">Meta superada</div>
-                </div>
-              </div>
-              <div class="achievement-card achievement-card--unlocked">
-                <div class="achievement-card__icon" style="background: #FFF4CC;">⭐</div>
-                <div>
-                  <div style="font-weight: 700; font-size: 12.5px; color: var(--text-primary);">Cierre del millón</div>
-                  <div style="font-size: 10.5px; color: var(--text-muted);">Opp > $500M</div>
-                </div>
-              </div>
-              <div class="achievement-card achievement-card--unlocked">
-                <div class="achievement-card__icon" style="background: #FFF4CC;">📍</div>
-                <div>
-                  <div style="font-weight: 700; font-size: 12.5px; color: var(--text-primary);">100 visitas</div>
-                  <div style="font-size: 10.5px; color: var(--text-muted);">GPS registradas</div>
-                </div>
-              </div>
-              <div class="achievement-card achievement-card--locked">
-                <div class="achievement-card__icon" style="background: var(--page-bg); filter: grayscale(1);">🎯</div>
-                <div>
-                  <div style="font-weight: 700; font-size: 12.5px; color: var(--text-muted);">5 cierres seguidos</div>
-                  <div style="font-size: 10.5px; color: var(--text-disabled);">2/5 ganadas</div>
-                </div>
-              </div>
-              <div class="achievement-card achievement-card--locked">
-                <div class="achievement-card__icon" style="background: var(--page-bg); filter: grayscale(1);">💎</div>
-                <div>
-                  <div style="font-weight: 700; font-size: 12.5px; color: var(--text-muted);">Cliente premium</div>
-                  <div style="font-size: 10.5px; color: var(--text-disabled);">Opp > $1B</div>
-                </div>
-              </div>
-              <div class="achievement-card achievement-card--locked">
-                <div class="achievement-card__icon" style="background: var(--page-bg); filter: grayscale(1);">🚀</div>
-                <div>
-                  <div style="font-weight: 700; font-size: 12.5px; color: var(--text-muted);">Ejecutivo del año</div>
-                  <div style="font-size: 10.5px; color: var(--text-disabled);">Ranking #1</div>
-                </div>
-              </div>
-              <div class="achievement-card achievement-card--locked">
-                <div class="achievement-card__icon" style="background: var(--page-bg); filter: grayscale(1);">🌟</div>
-                <div>
-                  <div style="font-weight: 700; font-size: 12.5px; color: var(--text-muted);">Racha épica</div>
-                  <div style="font-size: 10.5px; color: var(--text-disabled);">6 meses sobre meta</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
   `;
 }
 

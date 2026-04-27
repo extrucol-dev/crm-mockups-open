@@ -75,10 +75,6 @@ function nuevoClienteModal() {
             <label class="form-field__label">Nombre / Razón social <span class="req">*</span></label>
             <input class="input" placeholder="Nombre de la empresa o persona" />
           </div>
-          <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Nombre comercial</label>
-            <input class="input" placeholder="Nombre comercial (opcional)" />
-          </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
               <label class="form-field__label">País</label>
@@ -92,26 +88,31 @@ function nuevoClienteModal() {
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
               <label class="form-field__label">Departamento</label>
-              <input class="input" placeholder="Ej: Santander" />
+              <select class="select">
+                <option>Antioquia</option>
+                <option>Atlántico</option>
+                <option>Bogotá D.C.</option>
+                <option>Bolívar</option>
+                <option>Cundinamarca</option>
+                <option>Santander</option>
+                <option>Valle del Cauca</option>
+              </select>
             </div>
             <div class="form-field">
               <label class="form-field__label">Municipio</label>
-              <input class="input" placeholder="Ej: Bucaramanga" />
+              <select class="select">
+                <option>Bucaramanga</option>
+                <option>Cartagena</option>
+                <option>Medellín</option>
+                <option>Barranquilla</option>
+                <option>Bogotá</option>
+                <option>Cali</option>
+              </select>
             </div>
           </div>
           <div class="form-field" style="margin-bottom: 14px;">
             <label class="form-field__label">Dirección</label>
             <input class="input" placeholder="Dirección comercial" />
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="form-field">
-              <label class="form-field__label">Teléfono</label>
-              <input class="input" placeholder="+57 XXX XXX XXXX" />
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Email</label>
-              <input class="input" type="email" placeholder="contacto@empresa.com" />
-            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -146,15 +147,9 @@ function agregarContactoModal() {
               <option>Constructora Andina</option>
             </select>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-            <div class="form-field">
-              <label class="form-field__label">Nombre completo <span class="req">*</span></label>
-              <input class="input" placeholder="Nombre del contacto" />
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Cargo</label>
-              <input class="input" placeholder="Ej: Gerente de Compras" />
-            </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Nombre completo <span class="req">*</span></label>
+            <input class="input" placeholder="Nombre del contacto" />
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
@@ -187,12 +182,12 @@ function agregarContactoModal() {
 }
 
 const clientes = [
-{ name: 'RB DE COLOMBIA SA', company: 'RB DE COLOMBIA SA ESP', badge: 'ganada', city: 'Quibdó', phone: '+57 310 758 7157', email: 'notificaciones@rbdecolombia.com', registered: '27 Feb 2025', avatar: 'RB', color: 1, recurrente: true },
-    { name: 'INGEOMEGA', company: 'Ingeomega SAS', badge: 'info', city: 'Medellín', phone: '+57 318 394 1635', email: 'mceballos@ingeomegasas.com', registered: '15 May 2025', avatar: 'IG', color: 2, recurrente: false },
-    { name: 'CIVILE HIDRAULICOS', company: 'Civile Hidráulicos SAS', badge: 'accent', city: 'Magangué', phone: '+57 318 266 8393', email: 'civileshidraulicosavp@gmail.com', registered: '25 Ago 2025', avatar: 'CH', color: 3, recurrente: false },
-    { name: 'FIRELINE', company: 'Fireline SAS', badge: 'info', city: 'Cartagena', phone: '+57 317 745 9833', email: 'ventas@fireline.com.co', registered: '26 Jun 2025', avatar: 'FL', color: 4, recurrente: false },
-    { name: 'ADOS INGENIERIA', company: 'ADOS Ingeniería SAS', badge: 'info', city: 'Apartadó', phone: '+57 301 703 1093', email: 'adospresupuestos@gmail.com', registered: '21 Abr 2025', avatar: 'AD', color: 5, recurrente: false },
-    { name: 'Promotora Imola Park S.A.S', company: 'Promotora Imola Park S.A.S', badge: 'propuesta', city: 'Cartagena', phone: '+57 310 569 5671', email: 'Comprasimola@pradoverde.co', registered: '19 Ago 2025', avatar: 'PI', color: 6, recurrente: false },
+  { name: 'RB DE COLOMBIA SA', badge: 'ganada', city: 'Quibdó', depto: 'Chocó', registered: '27 Feb 2025', avatar: 'RB', color: 1, recurrente: true },
+  { name: 'INGEOMEGA', badge: 'info', city: 'Medellín', depto: 'Antioquia', registered: '15 May 2025', avatar: 'IG', color: 2, recurrente: false },
+  { name: 'CIVILE HIDRAULICOS', badge: 'accent', city: 'Magangué', depto: 'Bolívar', registered: '25 Ago 2025', avatar: 'CH', color: 3, recurrente: false },
+  { name: 'FIRELINE', badge: 'info', city: 'Cartagena', depto: 'Bolívar', registered: '26 Jun 2025', avatar: 'FL', color: 4, recurrente: false },
+  { name: 'ADOS INGENIERIA', badge: 'info', city: 'Apartadó', depto: 'Antioquia', registered: '21 Abr 2025', avatar: 'AD', color: 5, recurrente: false },
+  { name: 'Promotora Imola Park S.A.S', badge: 'propuesta', city: 'Cartagena', depto: 'Bolívar', registered: '19 Ago 2025', avatar: 'PI', color: 6, recurrente: false },
 ];
 
 function clienteCard(c) {
@@ -201,20 +196,15 @@ function clienteCard(c) {
       <div class="cliente-card">
         <div class="cliente-card__header">
           <div class="avatar avatar--color-${c.color}">${c.avatar}</div>
-          <div style="flex:1; min-width: 0;">
-            <div class="cliente-card__name">${c.name}</div>
-            <div class="cliente-card__company">${c.company}</div>
-          </div>
+          <div class="cliente-card__name">${c.name}</div>
           <span class="badge badge--${c.badge}">${c.recurrente ? 'Recurrente' : 'Nuevo'}</span>
         </div>
-        <div class="cliente-card__info">
-          <div class="cliente-card__info-row">${Icons.mapPin}<span>${c.city}</span></div>
-          <div class="cliente-card__info-row">${Icons.phone}<span>${c.phone}</span></div>
-          <div class="cliente-card__info-row">${Icons.envelope}<span style="overflow: hidden; text-overflow: ellipsis;">${c.email}</span></div>
+        <div class="cliente-card__location">
+          ${Icons.mapPin}<span>${c.city}, ${c.depto}</span>
         </div>
         <div class="cliente-card__footer">
           <span>${Icons.calendar} Desde ${c.registered}</span>
-          <div style="display:flex; align-items:center; gap: 6px;">
+          <div class="cliente-card__badge-row">
             ${c.recurrente ? '<span class="badge badge--ganada" style="font-size: 10px;">Recurrente</span>' : '<span class="badge badge--info" style="font-size: 10px;">Nuevo</span>'}
             ${Icons.chevronRight}
           </div>
@@ -261,7 +251,7 @@ function gridContent() {
         <button class="btn btn--secondary btn--sm" style="margin-left:auto;">${Icons.filter} Más filtros</button>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
         ${clientes.map(clienteCard).join('')}
       </div>
     </div>

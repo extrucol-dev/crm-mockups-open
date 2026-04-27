@@ -6,9 +6,9 @@
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/components.css">
 <style>
-  .chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 180px; padding: 0 8px; }
-  .chart-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
-  .chart-bar-wrap { width: 100%; display: flex; gap: 3px; align-items: flex-end; height: 100%; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 180px; padding: 0 4px; flex: 1; }
+  .chart-bar-group { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; min-width: 0; height: 100%; }
+  .chart-bar-wrap { width: 100%; display: flex; gap: 3px; align-items: flex-end; height: 140px; }
   .chart-bar { flex: 1; border-radius: 4px 4px 0 0; min-width: 8px; background: var(--primary); transition: all 200ms; }
   .chart-bar--light { background: var(--primary-bg); }
   .chart-bar-label { font-size: 10.5px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
@@ -76,11 +76,12 @@ function content() {
 
   const meses = ['Oct','Nov','Dic','Ene','Feb','Mar','Abr'];
   const valores = [65,72,58,85,70,92,78];
+  const maxVal = 100;
   const chartHTML = valores.map((v, i) => `
     <div class="chart-bar-group">
       <div class="chart-bar-wrap">
-        <div class="chart-bar" style="height: ${v}%"></div>
-        <div class="chart-bar chart-bar--light" style="height: ${v * 0.7}%"></div>
+        <div class="chart-bar" style="height: ${(v / maxVal) * 100}%;"></div>
+        <div class="chart-bar chart-bar--light" style="height: ${(v * 0.7 / maxVal) * 100}%;"></div>
       </div>
       <span class="chart-bar-label">${meses[i]}</span>
     </div>
@@ -204,7 +205,17 @@ function content() {
             </div>
           </div>
           <div class="card__body">
-            <div class="chart-bars">${chartHTML}</div>
+            <div style="display: flex; gap: 4px; align-items: stretch;">
+              <div style="display: flex; flex-direction: column; justify-content: space-between; padding: 4px 0; font-size: 9px; color: var(--text-muted); font-weight: 600; text-align: right; min-width: 28px;">
+                <span>$1.0B</span>
+                <span>$800M</span>
+                <span>$600M</span>
+                <span>$400M</span>
+                <span>$200M</span>
+                <span>0</span>
+              </div>
+              <div class="chart-bars">${chartHTML}</div>
+            </div>
             <div style="display: flex; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--border); margin-top: 12px;">
               <div>
                 <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Promedio mensual</div>

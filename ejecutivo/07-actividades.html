@@ -176,7 +176,7 @@ function calendarContent() {
     let eventsHtml = '';
     events.slice(0, 3).forEach(ev => {
       const shortTitle = ev.titulo.length > 22 ? ev.titulo.substring(0, 22) + '…' : ev.titulo;
-      eventsHtml += `<div class="cal-event cal-event--${ev.iconClass}" title="${ev.titulo}">${shortTitle}</div>`;
+      eventsHtml += `<div class="cal-event cal-event--${ev.iconClass}" title="${ev.titulo}" onclick="location.href='18-actividad-detalle.html'">${shortTitle}</div>`;
     });
     if (events.length > 3) {
       eventsHtml += `<div class="cal-more">+${events.length - 3} más</div>`;
@@ -199,7 +199,6 @@ function calendarContent() {
           <div class="tabs" style="border-bottom: none; margin-bottom: 0;">
             <a class="tab" onclick="switchView('lista')">Lista</a>
             <a class="tab is-active" onclick="switchView('calendario')">Calendario</a>
-            <a class="tab" onclick="switchView('mapa')">Mapa</a>
           </div>
           <button class="btn btn--primary btn--sm">${Icons.plus} Registrar</button>
         </div>
@@ -231,7 +230,7 @@ function calendarContent() {
 function switchView(view) {
   currentView = view;
   document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('is-active', t.textContent.trim().toLowerCase() === (view === 'lista' ? 'Lista' : view === 'calendario' ? 'Calendario' : 'Mapa'));
+    t.classList.toggle('is-active', t.textContent.trim().toLowerCase() === (view === 'lista' ? 'Lista' : view === 'calendario' ? 'Calendario' :"" ));
   });
   renderMainContent();
 }
@@ -285,7 +284,6 @@ function listContent() {
           <div class="tabs" style="border-bottom: none; margin-bottom: 0;">
             <a class="tab is-active" onclick="switchView('lista')">Lista</a>
             <a class="tab" onclick="switchView('calendario')">Calendario</a>
-            <a class="tab" onclick="switchView('mapa')">Mapa</a>
           </div>
           <a href="13-actividad-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
            <button class="btn btn--primary btn--sm">${Icons.plus} Registrar</button>

@@ -135,7 +135,7 @@ function cerrarGanadaModal() {
         <div class="modal-header">
           <div class="modal-header__icon modal-header__icon--success">${Icons.trophy}</div>
           <div>
-            <div style="font-weight: 700; font-size: 18px;">¡Oportunidad ganada! 🎉</div>
+            <div style="font-weight: 700; font-size: 18px;">¡Oportunidad ganada!</div>
             <div style="font-size: 12.5px; color: var(--text-muted);">Registra los detalles del cierre</div>
           </div>
           <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
@@ -296,6 +296,27 @@ function editarOportunidadModal() {
               <label class="form-field__label">Probabilidad de cierre (%)</label>
               <input class="input" type="number" min="0" max="100" value="65" />
             </div>
+            <div class="form-field">
+              <label class="form-field__label">Ciudad</label>
+              <select class="select">
+                <option>Piedecuesta</option>
+                <option selected>Cartagena</option>
+                <option>Medellín</option>
+                <option>Barranquilla</option>
+                <option>Bogotá</option>
+                <option>Cali</option>
+                <option>Bucaramanga</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Ejecutivo</label>
+              <select class="select">
+                <option>Paola Martínez</option>
+                <option selected>Juan Pérez</option>
+                <option>Carolina Gómez</option>
+                <option>Andrés Rojas</option>
+              </select>
+            </div>
           </div>
           <div class="form-field">
             <label class="form-field__label">Descripción</label>
@@ -337,10 +358,6 @@ function avanzarEstadoModal() {
               <option>Negociación</option>
               <option>Ganada</option>
             </select>
-          </div>
-          <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Fecha del cambio</label>
-            <input class="input" type="date" value="2026-04-22" />
           </div>
           <div class="form-field" style="margin-bottom: 14px;">
             <label class="form-field__label">Probabilidad de cierre (%)</label>
@@ -686,26 +703,23 @@ function content() {
           <div class="card__title">Empresa</div>
           <a href="14-cliente-detalle.html" style="text-decoration: none;"><button class="btn btn--ghost btn--sm">${Icons.view}</button></a>
         </div>
-        <div class="card__body">
-          <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
+        <div class="card__body" style="padding: 16px;">
+          <div style="display: flex; align-items: center; gap: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 14px;">
             <div class="avatar avatar--lg avatar--color-1">ES</div>
-            <div>
-              <div style="font-weight:700; color: var(--text-primary);">EMPAS S.A.</div>
-              <div style="font-size: 12px; color: var(--text-muted);">NIT 890.200.341-2</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 700; font-size: 15px; color: var(--text-primary);">EMPAS S.A.</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">NIT 890.200.341-2</div>
             </div>
+            <span class="badge badge--info">Recurrente</span>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-            <div>
-              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Municipio</div>
-              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Piedecuesta</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="background: var(--page-bg); border-radius: 8px; padding: 10px 12px;">
+              <div style="font-size: 10.5px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Municipio</div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Piedecuesta</div>
             </div>
-            <div>
-              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Modalidad</div>
-              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Interior</div>
-            </div>
-            <div>
-              <div style="font-size: 11px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Cliente</div>
-              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);"><span class="badge badge--info">Recurrente</span></div>
+            <div style="background: var(--page-bg); border-radius: 8px; padding: 10px 12px;">
+              <div style="font-size: 10.5px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Departamento</div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">Santander</div>
             </div>
           </div>
         </div>
@@ -716,24 +730,25 @@ function content() {
           <div class="card__title">Contacto</div>
           <div style="display: flex; gap: 4px;">
             <button class="topbar__icon-btn" onclick="openModal(contactOptionsModal())">${Icons.dots}</button>
-            <button class="btn btn--ghost btn--sm" onclick="openModal(agregarContactoModal())">${Icons.plus} Agregar</button>
           </div>
         </div>
-        <div class="card__body">
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-            <div class="avatar avatar--sm avatar--color-2">AR</div>
-            <div>
-              <div style="font-weight:600; color: var(--text-primary);">Andrés Rodríguez</div>
-              <div style="font-size: 12px; color: var(--text-muted);">Gerente de Proyectos</div>
+        <div class="card__body" style="padding: 16px;">
+          <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px;">
+            <div class="avatar avatar--md avatar--color-2">AR</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 700; font-size: 14px; color: var(--text-primary);">Andrés Rodríguez</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Gerente de proyectos</div>
             </div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <a style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--primary); cursor: pointer;">
-              ${Icons.phone} +57 310 555 8842
-            </a>
-            <a style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--primary); cursor: pointer;">
-              ${Icons.envelope} a.rodriguez@empas.gov.co
-            </a>
+          <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+            <div style="background: var(--page-bg); border-radius: 8px; padding: 10px 12px;">
+              <div style="font-size: 10.5px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Teléfono</div>
+              <a style="font-size: 12.5px; color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.phone.replace('class="icon"','class="icon icon--sm"')} +57 310 555 8842</a>
+            </div>
+            <div style="background: var(--page-bg); border-radius: 8px; padding: 10px 12px;">
+              <div style="font-size: 10.5px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Email</div>
+              <a style="font-size: 12.5px; color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.envelope.replace('class="icon"','class="icon icon--sm"')} a.rodriguez@empas.gov.co</a>
+            </div>
           </div>
         </div>
       </div>
@@ -793,15 +808,9 @@ function agregarContactoModal() {
           <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
         </div>
         <div class="modal-body">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-            <div class="form-field">
-              <label class="form-field__label">Nombre completo <span class="req">*</span></label>
-              <input class="input" placeholder="Nombre del contacto" />
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Cargo</label>
-              <input class="input" placeholder="Ej: Gerente de Proyectos" />
-            </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Nombre completo <span class="req">*</span></label>
+            <input class="input" placeholder="Nombre del contacto" />
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
             <div class="form-field">
@@ -841,7 +850,7 @@ function contactOptionsModal() {
           <div class="modal-header__icon" style="background: var(--page-bg); color: var(--text-muted);">${Icons.user}</div>
           <div>
             <div style="font-weight: 700; font-size: 15px;">Andrés Rodríguez</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Gerente de Proyectos · EMPAS S.A.</div>
+            <div style="font-size: 12px; color: var(--text-muted);">EMPAS S.A.</div>
           </div>
           <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
         </div>

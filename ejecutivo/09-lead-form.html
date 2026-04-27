@@ -89,23 +89,6 @@
 <script src="../shared/components.js"></script>
 <script>
 function content() {
-  const origenes = [
-    { icon: 'globe', label: 'Página Web', sel: true },
-    { icon: 'envelope', label: 'Email' },
-    { icon: 'chartBar', label: 'Facebook' },
-    { icon: 'sparkles', label: 'Instagram' },
-    { icon: 'clipboard', label: 'WhatsApp' },
-  ];
-
-  const intereses = [
-    { label: 'Tubería PE100', sel: true },
-    { label: 'Tubería PVC', sel: false },
-    { label: 'Accesorios PE', sel: true },
-    { label: 'Válvulas y fittings', sel: false },
-    { label: 'Sistema de riego', sel: false },
-    { label: 'Equipos de termofusión', sel: false },
-  ];
-
   return `
     <div class="content">
 
@@ -128,18 +111,28 @@ function content() {
               <label class="form-field__label">Descripción</label>
               <textarea class="textarea" rows="3">Cliente solicita cotización de tubería PE100 500mm PN10 para proyecto de alcantarillado en zona rural. Requiere visita técnica y cotización formal.</textarea>
             </div>
+            <div class="form-field">
+              <label class="form-field__label">Ejecutivo <span class="req">*</span></label>
+              <select class="select">
+                <option selected>Paola Martínez</option>
+                <option>Juan Pérez</option>
+                <option>Carolina Gómez</option>
+                <option>Andrés Rojas</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Estado inicial</label>
+              <select class="select">
+                ${renderLeadEstadoSelect('Nuevo')}
+              </select>
+            </div>
           </div>
         </div>
 
         <div class="form-section">
           <div class="form-section__title">${Icons.globe} Origen del lead</div>
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
-            ${origenes.map(o => `
-              <div class="origen-option ${o.sel ? 'is-selected' : ''}">
-                <div class="origen-option__icon">${Icons[o.icon]}</div>
-                <div class="origen-option__label">${o.label}</div>
-              </div>
-            `).join('')}
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
+            ${renderLeadOrigenOptions('web')}
           </div>
         </div>
 
@@ -148,26 +141,31 @@ function content() {
           <div class="form-grid-2" style="grid-template-columns: repeat(2, 1fr);">
             <div class="form-field">
               <label class="form-field__label">Empresa</label>
-              <div class="input-wrapper">
-                ${Icons.search}
-                <input class="input input--with-icon" placeholder="Buscar empresa existente..." />
-              </div>
-              <span class="form-field__hint">Opcional · si ya existe</span>
+              <input class="input" placeholder="Nombre de la empresa" />
             </div>
             <div class="form-field">
-              <label class="form-field__label">Contacto</label>
-              <div class="input-wrapper">
-                ${Icons.search}
-                <input class="input input--with-icon" placeholder="Buscar o crear contacto" />
-              </div>
+              <label class="form-field__label">Ciudad</label>
+              <select class="select">
+                <option>Cartagena</option>
+                <option>Medellín</option>
+                <option>Barranquilla</option>
+                <option>Bogotá</option>
+                <option>Cali</option>
+                <option>Bucaramanga</option>
+                <option>Piedecuesta</option>
+              </select>
             </div>
             <div class="form-field">
-              <label class="form-field__label">Email del contacto</label>
-              <input class="input" type="email" placeholder="cliente@empresa.com" />
+              <label class="form-field__label">Nombre del contacto</label>
+              <input class="input" placeholder="Nombre del contacto" />
             </div>
             <div class="form-field">
               <label class="form-field__label">Teléfono</label>
               <input class="input" placeholder="+57 300 000 0000" />
+            </div>
+            <div class="form-field form-grid-full">
+              <label class="form-field__label">Email del contacto</label>
+              <input class="input" type="email" placeholder="cliente@empresa.com" />
             </div>
           </div>
         </div>
@@ -176,9 +174,7 @@ function content() {
           <div class="form-section__title">${Icons.tag} Intereses</div>
           <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Selecciona todos los productos o servicios de interés del lead</div>
           <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-            ${intereses.map(i => `
-              <span class="interes-chip ${i.sel ? 'is-selected' : ''}">${i.label}</span>
-            `).join('')}
+            ${renderLeadInteresChips(['Tubería PE100', 'Accesorios PE'])}
           </div>
         </div>
 
@@ -186,31 +182,7 @@ function content() {
           <div class="form-section__title">${Icons.fire} Scoring inicial</div>
           <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Calificación prospectiva — ayuda a priorizar seguimiento</div>
           <div class="score-selector">
-            <div class="score-card" data-score="20">
-              <div class="score-card__n">20%</div>
-              <div class="score-card__label">Frío</div>
-              <div class="score-card__desc">Lead sin interés demostrado aún</div>
-            </div>
-            <div class="score-card" data-score="40">
-              <div class="score-card__n">40%</div>
-              <div class="score-card__label">Tibio</div>
-              <div class="score-card__desc">Contacto inicial, sin compromiso</div>
-            </div>
-            <div class="score-card is-selected" data-score="60">
-              <div class="score-card__n">60%</div>
-              <div class="score-card__label">Cálido</div>
-              <div class="score-card__desc">Interés claro, requiere seguimiento</div>
-            </div>
-            <div class="score-card" data-score="80">
-              <div class="score-card__n">80%</div>
-              <div class="score-card__label">Caliente</div>
-              <div class="score-card__desc">Alto potencial, oportunidad real</div>
-            </div>
-            <div class="score-card" data-score="100">
-              <div class="score-card__n">100%</div>
-              <div class="score-card__label">Muy caliente</div>
-              <div class="score-card__desc">Listo para conversión inmediata</div>
-            </div>
+            ${renderLeadScore(60)}
           </div>
         </div>
 
@@ -232,6 +204,17 @@ document.querySelectorAll('.score-card').forEach(card => {
     document.querySelectorAll('.score-card').forEach(c => c.classList.remove('is-selected'));
     card.classList.add('is-selected');
   });
+});
+
+document.querySelectorAll('.origen-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.origen-option').forEach(o => o.classList.remove('is-selected'));
+    opt.classList.add('is-selected');
+  });
+});
+
+document.querySelectorAll('.interes-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('is-selected'));
 });
 </script>
 </body>
