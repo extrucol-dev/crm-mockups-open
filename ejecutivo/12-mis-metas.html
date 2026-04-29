@@ -30,7 +30,7 @@
   .hero-ring {
     width: 160px; height: 160px;
     border-radius: 50%;
-    background: conic-gradient(var(--accent) 0 72%, rgba(255,255,255,0.15) 72%);
+    background: conic-gradient(var(--accent) 0 90%, rgba(255,255,255,0.15) 90%);
     position: relative;
     flex-shrink: 0;
   }
@@ -183,47 +183,6 @@ function closeModal() {
   if (overlays.length > 0) overlays[overlays.length - 1].remove();
 }
 
-function editarMetaModal() {
-  return `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-content" style="max-width: 560px;">
-        <div class="modal-header">
-          <div class="modal-header__icon" style="background: var(--primary-bg); color: var(--primary);">${Icons.pencil}</div>
-          <div>
-            <div style="font-weight: 700; font-size: 16px;">Editar metas personales</div>
-            <div style="font-size: 12.5px; color: var(--text-muted);">Abril 2026</div>
-          </div>
-          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
-        </div>
-        <div class="modal-body">
-          <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px;">Tus metas personales (marcadas con ⭐)</div>
-          ${[
-            { label: 'Clientes nuevos', actual: 4, meta: 5, color: '#7C3AED' },
-            { label: 'Tasa de conversión leads', actual: '42%', meta: '40%', color: '#3B82F6' },
-            { label: 'Visitas al sector Agro', actual: 3, meta: 8, color: 'var(--error)' },
-          ].map(m => `
-            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px;">
-              <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">${m.label}</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Actual: ${m.actual}</div>
-              </div>
-              <div class="form-field" style="margin: 0; min-width: 100px;">
-                <label class="form-field__label" style="font-size: 10px;">Meta</label>
-                <input class="input" value="${m.meta}" />
-              </div>
-            </div>
-          `).join('')}
-          <div class="alert alert--info" style="margin-top: 8px;">${Icons.informationCircle}<div style="font-size: 12px;">Las metas del sistema (ventas, actividades, oportunidades) solo pueden ser editadas por el director.</div></div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
-          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Guardar metas</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
 function content() {
   return `
     <div class="content">
@@ -240,7 +199,6 @@ function content() {
             <option>Histórico</option>
           </select>
           <a href="07-actividades.html" style="text-decoration: none;"><button class="btn btn--secondary btn--sm">${Icons.clock} Historial</button></a>
-          <button class="btn btn--primary btn--sm" onclick="openModal(editarMetaModal())">${Icons.pencil} Editar metas</button>
         </div>
       </div>
 
@@ -248,7 +206,7 @@ function content() {
         <div style="display: flex; align-items: center; gap: 32px; position: relative;">
           <div class="hero-ring">
             <div class="hero-ring__inner">
-              <div class="hero-ring__value">72%</div>
+              <div class="hero-ring__value">90%</div>
               <div class="hero-ring__label">Completado</div>
             </div>
           </div>
@@ -258,8 +216,8 @@ function content() {
               ¡Buen ritmo, Juan! <span style="color: var(--accent);">Vas en buen camino</span>
             </div>
             <div style="font-size: 15px; opacity: 0.85; max-width: 560px; line-height: 1.5;">
-              Has completado el 72% de tus metas consolidadas. Si mantienes este ritmo, cerrarás el mes con ~89% de cumplimiento.
-              Priorizar las 2 oportunidades próximas a cerrar podría subirte al 95%.
+              Has completado el 90% de tus metas del sistema este mes. Si mantienes este ritmo, cerrarás con cumplimiento completo.
+              Cierra las 2 oportunidades pendientes para superar la meta de ventas.
             </div>
             <div style="display: flex; gap: 12px; margin-top: 16px;">
               <div style="padding: 10px 16px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; flex-direction: column;">
@@ -283,12 +241,10 @@ function content() {
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
           <div>
             <div style="font-size: 15px; font-weight: 700; color: var(--text-primary);">Metas del mes</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Metas asignadas + tus metas personales</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Metas del sistema asignadas este mes</div>
           </div>
           <div style="display: flex; gap: 6px;">
-            <button class="btn btn--ghost btn--sm" style="background: var(--primary-bg); color: var(--primary);">Todas (6)</button>
-            <button class="btn btn--ghost btn--sm">Del sistema (3)</button>
-            <button class="btn btn--ghost btn--sm">Personales (3)</button>
+            <button class="btn btn--ghost btn--sm" style="background: var(--primary-bg); color: var(--primary);">Todas (3)</button>
           </div>
         </div>
       </div>
@@ -369,80 +325,6 @@ function content() {
           </div>
         </div>
 
-        <div class="meta-card">
-          <div class="meta-card__stripe" style="background: #A855F7;"></div>
-          <div class="meta-card__header">
-            <div class="meta-card__icon" style="background: #F3E8FF; color: #7C3AED;">${Icons.users}</div>
-            <span class="badge badge--accent" style="font-size: 10px;">Personal ⭐</span>
-          </div>
-          <div class="meta-card__title">Clientes nuevos</div>
-          <div class="meta-card__desc">Empresas nuevas ingresadas al sistema</div>
-          <div style="margin-top: 14px;">
-            <div class="meta-card__progress-row">
-              <div>
-                <span class="meta-current" style="color: #7C3AED;">4</span>
-                <span class="meta-target">/ 5 clientes</span>
-              </div>
-              <span class="meta-pct" style="color: #A855F7;">80%</span>
-            </div>
-            <div class="meta-bar">
-              <div class="meta-bar__fill" style="width: 80%; background: #A855F7;"></div>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-muted);">
-              Falta <strong style="color: var(--text-primary);">1 cliente nuevo</strong> · Tienes 3 leads trasladados a distribuidor cerca
-            </div>
-          </div>
-        </div>
-
-        <div class="meta-card">
-          <div class="meta-card__stripe" style="background: #3B82F6;"></div>
-          <div class="meta-card__header">
-            <div class="meta-card__icon" style="background: #EEF1FA; color: #3B82F6;">${Icons.funnel}</div>
-            <span class="badge badge--accent" style="font-size: 10px;">Personal ⭐</span>
-          </div>
-          <div class="meta-card__title">Tasa de conversión leads</div>
-          <div class="meta-card__desc">% de leads que se convierten en oportunidad</div>
-          <div style="margin-top: 14px;">
-            <div class="meta-card__progress-row">
-              <div>
-                <span class="meta-current" style="color: #3B82F6;">42%</span>
-                <span class="meta-target">/ meta 40%</span>
-              </div>
-              <span class="meta-pct" style="color: var(--success);">105%</span>
-            </div>
-            <div class="meta-bar">
-              <div class="meta-bar__fill" style="width: 100%; background: var(--success);"></div>
-            </div>
-            <div style="font-size: 11.5px; color: var(--success); font-weight: 600;">
-              ✓ Meta superada · 2 puntos sobre objetivo personal
-            </div>
-          </div>
-        </div>
-
-        <div class="meta-card">
-          <div class="meta-card__stripe" style="background: var(--error);"></div>
-          <div class="meta-card__header">
-            <div class="meta-card__icon" style="background: #FDECEA; color: var(--error);">${Icons.mapPin}</div>
-            <span class="badge badge--accent" style="font-size: 10px;">Personal ⭐</span>
-          </div>
-          <div class="meta-card__title">Visitas al sector Agro</div>
-          <div class="meta-card__desc">Ampliar presencia en sector de mayor crecimiento</div>
-          <div style="margin-top: 14px;">
-            <div class="meta-card__progress-row">
-              <div>
-                <span class="meta-current" style="color: var(--error);">3</span>
-                <span class="meta-target">/ 8 visitas</span>
-              </div>
-              <span class="meta-pct" style="color: var(--error);">38%</span>
-            </div>
-            <div class="meta-bar">
-              <div class="meta-bar__fill" style="width: 38%; background: var(--error);"></div>
-            </div>
-            <div style="font-size: 11.5px; color: var(--error); font-weight: 600;">
-              ⚠ Atrás del ritmo · Necesitas 5 visitas en 12 días
-            </div>
-          </div>
-        </div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin-bottom: 16px;">
