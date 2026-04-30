@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed 's/^.*function //')",
+      "Bash(sed 's/\\(.*$//')",
+      "Bash(xargs -I {} basename {})",
+      "Bash(npm install *)",
+      "Bash(npm run *)"
+    ]
+  }
+}

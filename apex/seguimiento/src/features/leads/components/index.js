@@ -1,0 +1,5 @@
+export { LeadsKanban } from './LeadsKanban'
+export { LeadCard } from './LeadCard'
+export { LeadForm } from './LeadForm'
+export { LeadDetalle } from './LeadDetalle'
+export { LeadConversion } from './LeadConversion'

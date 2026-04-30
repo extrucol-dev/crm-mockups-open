@@ -60,6 +60,7 @@ When building new UI, always reference `var(--primary)` etc. rather than hex lit
 The `.skills/` directory contains project-specific skills loaded on demand:
 
 - **`crm-ui-builder`** — comprehensive patterns for building pages and modals in this design system (page skeleton, layout patterns, component snippets, per-role file maps and button→target mappings). Invoke this whenever the task involves creating or modifying a screen/modal.
+- **`skill-creator`** — create, improve, evaluate, and optimize Claude skills. Use when the user wants to create a new skill from scratch, edit an existing skill, run evals, benchmark performance, or optimize a skill's description. Invoke via `/skill-creator` or whenever the user mentions creating/improving a skill.
 
 ## Working conventions
 
