@@ -5,7 +5,8 @@
       "Bash(sed 's/\\(.*$//')",
       "Bash(xargs -I {} basename {})",
       "Bash(npm install *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(dir /b \"C:\\\\Users\\\\PRACT.SISTEMAS\\\\Desktop\\\\crm-desarollo\\\\front\\\\crm_extrucol\")"
     ]
   }
 }

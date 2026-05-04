@@ -71,7 +71,7 @@ updatedAt = null       // hora de la ultima actualizacion
 **Estructura del JSX:**
 ```
 Dashboard
-├── <header>  — Titulo, modo (APEX live / ORDS live), boton Refrescar
+├── <header>  — Titulo, modo (APEX live), boton Refrescar
 ├── {error}   — Banner rojo si hay error
 ├── <section .kpi-grid>  — 6 KpiCard
 ├── <section .grid-2>    — VentasMensualesChart + CategoriasDonut

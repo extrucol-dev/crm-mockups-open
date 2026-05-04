@@ -21,26 +21,12 @@ Vite carga archivos `.env` automaticamente segun el modo de ejecucion:
 
 | Valor | Descripcion |
 |-------|-------------|
-| `false` | Modo desarrollo: usa axios + proxy de Vite para llamar a ORDS |
-| `true` | Modo produccion: usa APEX On-Demand Processes (POST a wwv_flow.ajax) |
+| `true` | Usa APEX On-Demand Processes (POST a wwv_flow.ajax) |
 
 ```bash
-# .env.development
-VITE_APEX_MODE=false
-
 # .env.production
 VITE_APEX_MODE=true
 ```
-
-#### `VITE_ORDS_BASE`
-
-URL base de ORDS. Solo se usa cuando `VITE_APEX_MODE=false`.
-
-```bash
-VITE_ORDS_BASE=http://localhost:8080/ords/ventas
-```
-
-En produccion con modo APEX, esta variable no se usa (se puede dejar vacia o no ponerla).
 
 ---
 
@@ -49,20 +35,8 @@ En produccion con modo APEX, esta variable no se usa (se puede dejar vacia o no 
 ### `.env.example`
 
 ```env
-# Copia como .env.development para desarrollo local
-# El proxy de Vite reenvia /api -> VITE_ORDS_BASE (ver vite.config.js)
-VITE_APEX_MODE=false
-VITE_ORDS_BASE=http://localhost:8080/ords/ventas
-
-# En produccion (.env.production) solo se necesita:
-# VITE_APEX_MODE=true
-```
-
-### `.env.development` (para tu maquina local)
-
-```env
-VITE_APEX_MODE=false
-VITE_ORDS_BASE=http://TU_SERVIDOR_ORDS/ords/ventas
+# En produccion (.env.production):
+VITE_APEX_MODE=true
 ```
 
 ### `.env.production` (para el build de APEX)
@@ -70,37 +44,6 @@ VITE_ORDS_BASE=http://TU_SERVIDOR_ORDS/ords/ventas
 ```env
 VITE_APEX_MODE=true
 ```
-
----
-
-## Proxy de Vite (solo en desarrollo)
-
-El archivo `vite.config.js` configura un proxy para evitar CORS en desarrollo:
-
-```js
-server: {
-  proxy: {
-    '/api': {
-      target: ordsBase,        // VITE_ORDS_BASE
-      changeOrigin: true,
-      rewrite: (path) => path.replace(/^\/api/, ''),
-    },
-  },
-}
-```
-
-**Como funciona:**
-
-```
-Navegador                Vite Dev Server             ORDS
-    |                         |                         |
-    |--- GET /api/dashboard/kpis -->|                   |
-    |                         |--- GET /dashboard/kpis ->|
-    |                         |<-- { "items": [...] } ---|
-    |<-- { "items": [...] } --|                         |
-```
-
-El navegador solo ve `localhost:5173`. Vite hace la llamada real a ORDS y devuelve la respuesta. No hay CORS porque el navegador nunca habla directamente con ORDS.
 
 ---
 
@@ -185,8 +128,6 @@ Servir los archivos de `dist/` desde un servidor web (Apache, Nginx) en el mismo
 │  Tu PC (desarrollo)                                         │
 │                                                              │
 │  npm run dev → localhost:5173                               │
-│  VITE_APEX_MODE=false                                       │
-│  Proxy: /api → http://servidor:8080/ords/ventas             │
 └───────────────────────────┬─────────────────────────────────┘
                             |
                             | Cuando está listo:
@@ -248,13 +189,6 @@ La app React se esta ejecutando fuera de una sesion APEX (ej. abriendo el HTML d
 El proceso existe pero devuelve datos vacios. Verificar:
 1. Las tablas tienen datos: `SELECT COUNT(*) FROM ventas WHERE estado='PAGADA'`
 2. El paquete `pkg_dashboard` esta compilado sin errores: `SHOW ERRORS PACKAGE BODY pkg_dashboard`
-
-### CORS error en desarrollo
-
-El proxy de Vite no esta funcionando. Verificar:
-1. `VITE_APEX_MODE=false` en `.env.development`
-2. `VITE_ORDS_BASE` apunta a la URL correcta de ORDS
-3. ORDS esta corriendo y accesible desde la PC
 
 ### "No se pudo cargar el dashboard" (banner rojo)
 

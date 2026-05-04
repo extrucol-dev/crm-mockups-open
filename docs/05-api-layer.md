@@ -4,32 +4,17 @@ La carpeta `vite-project/src/api/` contiene toda la logica de comunicacion entre
 
 ```
 api/
-├── utils.js        — APEX_MODE, toLower(), unwrap()
+├── utils.js        — toLower(), unwrap()
 ├── apexClient.js   — Cliente para APEX On-Demand Processes
-├── dashboardApi.js — API del dashboard (elige ORDS o APEX)
-└── clientesApi.js  — API de clientes CRUD (elige ORDS o APEX)
+├── dashboardApi.js — API del dashboard via APEX
+└── clientesApi.js  — API de clientes CRUD via APEX
 ```
 
 ---
 
 ## `utils.js`
 
-Las tres exportaciones mas importantes del proyecto.
-
-### `APEX_MODE`
-
-```js
-export const APEX_MODE = String(import.meta.env.VITE_APEX_MODE) === 'true'
-```
-
-Es una constante booleana calculada en tiempo de build a partir de la variable de entorno `VITE_APEX_MODE`.
-
-- `APEX_MODE = true` → el codigo usa `apexClient` (POST a wwv_flow.ajax)
-- `APEX_MODE = false` → el codigo usa `axios` (GET a ORDS endpoints)
-
-Se evalua una sola vez cuando la app carga. No cambia en runtime.
-
-> Por que `String(...)` en vez de solo comparar? Porque las variables de entorno de Vite siempre son strings. Si alguien pone `VITE_APEX_MODE=true` en el .env, el valor llega como `"true"` (string), no como `true` (booleano).
+Las dos exportaciones mas importantes del proyecto.
 
 ### `toLower(val)`
 
@@ -54,7 +39,7 @@ toLower({ INGRESOS_TOTAL: 450000, VENTAS: [{ ID: 1 }] })
 ```
 
 **Por que es necesario?**
-Oracle devuelve nombres de columna en MAYUSCULAS por defecto. Sin esta funcion, el componente tendria que escribir `k.INGRESOS_TOTAL` en vez de `k.ingresos_total`, lo cual es incomodo y puede variar entre versiones de ORDS.
+Oracle devuelve nombres de columna en MAYUSCULAS por defecto. Sin esta funcion, el componente tendria que escribir `k.INGRESOS_TOTAL` en vez de `k.ingresos_total`.
 
 ### `unwrap(payload)`
 
@@ -76,7 +61,7 @@ Extrae el array de datos del payload, sin importar como lo envuelva el servidor.
 |-----------------|--------------------------|
 | `[{...}, {...}]` | `[{...}, {...}]` — ya es un array |
 | `{ "data": [{...}] }` | `[{...}]` — extrae `data` |
-| `{ "items": [{...}] }` | `[{...}]` — extrae `items` (formato ORDS) |
+| `{ "items": [{...}] }` | `[{...}]` — extrae `items` |
 | `{ "rows": [{...}] }` | `[{...}]` — extrae `rows` |
 | `{ "kpi": 42 }` | `{ "kpi": 42 }` — objeto plano, lo devuelve tal cual |
 
@@ -174,36 +159,18 @@ Cada funcion devuelve una Promesa con el JSON crudo del servidor.
 
 ## `dashboardApi.js`
 
-Exporta un objeto `dashboardApi` con los mismos metodos independientemente del modo.
+Exporta un objeto `dashboardApi` que llama a `apexClient` y normaliza la respuesta con `unwrap`.
 
 ```js
-export const dashboardApi = APEX_MODE
-  ? {
-      // En modo APEX: llama a apexClient y normaliza con unwrap
-      kpis: () => apexGet(apexDashboardApi.kpis),
-      // ...
-    }
-  : {
-      // En modo ORDS: llama a axios y normaliza con unwrap
-      kpis: () => ordsGet('/kpis'),
-      // ...
-    }
-```
-
-**Funcion `ordsGet(path, params)`:**
-```js
-const ordsGet = async (path, params) => {
-  try {
-    const { data } = await http.get(`/dashboard${path}`, { params })
-    return unwrap(data)
-  } catch (err) {
-    console.warn(`[dashboardApi] Error en ${path}:`, err.message)
-    throw err   // re-lanza para que Dashboard.jsx lo maneje
-  }
+export const dashboardApi = {
+  kpis:            ()           => apexGet(apexDashboardApi.kpis),
+  ventasMensuales: ()           => apexGet(apexDashboardApi.ventasMensuales),
+  topProductos:    (limit = 5)  => apexGet(() => apexDashboardApi.topProductos(limit)),
+  ventasCategoria: ()           => apexGet(apexDashboardApi.ventasCategoria),
+  ventasRegion:    ()           => apexGet(apexDashboardApi.ventasRegion),
+  ultimasVentas:   (limit = 10) => apexGet(() => apexDashboardApi.ultimasVentas(limit)),
 }
 ```
-
-Usa axios con `baseURL` apuntando a `/api` (en desarrollo) o a `VITE_ORDS_BASE` (en produccion sin APEX).
 
 **Funcion `apexGet(apexFn)`:**
 ```js
@@ -218,9 +185,7 @@ const apexGet = async (apexFn) => {
 }
 ```
 
-Llama a la funcion APEX y normaliza con `unwrap`.
-
-**Resultado:** los componentes (como `Dashboard.jsx`) siempre reciben un array normalizado, sin importar el modo. No necesitan saber si los datos vienen de ORDS o de APEX.
+Llama a la funcion APEX y normaliza con `unwrap`. Los componentes (como `Dashboard.jsx`) siempre reciben un array normalizado.
 
 ---
 
@@ -229,23 +194,13 @@ Llama a la funcion APEX y normaliza con `unwrap`.
 Mismo patron que `dashboardApi.js`, pero para el CRUD de clientes.
 
 ```js
-export const clientesApi = APEX_MODE
-  ? {
-      list:   () => apexClientesApi.list().then(fromApex),
-      create: (data) => apexClientesApi.create(data).then(toLower),
-      update: (data) => apexClientesApi.update(data).then(toLower),
-      delete: (id)   => apexClientesApi.delete(id).then(toLower),
-    }
-  : {
-      // Modo desarrollo sin APEX: retorna arrays vacios (no conecta a ORDS para CRUD)
-      list:   () => Promise.resolve([]),
-      create: () => Promise.resolve({}),
-      update: () => Promise.resolve({}),
-      delete: () => Promise.resolve({}),
-    }
+export const clientesApi = {
+  list:   () => apexClientesApi.list().then(fromApex),
+  create: (data) => apexClientesApi.create(data).then(toLower),
+  update: (data) => apexClientesApi.update(data).then(toLower),
+  delete: (id)   => apexClientesApi.delete(id).then(toLower),
+}
 ```
-
-> En `APEX_MODE=false`, las operaciones CRUD devuelven datos vacios. Para el dashboard esto no es problema porque los datos de lectura si van a ORDS. Si necesitas probar el CRUD sin APEX, tendrias que agregar endpoints ORDS para los clientes.
 
 ---
 

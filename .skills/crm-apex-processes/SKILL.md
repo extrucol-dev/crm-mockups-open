@@ -2,16 +2,16 @@
 name: crm-apex-processes
 description: >-
   CRM Extrucol APEX On-Demand Application Processes. SIEMPRE USA cuando: crear proceso APEX,
-  escribir PL/SQL para el CRM, agregar Application Process, conectar React a Oracle, definir
-  endpoint APEX, escribir APEX_JSON, leer parámetros x01 x02 xN, crear package PL/SQL para
-  el CRM. Trigger on: "proceso APEX", "application process", "APEX_JSON", "PL/SQL proceso",
-  "callProcess", "conectar frontend", "G_X01", "proceso on-demand", "crear proceso",
-  "LEADS_LIST", "OPP_", "DASH_", cualquier nombre de proceso en mayúsculas.
+  escribir PL/SQL para el CRM, agregar Application Process en APEX Builder, conectar React a Oracle,
+  escribir APEX_JSON, leer parámetros G_X01 G_X02, crear package PL/SQL CRM_{FEATURE}_API,
+  implementar endpoint APEX, verificar sesión APEX, depurar callProcess. Trigger on: "proceso APEX",
+  "application process", "APEX_JSON", "PL/SQL proceso", "callProcess", "G_X01", "proceso on-demand",
+  cualquier nombre de proceso en mayúsculas (LEADS_LIST, CLIENTES_CREATE, DASHBOARD_EJECUTIVO, etc.).
 ---
 
 # CRM Extrucol — APEX On-Demand Processes
 
-Crea Application Processes en Oracle APEX que el frontend React consume via `callProcess()`.
+Crea Application Processes en Oracle APEX consumidos por `callProcess()` del frontend React.
 
 ---
 
@@ -22,333 +22,311 @@ App Builder → Tu Aplicación → Shared Components → Application Processes �
 ```
 
 | Campo | Valor |
-|---|---|
+|-------|-------|
 | **Name** | `FEATURE_ACCION` en MAYÚSCULAS (ej: `LEADS_LIST`) |
-| **Sequence** | 10, 20, 30... (cualquier número) |
+| **Sequence** | 10, 20, 30... |
 | **Point** | **On Demand — Run this application process when requested by a page** |
 | **Type** | PL/SQL Anonymous Block |
 | **Source** | El PL/SQL del proceso |
-
----
-
-## Convención de nombres
-
-```
-{FEATURE}_{ACCION}
-
-LEADS_LIST          LEADS_GET           LEADS_CREATE
-LEADS_UPDATE        LEADS_DESCALIFICAR  LEADS_CONVERTIR
-OPP_LIST            OPP_GET             OPP_CREATE
-OPP_CERRAR_GANADA   OPP_CERRAR_PERDIDA
-DASH_EJECUTIVO_KPIS DASH_DIRECTOR_KPIS
-CLIENTES_LIST       CLIENTES_CREATE     CLIENTES_UPDATE
-AUTH_SESSION        SESSION_INFO
-```
-
----
-
-## Patrón de paquetes del proyecto
-
-Cada feature tiene un paquete `CRM_{FEATURE}_API` con procedimientos que:
-1. Aceptan `p_result OUT SYS_REFCURSOR` como primer parámetro
-2. Aceptan `p_x01..p_xN IN VARCHAR2` para los parámetros del frontend
-3. Siempre devuelven datos por el cursor — incluso mutaciones devuelven `{success, id}`
-
-```
-CRM_LEADS_API         → procedimientos LEADS_*
-CRM_OPP_API           → procedimientos OPP_*
-CRM_CLIENTES_API      → procedimientos CLIENTES_*
-CRM_ACTIVIDADES_API   → procedimientos ACTIVIDADES_*
-CRM_PROYECTOS_API     → procedimientos PROYECTOS_*
-CRM_DASHBOARD_API     → procedimientos DASH_*
-CRM_ADMIN_API         → procedimientos ADMIN_*
-```
-
----
-
-## Template: Application Process en APEX Builder
-
-**Para todos los procesos** — lectura y escritura usan el mismo patrón:
-
-```sql
--- Process Name: LEADS_LIST
--- Point: On Demand - Run this application process when requested by a page
-DECLARE
-  l_cur SYS_REFCURSOR;
-BEGIN
-  CRM_LEADS_API.LEADS_LIST(
-    p_result => l_cur,
-    p_x01    => APEX_APPLICATION.G_X01,   -- id_estado_lead (filtro)
-    p_x02    => APEX_APPLICATION.G_X02    -- id_usuario (filtro)
-  );
-  APEX_JSON.OPEN_OBJECT;
-  APEX_JSON.WRITE('data', l_cur);
-  APEX_JSON.CLOSE_OBJECT;
-END;
-```
-
-```sql
--- Process Name: LEADS_CREATE
-DECLARE
-  l_cur SYS_REFCURSOR;
-BEGIN
-  CRM_LEADS_API.LEADS_CREATE(
-    p_result => l_cur,
-    p_x01    => APEX_APPLICATION.G_X01,   -- titulo
-    p_x02    => APEX_APPLICATION.G_X02,   -- descripcion
-    p_x03    => TO_NUMBER(APEX_APPLICATION.G_X03),  -- score
-    p_x04    => TO_NUMBER(APEX_APPLICATION.G_X04),  -- id_estado_lead
-    p_x05    => TO_NUMBER(APEX_APPLICATION.G_X05),  -- id_origen_lead
-    p_x06    => TO_NUMBER(APEX_APPLICATION.G_X06)   -- id_usuario
-  );
-  APEX_JSON.OPEN_OBJECT;
-  APEX_JSON.WRITE('data', l_cur);
-  APEX_JSON.CLOSE_OBJECT;
-END;
-```
-
-**El cursor de mutaciones devuelve siempre una fila:**
-```json
-{ "data": [{ "id_lead": 15, "success": "true" }] }
-```
-El frontend hace `unwrap(resp)` → `[{ id_lead: 15, success: "true" }]` → `result[0]`.
-
----
-
-## Template: Spec del paquete
-
-```sql
-CREATE OR REPLACE PACKAGE CRM_{FEATURE}_API AS
-
-  -- Lectura: cursor con filas
-  PROCEDURE {FEATURE}_LIST(
-    p_result OUT SYS_REFCURSOR,
-    p_x01    IN  VARCHAR2 DEFAULT NULL,   -- filtro 1
-    p_x02    IN  VARCHAR2 DEFAULT NULL    -- filtro 2
-  );
-
-  -- Mutación: cursor con {id, success} o {success, err_msg}
-  PROCEDURE {FEATURE}_CREATE(
-    p_result OUT SYS_REFCURSOR,
-    p_x01    IN  VARCHAR2,               -- campo requerido
-    p_x02    IN  VARCHAR2 DEFAULT NULL,
-    p_x03    IN  NUMBER   DEFAULT NULL
-  );
-
-END CRM_{FEATURE}_API;
-/
-```
-
----
-
-## Template: Body del paquete
-
-```sql
-CREATE OR REPLACE PACKAGE BODY CRM_{FEATURE}_API AS
-
-  PROCEDURE {FEATURE}_LIST(
-    p_result OUT SYS_REFCURSOR,
-    p_x01    IN  VARCHAR2 DEFAULT NULL,
-    p_x02    IN  VARCHAR2 DEFAULT NULL
-  ) IS
-  BEGIN
-    OPEN p_result FOR
-      SELECT t.id, t.nombre, ...
-      FROM   crm_{entidad} t
-      WHERE  (p_x01 IS NULL OR t.id_estado = TO_NUMBER(p_x01))
-        AND  (p_x02 IS NULL OR t.id_usuario = TO_NUMBER(p_x02))
-      ORDER BY t.fecha_creacion DESC;
-  END;
-
-  PROCEDURE {FEATURE}_CREATE(
-    p_result OUT SYS_REFCURSOR,
-    p_x01    IN  VARCHAR2,
-    p_x02    IN  VARCHAR2 DEFAULT NULL,
-    p_x03    IN  NUMBER   DEFAULT NULL
-  ) IS
-    v_id NUMBER;
-  BEGIN
-    INSERT INTO crm_{entidad} (nombre, descripcion, ...)
-    VALUES (p_x01, p_x02, ...)
-    RETURNING id INTO v_id;
-
-    OPEN p_result FOR
-      SELECT v_id AS id, 'true' AS success FROM DUAL;
-  EXCEPTION
-    WHEN OTHERS THEN
-      OPEN p_result FOR
-        SELECT '0' AS id, 'false' AS success,
-               DBMS_UTILITY.FORMAT_ERROR_STACK AS err_msg FROM DUAL;
-  END;
-
-END CRM_{FEATURE}_API;
-/
-```
-
----
-
-## Cómo leer parámetros (G_X01..G_X10)
-
-| Parámetro frontend | Variable APEX | Conversión |
-|---|---|---|
-| `x01: 'texto'` | `APEX_APPLICATION.G_X01` | VARCHAR2, usar directo |
-| `x01: 42` | `TO_NUMBER(APEX_APPLICATION.G_X01)` | Convertir a NUMBER |
-| `x01: '2026-04-30'` | `TO_DATE(APEX_APPLICATION.G_X01,'YYYY-MM-DD')` | Convertir a DATE |
-| `x01: 'true'` | `APEX_APPLICATION.G_X01 = 'true'` | Comparar string |
-
-Default con NVL:
-```sql
-l_limit NUMBER := NVL(TO_NUMBER(APEX_APPLICATION.G_X01), 10);
-```
+| **Error Handling** | Display Inline with Field and in Notification |
 
 ---
 
 ## Cómo el frontend llama el proceso
 
 ```js
-// En React — callProcess en shared/apex/apexClient.js
-callProcess('LEADS_LIST', { x01: userId })
+// En src/shared/apex/apexClient.js
+callProcess('LEADS_LIST')
+callProcess('LEADS_GET', { x01: 42 })
+callProcess('LEADS_CREATE', { x01: 'Empresa ABC', x02: 'abc@empresa.com', x03: '300' })
+```
 
-// Genera este POST:
-POST /apex/wwv_flow.ajax
-  p_request      = APPLICATION_PROCESS=LEADS_LIST
-  p_flow_id      = {APEX APP_ID}
-  p_flow_step_id = {APEX PAGE_ID}
-  p_instance     = {APEX SESSION}
-  x01            = {userId}
+Los extras `{ x01, x02, ... }` llegan al proceso como:
+
+| JS extra | Variable PL/SQL | Conversión típica |
+|----------|----------------|-------------------|
+| `x01: 'texto'` | `APEX_APPLICATION.G_X01` | VARCHAR2 directo |
+| `x01: 42` | `TO_NUMBER(APEX_APPLICATION.G_X01)` | Convertir a NUMBER |
+| `x01: '2026-04-30'` | `TO_DATE(APEX_APPLICATION.G_X01,'YYYY-MM-DD')` | Convertir a DATE |
+| `x01: true/false` | `APEX_APPLICATION.G_X01 = 'true'` | Comparar string |
+
+Con NVL para opcionales:
+```sql
+l_limit NUMBER := NVL(TO_NUMBER(APEX_APPLICATION.G_X01), 10);
 ```
 
 ---
 
-## Formato de respuesta estándar
+## Plantillas PL/SQL
 
-**Listas:**
-```json
-{ "data": [ { "id_lead": 1, "titulo": "..." }, ... ] }
+### LIST — Devuelve array de registros
+
+```sql
+DECLARE
+  l_cur SYS_REFCURSOR;
+BEGIN
+  OPEN l_cur FOR
+    SELECT id, nombre, email, activo
+      FROM crm_{entidad}
+     WHERE activo = 1
+     ORDER BY nombre;
+
+  APEX_JSON.OPEN_OBJECT;
+  APEX_JSON.WRITE('data', l_cur);
+  APEX_JSON.CLOSE_OBJECT;
+END;
 ```
 
-**Objeto único:**
-```json
-{ "data": [{ "id_lead": 1, "titulo": "...", "empresa": "..." }] }
+### GET — Devuelve un registro por ID
+
+```sql
+DECLARE
+  l_cur SYS_REFCURSOR;
+  l_id  NUMBER := TO_NUMBER(APEX_APPLICATION.G_X01);
+BEGIN
+  OPEN l_cur FOR
+    SELECT id, nombre, email, sector, activo
+      FROM crm_{entidad}
+     WHERE id = l_id;
+
+  APEX_JSON.OPEN_OBJECT;
+  APEX_JSON.WRITE('data', l_cur);
+  APEX_JSON.CLOSE_OBJECT;
+END;
 ```
 
-**Mutación exitosa:**
-```json
-{ "id": 9, "success": true }
+### CREATE — Inserta y devuelve ID nuevo
+
+```sql
+DECLARE
+  l_id NUMBER;
+BEGIN
+  INSERT INTO crm_{entidad} (nombre, email, campo3)
+  VALUES (
+    APEX_APPLICATION.G_X01,   -- nombre
+    APEX_APPLICATION.G_X02,   -- email
+    APEX_APPLICATION.G_X03    -- campo3
+  )
+  RETURNING id INTO l_id;
+
+  APEX_JSON.OPEN_OBJECT;
+  APEX_JSON.WRITE('id',      l_id);
+  APEX_JSON.WRITE('success', TRUE);
+  APEX_JSON.CLOSE_OBJECT;
+
+EXCEPTION
+  WHEN OTHERS THEN
+    APEX_JSON.OPEN_OBJECT;
+    APEX_JSON.WRITE('success', FALSE);
+    APEX_JSON.WRITE('error',   SQLERRM);
+    APEX_JSON.CLOSE_OBJECT;
+END;
 ```
 
-**Error:**
-```json
-{ "success": false, "error": "ORA-00001: unique constraint violated" }
+### UPDATE — Actualiza y confirma
+
+```sql
+DECLARE
+  l_id NUMBER := TO_NUMBER(APEX_APPLICATION.G_X01);
+BEGIN
+  UPDATE crm_{entidad}
+     SET nombre  = APEX_APPLICATION.G_X02,
+         email   = APEX_APPLICATION.G_X03,
+         campo3  = APEX_APPLICATION.G_X04
+   WHERE id = l_id;
+
+  APEX_JSON.OPEN_OBJECT;
+  APEX_JSON.WRITE('success', SQL%ROWCOUNT > 0);
+  APEX_JSON.CLOSE_OBJECT;
+
+EXCEPTION
+  WHEN OTHERS THEN
+    APEX_JSON.OPEN_OBJECT;
+    APEX_JSON.WRITE('success', FALSE);
+    APEX_JSON.WRITE('error',   SQLERRM);
+    APEX_JSON.CLOSE_OBJECT;
+END;
+```
+
+### USUARIO_ACTUAL — Proceso de autenticación (especial)
+
+```sql
+DECLARE
+  l_cur SYS_REFCURSOR;
+BEGIN
+  OPEN l_cur FOR
+    SELECT u.id,
+           u.nombre,
+           UPPER(u.rol) AS rol
+      FROM crm_usuarios u
+     WHERE UPPER(u.email) = UPPER(v('APP_USER'))
+       AND u.activo = 1;
+
+  APEX_JSON.OPEN_OBJECT;
+  APEX_JSON.WRITE('data', l_cur);   -- unwrapSingle() extrae el primer objeto
+  APEX_JSON.CLOSE_OBJECT;
+END;
 ```
 
 ---
 
-## Registro completo de procesos CRM
+## Convención de respuesta JSON
 
-### Auth / Sesión
-| Proceso | x01 | x02 | Devuelve |
-|---|---|---|---|
-| `SESSION_INFO` | — | — | `{id_usuario, nombre, rol, id_departamento}` |
+| Tipo | Estructura | Cómo lo consume el frontend |
+|------|-----------|----------------------------|
+| Lista | `{ "data": [{...}, {...}] }` | `unwrapList(resp)` → array |
+| Objeto | `{ "data": [{...}] }` | `unwrapSingle(resp)` → objeto |
+| Mutación OK | `{ "id": N, "success": true }` | `resp.id`, `resp.success` |
+| Error | `{ "success": false, "error": "ORA-..." }` | Mensaje de error |
 
-### Leads
-| Proceso | Params | Devuelve |
-|---|---|---|
-| `LEADS_CATALOGOS` | — | `{estados, origenes, intereses, motivos_descalificacion}` |
-| `LEADS_LIST` | x01=id_usuario? | array leads |
-| `LEADS_GET` | x01=id_lead | objeto lead |
-| `LEADS_CREATE` | x01=titulo, x02=descripcion, x03=score, x04=id_estado, x05=id_origen, x06=id_usuario | `{id_lead, success}` |
-| `LEADS_UPDATE` | x01=id_lead + mismos campos | `{success}` |
-| `LEADS_DESCALIFICAR` | x01=id_lead, x02=id_motivo, x03=observacion | `{success}` |
-| `LEADS_CONVERTIR` | x01=id_lead, x02=titulo_opp, x03=valor_estimado, x04=id_tipo, x05=id_sector, x06=fecha_cierre | `{id_oportunidad, success}` |
-| `LEADS_HISTORIAL` | x01=id_lead | array historial_estado |
-
-### Oportunidades
-| Proceso | Params | Devuelve |
-|---|---|---|
-| `OPP_LIST` | x01=id_usuario? | array oportunidades |
-| `OPP_GET` | x01=id_oportunidad | objeto oportunidad |
-| `OPP_CREATE` | x01=titulo, x02=id_tipo, x03=id_estado, x04=valor_estimado, x05=probabilidad, x06=id_sector, x07=id_empresa, x08=fecha_cierre, x09=id_usuario | `{id_oportunidad, success}` |
-| `OPP_UPDATE` | x01=id + mismos campos | `{success}` |
-| `OPP_AVANZAR_ESTADO` | x01=id_oportunidad, x02=id_estado_nuevo, x03=comentario | `{success}` |
-| `OPP_AGREGAR_PRODUCTO` | x01=id_oportunidad, x02=id_producto | `{success}` |
-| `OPP_QUITAR_PRODUCTO` | x01=id_oportunidad_producto | `{success}` |
-| `OPP_REGISTRAR_ACTIVIDAD` | x01=id_opp, x02=tipo, x03=asunto, x04=descripcion, x05=fecha, x06=virtual | `{id_actividad, success}` |
-| `OPP_CERRAR_GANADA` | x01=id_opp, x02=valor_final, x03=id_motivo, x04=descripcion | `{success}` |
-| `OPP_CERRAR_PERDIDA` | x01=id_opp, x02=id_motivo, x03=descripcion | `{success}` |
-| `OPP_PRODUCTOS_CATALOGO` | — | array productos |
-| `OPP_ESTANCADOS` | x01=id_usuario? | array opp estancadas |
-| `OPP_ACTIVIDADES` | x01=id_oportunidad | array actividades |
-
-### Dashboard
-| Proceso | Params | Devuelve |
-|---|---|---|
-| `DASH_EJECUTIVO_KPIS` | x01=id_usuario | `{leads_activos, opp_activas, pipeline_valor, actividades_hoy}` |
-| `DASH_EJECUTIVO_OPP` | x01=id_usuario | últimas 5 oportunidades |
-| `DASH_EJECUTIVO_ACT` | x01=id_usuario | próximas actividades |
-| `DASH_COORDINADOR_KPIS` | — | KPIs de supervisión |
-| `DASH_COORDINADOR_EQUIPO` | — | array ejecutivos con mini-stats |
-| `DASH_COORDINADOR_ALERTAS` | — | alertas recientes |
-| `DASH_DIRECTOR_KPIS` | — | KPIs estratégicos |
-| `DASH_DIRECTOR_FUNNEL` | — | pipeline por etapa para funnel chart |
-| `DASH_DIRECTOR_EQUIPO` | — | comparativo ejecutivos |
-| `DASH_ADMIN_KPIS` | — | métricas sistema |
-
-### Clientes
-| Proceso | Params | Devuelve |
-|---|---|---|
-| `CLIENTES_LIST` | — | array empresas |
-| `CLIENTES_GET` | x01=id_empresa | empresa + contactos |
-| `CLIENTES_CREATE` | x01=nombre, x02=no_documento, x03=id_municipio, x04=id_documento, x05=id_modalidad | `{id_empresa, success}` |
-| `CLIENTES_UPDATE` | x01=id_empresa + campos | `{success}` |
-| `CLIENTES_AGREGAR_CONTACTO` | x01=id_empresa, x02=nombre, x03=apellido, x04=cargo, x05=email, x06=telefono, x07=es_principal | `{id_contacto, success}` |
-| `CLIENTES_DESACTIVAR` | x01=id_empresa | `{success}` |
-
-### Actividades
-| Proceso | Params | Devuelve |
-|---|---|---|
-| `ACTIVIDADES_LIST` | x01=id_usuario, x02=fecha_desde?, x03=fecha_hasta?, x04=tipo? | array actividades |
-| `ACTIVIDADES_GET` | x01=id_actividad | objeto actividad |
-| `ACTIVIDADES_CREATE` | x01=tipo, x02=asunto, x03=descripcion, x04=id_lead?, x05=id_oportunidad?, x06=fecha, x07=virtual, x08=latitud?, x09=longitud? | `{id_actividad, success}` |
-| `ACTIVIDADES_COMPLETAR` | x01=id_actividad, x02=resultado | `{success}` |
-| `ACTIVIDADES_ALL_FOR_COORD` | x01=fecha_desde?, x02=fecha_hasta? | array todas actividades |
-
-### Proyectos
-| Proceso | Params | Devuelve |
-|---|---|---|
-| `PROYECTOS_LIST` | x01=id_usuario? | array proyectos |
-| `PROYECTOS_GET` | x01=id_proyecto | proyecto + hitos |
-| `PROYECTOS_CREATE` | x01=nombre, x02=descripcion, x03=id_oportunidad, x04=fecha_inicio, x05=fecha_fin | `{id_proyecto, success}` |
-| `PROYECTOS_UPDATE` | x01=id_proyecto + campos | `{success}` |
-
-### Metas
-| Proceso | Params | Devuelve |
-|---|---|---|
-| `METAS_MIS_METAS` | x01=id_usuario, x02=periodo? | `{metas:[{metrica, valor_meta, valor_actual, pct}]}` |
-| `METAS_CUMPLIMIENTO` | — | array ejecutivos con pct cumplimiento |
-
-### Admin
-| Proceso | Params | Devuelve |
-|---|---|---|
-| `ADMIN_USUARIOS_LIST` | — | array usuarios |
-| `ADMIN_USUARIOS_CREATE` | x01=nombre, x02=email, x03=rol, x04=id_departamento | `{id_usuario, success}` |
-| `ADMIN_USUARIOS_TOGGLE` | x01=id_usuario, x02=activo | `{success}` |
-| `ADMIN_CATALOGOS_LIST` | x01=tipo | array entradas catálogo |
-| `ADMIN_AUDITORIA_LIST` | x01=pagina, x02=limite, x03=fecha_desde? | array logs |
-| `ADMIN_VARIABLES_LIST` | — | array CRM_CONFIGURACION_SISTEMA |
-| `ADMIN_VARIABLES_UPDATE` | x01=clave, x02=valor | `{success}` |
+Las claves Oracle llegan en MAYÚSCULAS → `toLower()` las normaliza automáticamente en `utils.js`.
 
 ---
 
-## Verificar desde el navegador
+## Paquetes PL/SQL del proyecto
 
-Cuando la app está cargada dentro de APEX:
+Nomenclatura: `CRM_{FEATURE}_API`. Todos los procedimientos tienen `p_result OUT SYS_REFCURSOR` como primer parámetro — incluso las mutaciones devuelven un cursor con `{id, success}`.
+
+Ver skill `/crm-db-oracle` para los templates completos de SPEC y BODY.
+
+Paquetes del proyecto:
+```
+CRM_LEADS_API        → procesos LEADS_*
+CRM_CLIENTES_API     → procesos CLIENTES_*
+CRM_OPOR_API         → procesos OPORTUNIDADES_*
+CRM_ACTIV_API        → procesos ACTIVIDADES_*
+CRM_PROY_API         → procesos PROYECTOS_*
+CRM_USUARIOS_API     → procesos USUARIOS_*
+CRM_DASHBOARD_API    → procesos DASHBOARD_*
+```
+
+---
+
+## Catálogo completo de procesos (49 procesos)
+
+### Autenticación (1)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `USUARIO_ACTUAL` | — | `{id, nombre, rol}` |
+
+### Clientes (4)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `CLIENTES_LIST` | — | array clientes |
+| `CLIENTES_GET` | x01=id | objeto cliente |
+| `CLIENTES_CREATE` | x01=nombre, x02=empresa, x03=sector, x04=ciudad_id, x05=email, x06=telefono | `{id, success}` |
+| `CLIENTES_UPDATE` | x01=id, x02=nombre, x03=empresa, x04=sector, x05=ciudad_id, x06=email, x07=telefono | `{success}` |
+
+### Leads (6)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `LEADS_LIST` | — | array leads del ejecutivo |
+| `LEADS_GET` | x01=id | objeto lead |
+| `LEADS_CREATE` | x01=nombre, x02=empresa, x03=email, x04=telefono, x05=origen, x06=sector, x07=ciudad_id, x08=descripcion | `{id, success}` |
+| `LEADS_UPDATE` | x01=id + mismos campos | `{success}` |
+| `LEADS_ESTADO` | x01=id, x02=estado | `{success}` |
+| `LEADS_CONVERTIR` | x01=id, x02=nombre_oportunidad, x03=valor_estimado, x04=fecha_cierre | `{id_oportunidad, success}` |
+
+### Oportunidades (9)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `OPORTUNIDADES_LIST` | — | array oportunidades del ejecutivo |
+| `OPORTUNIDADES_LIST_TODAS` | — | array todas (director) |
+| `OPORTUNIDADES_GET` | x01=id | objeto oportunidad |
+| `OPORTUNIDADES_ACTIVIDADES` | x01=id | array actividades de la oportunidad |
+| `OPORTUNIDADES_CREATE` | x01=nombre, x02=descripcion, x03=tipo, x04=valor_estimado, x05=fecha_cierre, x06=cliente_id | `{id, success}` |
+| `OPORTUNIDADES_UPDATE` | x01=id, x02=nombre, x03=descripcion, x04=tipo, x05=estado, x06=valor_estimado, x07=fecha_cierre, x08=cliente_id | `{success}` |
+| `OPORTUNIDADES_AVANZAR` | x01=id, x02=estado | `{success}` |
+| `OPORTUNIDADES_CERRAR` | x01=id, x02=estado, x03=fecha_cierre, x04=motivo_cierre | `{success}` |
+| `OPORTUNIDADES_ESTANCADAS` | x01=dias_sin_actividad | array oportunidades |
+
+### Actividades (6)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `ACTIVIDADES_CREATE` | x01=tipo, x02=descripcion, x03=virtual(1/0), x04=fecha_actividad, x05=oportunidad_id | `{id, success}` |
+| `ACTIVIDADES_GET` | x01=id | objeto actividad |
+| `ACTIVIDADES_UPDATE` | x01=id, x02=tipo, x03=descripcion, x04=virtual(1/0), x05=fecha_actividad, x06=oportunidad_id | `{success}` |
+| `ACTIVIDADES_CERRAR` | x01=id, x02=resultado, x03=latitud, x04=longitud | `{success}` |
+| `ACTIVIDADES_LIST_TODAS` | x01=inicio(YYYY-MM-DD)?, x02=fin? | array todas (director) |
+| `ACTIVIDADES_LIST_MIS` | x01=inicio?, x02=fin? | array del ejecutivo |
+
+### Proyectos (6)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `PROYECTOS_LIST` | — | array del ejecutivo |
+| `PROYECTOS_LIST_TODOS` | — | array todos (director) |
+| `PROYECTOS_GET` | x01=id | objeto proyecto |
+| `PROYECTOS_CREATE` | x01=nombre, x02=descripcion, x03=oportunidad_id | `{id, success}` |
+| `PROYECTOS_UPDATE` | x01=id, x02=nombre, x03=descripcion, x04=estado, x05=oportunidad_id | `{success}` |
+| `PROYECTOS_ESTADO` | x01=id, x02=estado | `{success}` |
+
+### Usuarios (5)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `USUARIOS_LIST` | — | array usuarios |
+| `USUARIOS_GET` | x01=id | objeto usuario |
+| `USUARIOS_CREATE` | x01=nombre, x02=email, x03=rol, x04=ciudad_id | `{id, success}` |
+| `USUARIOS_UPDATE` | x01=id, x02=nombre, x03=email, x04=rol, x05=ciudad_id | `{success}` |
+| `USUARIOS_ESTADO` | x01=id, x02=activo(1/0) | `{success}` |
+
+### Ciudades (1)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `CIUDADES_LIST` | — | array ciudades |
+
+### Dashboard (2)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `DASHBOARD_EJECUTIVO` | — | KPIs del ejecutivo logueado |
+| `DASHBOARD_COORDINADOR` | — | KPIs de supervisión del equipo |
+
+### Metas (2)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `METAS_MIS_METAS` | — | metas del ejecutivo de sesión |
+| `METAS_CUMPLIMIENTO` | x01=periodo (YYYY-MM) | cumplimiento del equipo |
+
+### Alertas (3)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `ALERTAS_LIST` | — | array alertas activas |
+| `ALERTAS_LOG` | x01=inicio, x02=fin | log de notificaciones |
+| `ALERTAS_MARCAR_LEIDA` | x01=id | `{success}` |
+
+### Equipo (2)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `EQUIPO_LIST` | — | array ejecutivos del equipo |
+| `EQUIPO_GET_EJECUTIVO` | x01=id | perfil + métricas del ejecutivo |
+
+### Monitoreo (2)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `MONITOREO_EJECUTIVOS_GPS` | — | posiciones GPS recientes |
+| `MONITOREO_ACTIVIDADES_MAPA` | x01=fecha (YYYY-MM-DD) | actividades georeferenciadas del día |
+
+### Análisis (2)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `ANALISIS_SECTORES` | x01=periodo (YYYY-MM) | ingresos por sector |
+| `ANALISIS_FORECAST` | x01=meses | proyección de ventas a N meses |
+
+### Reportes (2)
+| Proceso | Params | Devuelve |
+|---------|--------|---------|
+| `REPORTES_LIST` | — | reportes disponibles |
+| `REPORTES_GENERAR` | x01=tipo, x02=inicio, x03=fin | datos del reporte |
+
+---
+
+## Verificar desde el navegador (dentro de APEX)
+
 ```js
-// Verificar sesión APEX
+// Ver sesión activa
 console.log(window.apex?.env)
 // → { APP_ID: "100", APP_PAGE_ID: "1", APP_SESSION: "..." }
 
-// Llamar un proceso manualmente
+// Llamar proceso manualmente desde DevTools
 fetch('/apex/wwv_flow.ajax', {
   method: 'POST',
   body: new URLSearchParams({
@@ -360,4 +338,7 @@ fetch('/apex/wwv_flow.ajax', {
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   credentials: 'include',
 }).then(r => r.json()).then(console.log)
+
+// Verificar en SQL Workshop
+-- SELECT * FROM user_errors WHERE name LIKE 'CRM_%' ORDER BY name, sequence;
 ```
