@@ -147,7 +147,7 @@ function renderSidebar(activeItem = 'dashboard', role = 'ejecutivo') {
   return `
     <aside class="sidebar">
       <div class="sidebar__brand">
-        <div class="sidebar__logo">CRM <span>Extrucol</span></div>
+        <div class="sidebar__logo">Seguimiento <span>Extrucol</span></div>
         <div class="sidebar__tagline">Sistema Comercial</div>
       </div>
       <div class="sidebar__user">
