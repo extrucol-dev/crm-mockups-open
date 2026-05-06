@@ -6,7 +6,30 @@
       "Bash(xargs -I {} basename {})",
       "Bash(npm install *)",
       "Bash(npm run *)",
-      "Bash(dir /b \"C:\\\\Users\\\\PRACT.SISTEMAS\\\\Desktop\\\\crm-desarollo\\\\front\\\\crm_extrucol\")"
+      "Bash(dir /b \"C:\\\\Users\\\\PRACT.SISTEMAS\\\\Desktop\\\\crm-desarollo\\\\front\\\\crm_extrucol\")",
+      "Read(//c/Users/PRACT.SISTEMAS/Desktop/crm-desarollo/front/crm_extrucol/dist//**)",
+      "Read(//c/Users/PRACT.SISTEMAS/Desktop/crm-desarollo/front/crm_extrucol/dist/assets//**)",
+      "Bash(cat /c/Users/PRACT.SISTEMAS/Desktop/crm-desarollo/front/crm_extrucol/vite.config.js)",
+      "Read(//c/Users/PRACT.SISTEMAS/Desktop/crm-desarollo/front/crm_extrucol/**)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\PRACT.SISTEMAS\\\\Downloads\\\\crm-mockups-open\\\\crm-mockups-open\\\\\" -Recurse -Filter \"*.html\" | Select-Object DirectoryName, Name | Sort-Object DirectoryName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\PRACT.SISTEMAS\\\\Desktop\\\\crm-desarollo\\\\front\\\\crm_extrucol\\\\src\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(npx vite *)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\reportes\\pages",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\oportunidades\\pages",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\proyectos\\pages",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\analisis\\pages",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\actividades\\services",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\clientes\\pages",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\leads\\hooks",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\leads\\pages",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\oportunidades\\hooks",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\actividades\\pages",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\apex\\sql",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\oportunidades\\components",
+      "C:\\Users\\PRACT.SISTEMAS\\Desktop\\crm-desarollo\\front\\crm_extrucol\\src\\features\\oportunidades\\services"
     ]
   }
 }
