@@ -94,20 +94,27 @@ const estadoLabels = {
   PERDIDA: { label: 'Perdida', badgeClass: 'perdida' },
 };
 
+const PROB_LABEL = { 20: 'Frío', 25: 'Frío', 15: 'Frío', 45: 'Tibio', 55: 'Tibio', 65: 'Tibio', 70: 'Tibio', 75: 'Caliente', 85: 'Caliente', 90: 'Caliente' };
+const PROB_COLOR = { 20: '#24388C', 25: '#24388C', 15: '#24388C', 45: '#C7770D', 55: '#C7770D', 65: '#C7770D', 70: '#C7770D', 75: '#DC2626', 85: '#DC2626', 90: '#DC2626' };
+
+function getProbLabel(p) {
+  if (p <= 30) return { label: 'Frío', color: '#24388C' };
+  if (p <= 70) return { label: 'Tibio', color: '#C7770D' };
+  return { label: 'Caliente', color: '#DC2626' };
+}
+
 function renderKanbanCard(op, estadoKey) {
-  const s = estadoLabels[estadoKey];
   return `
     <a href="04-oportunidad-detalle.html" style="text-decoration: none; color: inherit;">
       <div class="kanban-card">
         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
-          <span class="badge badge--${s.badgeClass}"><span class="dot"></span> ${s.label}</span>
           <span class="badge badge--info" style="font-size: 10px;">${op.sector}</span>
         </div>
         <div class="kanban-card__title">${op.titulo}</div>
         <div class="kanban-card__company">${op.empresa}</div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <div class="kanban-card__value">${op.valor}</div>
-          <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">${op.prob}%</span>
+          <span style="font-size: 11px; color: ${getProbLabel(op.prob).color}; font-weight: 600;">${getProbLabel(op.prob).label}</span>
         </div>
         <div class="kanban-card__footer">
           <span class="kanban-card__date">${Icons.calendar} ${op.fecha}</span>

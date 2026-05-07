@@ -60,7 +60,10 @@ const Icons = {
   lock: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>`,
   gps: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1.5v2.25M12 21.75v-2.25m10.5-7.5H19.5M4.5 12H1.5M12 7.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z"/></svg>`,
   fire: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/><path d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z"/></svg>`,
+  droplet: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`,
   inbox: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z"/></svg>`,
+  truck: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>`,
+  userGroup: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg>`,
 };
 
 /**
@@ -96,6 +99,7 @@ function renderSidebar(activeItem = 'dashboard', role = 'ejecutivo') {
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: 'chartBar', route: '01-dashboard.html' },
         { id: 'pipeline', label: 'Pipeline global', icon: 'funnel', route: '02-pipeline-global.html' },
+        { id: 'leads', label: 'Análisis leads', icon: 'fire', route: '04-analisis-leads.html' },
         { id: 'equipo', label: 'Equipo comercial', icon: 'users', route: '05-equipo-comercial.html' },
         { id: 'reportes', label: 'Reportes', icon: 'chartPie', route: '06-reportes.html' },
         { id: 'sectores', label: 'Análisis sectores', icon: 'building', route: '03-analisis-sectores.html' },
@@ -106,6 +110,7 @@ function renderSidebar(activeItem = 'dashboard', role = 'ejecutivo') {
       user: { name: 'Diana Ruiz', role: 'Coordinador', initial: 'DR' },
       items: [
         { id: 'dashboard', label: 'Panel seguimiento', icon: 'home', route: '01-dashboard.html' },
+        { id: 'leads', label: 'Leads', icon: 'funnel', route: '09-leads-kanban.html' },
         { id: 'alertas', label: 'Alertas activas', icon: 'bell', route: '08-alertas.html' },
         { id: 'variables', label: 'Variables y catálogos', icon: 'adjustments', route: '02-variables-sistema.html' },
         { id: 'monitoreo', label: 'Monitoreo ejecutivos', icon: 'view', route: '03-monitoreo-mapa-notif.html' },
@@ -237,11 +242,9 @@ const LeadCatalog = {
   ],
   estados: ['Nuevo', 'Contactado', 'Interesado', 'Calificado', 'Descalificado'],
   scores: [
-    { value: 20,  label: 'Frío',        desc: 'Sin interés demostrado aún' },
-    { value: 40,  label: 'Tibio',       desc: 'Contacto inicial, sin compromiso' },
-    { value: 60,  label: 'Cálido',      desc: 'Interés claro, requiere seguimiento' },
-    { value: 80,  label: 'Caliente',    desc: 'Alto potencial, oportunidad real' },
-    { value: 100, label: 'Muy caliente', desc: 'Listo para conversión inmediata' },
+    { value: 33,  label: 'Frío',     desc: 'Sin interés demostrado aún', icon: 'droplet' },
+    { value: 66,  label: 'Tibio',    desc: 'Interés claro, requiere seguimiento', icon: 'fire' },
+    { value: 100, label: 'Caliente', desc: 'Listo para conversión inmediata', icon: 'fire' },
   ],
 };
 
@@ -276,7 +279,7 @@ function renderLeadEstadoSelect(selectedLabel) {
 function renderLeadScore(selectedValue, { compact = false } = {}) {
   return LeadCatalog.scores.map(s => `
     <div class="score-card ${s.value === selectedValue ? 'is-selected' : ''}" data-score="${s.value}">
-      <div class="score-card__n">${s.value}%</div>
+      <div class="score-card__n" style="color: ${s.value === 33 ? '#24388C' : s.value === 66 ? '#C7770D' : '#DC2626'};">${Icons[s.icon]}</div>
       <div class="score-card__label">${s.label}</div>
       ${compact ? '' : `<div class="score-card__desc">${s.desc}</div>`}
     </div>

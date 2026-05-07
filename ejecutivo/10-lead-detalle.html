@@ -92,16 +92,12 @@
   .score-card__n { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
   .score-card__label { font-size: 10px; font-weight: 600; color: var(--text-muted); }
   .score-card__desc { font-size: 10px; color: var(--text-muted); text-align: center; }
-  .score-card[data-score="20"]::before { background: #93C5FD; }
-  .score-card[data-score="20"] .score-card__n { background: #EEF1FA; color: #24388C; }
-  .score-card[data-score="40"]::before { background: #A5B4FC; }
-  .score-card[data-score="40"] .score-card__n { background: #EEF1FA; color: #6366F1; }
-  .score-card[data-score="60"]::before { background: #FCD34D; }
-  .score-card[data-score="60"] .score-card__n { background: #FFF4E0; color: #C7770D; }
-  .score-card[data-score="80"]::before { background: #FB923C; }
-  .score-card[data-score="80"] .score-card__n { background: #FFF4E0; color: #EA580C; }
-  .score-card[data-score="100"]::before { background: #4ADE80; }
-  .score-card[data-score="100"] .score-card__n { background: #E8F5EE; color: #1A8754; }
+  .score-card[data-score="33"]::before { background: #93C5FD; }
+  .score-card[data-score="33"] .score-card__n { background: #EEF1FA; color: #24388C; }
+  .score-card[data-score="66"]::before { background: #FCD34D; }
+  .score-card[data-score="66"] .score-card__n { background: #FFF4E0; color: #C7770D; }
+  .score-card[data-score="100"]::before { background: #F87171; }
+  .score-card[data-score="100"] .score-card__n { background: #FEE2E2; color: #DC2626; }
   .dropdown-item {
     display: flex; align-items: center; gap: 10px;
     width: 100%; padding: 10px 12px;
@@ -244,7 +240,7 @@ function descalificarLeadModal() {
         <div class="modal-body">
           <div style="padding: 14px; background: var(--error-bg); border-radius: 8px; margin-bottom: 16px;">
             <div style="font-weight: 700; color: var(--text-primary);">Cotización proyecto RCI Seren del Mar</div>
-            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">FIRELINE · Score 100%</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">FIRELINE · <span style="color:#DC2626;font-weight:700;">Score Caliente</span></div>
           </div>
           <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px;">Motivo de descalificación <span style="color: var(--error);">*</span></div>
           <div class="motivo-option is-selected--error" onclick="selectMotivo(this)">
@@ -266,13 +262,6 @@ function descalificarLeadModal() {
             <div>
               <div style="font-weight: 600; font-size: 13.5px;">No es el responsable</div>
               <div style="font-size: 11.5px; color: var(--text-muted);">Contactó a alguien sin poder de decisión</div>
-            </div>
-          </div>
-          <div class="motivo-option" onclick="selectMotivo(this)">
-            <div class="motivo-option__radio"></div>
-            <div>
-              <div style="font-weight: 600; font-size: 13.5px;">Trasladado a distribuidor</div>
-              <div style="font-size: 11.5px; color: var(--text-muted);">Lead derivado a red de distribuidores</div>
             </div>
           </div>
           <div class="motivo-option" onclick="selectMotivo(this)">
@@ -361,7 +350,7 @@ function conversionModal() {
               ${Icons.funnel.replace('class="icon"','class="icon icon--xs"')} Lead origen
             </div>
             <div style="font-weight: 700;">Cotización proyecto RCI Seren del Mar</div>
-            <div style="font-size: 12px; color: var(--text-muted);">FIRELINE · Score 100%</div>
+            <div style="font-size: 12px; color: var(--text-muted);">FIRELINE · <span style="color:#DC2626;font-weight:700;">Score Caliente</span></div>
           </div>
           <div class="convert-arrow">${Icons.chevronDown}</div>
 
@@ -414,9 +403,22 @@ function conversionModal() {
               <label class="form-field__label">Fecha estimada de cierre <span class="req">*</span></label>
               <input class="input" type="date" value="2025-09-30" />
             </div>
-            <div class="form-field">
-              <label class="form-field__label">Probabilidad de cierre (%) <span class="req">*</span></label>
-              <input class="input" type="number" min="0" max="100" value="65" />
+            <div class="form-field" style="margin-bottom: 16px;">
+              <label class="form-field__label">Probabilidad de cierre</label>
+              <div class="score-selector">
+                <div class="score-card" data-score="33">
+                  <div class="score-card__n" style="color: #24388C; background: transparent;">${Icons.droplet}</div>
+                  <div class="score-card__label">Frío</div>
+                </div>
+                <div class="score-card is-selected" data-score="66">
+                  <div class="score-card__n" style="color: #C7770D; background: transparent;">${Icons.fire}</div>
+                  <div class="score-card__label">Tibio</div>
+                </div>
+                <div class="score-card" data-score="100">
+                  <div class="score-card__n" style="color: #DC2626; background: transparent;">${Icons.fire}</div>
+                  <div class="score-card__label">Caliente</div>
+                </div>
+              </div>
             </div>
             <div class="form-field">
               <label class="form-field__label">Estado inicial</label>
@@ -455,7 +457,7 @@ function detailContent() {
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
             <span class="badge badge--calificacion"><span class="dot"></span> Interesado</span>
             <span class="badge badge--info">${Icons.globe.replace('class="icon"','class="icon icon--xs"')} WhatsApp</span>
-            <span class="badge badge--accent">${Icons.fire.replace('class="icon"','class="icon icon--xs"')} Score 100%</span>
+            <span class="badge badge--accent" style="color:#DC2626;">${Icons.fire.replace('class="icon"','class="icon icon--xs"')} Score Caliente</span>
           </div>
           <div style="font-size: 22px; font-weight: 800; color: var(--text-primary); line-height: 1.2;">
             Cotización proyecto RCI Seren del Mar
@@ -466,6 +468,7 @@ function detailContent() {
         </div>
         <div style="display: flex; gap: 8px; flex-shrink: 0;">
 <button class="btn btn--secondary btn--sm" onclick="openModal(editarLeadModal())">${Icons.pencil} Editar</button>
+          <button class="btn btn--secondary btn--sm" style="color: var(--accent); border-color: var(--accent);" onclick="openModal(trasladarDistribuidorModal())">${Icons.truck} Trasladar</button>
           <button class="btn btn--secondary btn--sm" onclick="openModal(descalificarLeadModal())">${Icons.xCircle} Descalificar</button>
           <button class="btn btn--primary btn--sm" style="background: var(--success);" onclick="openModal(conversionModal())">${Icons.arrowRight} Convertir a oportunidad</button>
         </div>
@@ -555,7 +558,7 @@ function detailContent() {
             <dt>Empresa</dt><dd>FIRELINE</dd>
             <dt>Ciudad</dt><dd>Cartagena</dd>
             <dt>Asesor</dt><dd>Paola</dd>
-            <dt>Score</dt><dd style="color: var(--accent); font-weight: 700;">100%</dd>
+            <dt>Score</dt><dd style="color: #DC2626; font-weight: 700;">Caliente</dd>
             <dt>Edad</dt><dd>12 días</dd>
           </dl>
         </div>
@@ -565,6 +568,7 @@ function detailContent() {
         <div class="card__header"><div class="card__title">Acciones</div></div>
         <div class="card__body" style="display: flex; flex-direction: column; gap: 8px;">
           <button class="btn btn--primary btn--sm" style="background: var(--success); width: 100%;" onclick="openModal(conversionModal())">${Icons.arrowRight} Convertir a oportunidad</button>
+          <button class="btn btn--secondary btn--block" style="color: var(--accent); border-color: var(--accent);" onclick="openModal(trasladarDistribuidorModal())">${Icons.truck} Trasladar a distribuidor</button>
           <button class="btn btn--secondary btn--block" style="color: var(--error); border-color: var(--error-border);" onclick="openModal(descalificarLeadModal())">${Icons.xCircle} Descalificar lead</button>
         </div>
       </div>

@@ -92,22 +92,38 @@
   .motivo-option.is-selected--error .motivo-option__radio::after {
     content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--error);
   }
-.modal-footer {
+  .modal-footer {
     padding: 16px 24px; border-top: 1px solid var(--border);
     display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
   }
-  .dropdown-item {
-    display: flex; align-items: center; gap: 10px;
-    width: 100%; padding: 10px 12px;
-    background: none; border: none;
-    font-family: inherit; font-size: 13.5px; font-weight: 500;
-    color: var(--text-primary);
-    border-radius: 6px;
-    cursor: pointer;
-    text-align: left;
-    transition: background 150ms;
+  .score-selector { display: flex; gap: 10px; }
+  .score-card {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 14px 8px 10px; border-radius: 10px;
+    border: 2px solid var(--border); cursor: pointer;
+    background: var(--surface); transition: all 200ms;
+    position: relative; overflow: hidden;
   }
-  .dropdown-item:hover { background: var(--page-bg); }
+  .score-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .score-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .score-card.is-selected { border-color: var(--primary); background: var(--primary-bg); }
+  .score-card__n {
+    width: 32px; height: 32px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; margin-bottom: 6px;
+  }
+  .score-card__label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .score-card[data-score="33"]::before { background: #93C5FD; }
+  .score-card[data-score="33"] .score-card__label { color: #24388C; }
+  .score-card[data-score="66"]::before { background: #FCD34D; }
+  .score-card[data-score="66"] .score-card__label { color: #C7770D; }
+  .score-card[data-score="100"]::before { background: #F87171; }
+  .score-card[data-score="100"] .score-card__label { color: #DC2626; }
 </style>
 </head>
 <body>
@@ -293,8 +309,29 @@ function editarOportunidadModal() {
               <input class="input" type="date" value="2026-04-25" />
             </div>
             <div class="form-field">
-              <label class="form-field__label">Probabilidad de cierre (%)</label>
-              <input class="input" type="number" min="0" max="100" value="65" />
+              <label class="form-field__label">Estado</label>
+              <select class="select">
+                <option>Prospección</option>
+                <option selected>Propuesta</option>
+                <option>Negociación</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Probabilidad de cierre</label>
+              <div class="score-selector">
+                <div class="score-card" data-score="33">
+                  <div class="score-card__n" style="color: #24388C; background: transparent;">${Icons.droplet}</div>
+                  <div class="score-card__label">Frío</div>
+                </div>
+                <div class="score-card is-selected" data-score="66">
+                  <div class="score-card__n" style="color: #C7770D; background: transparent;">${Icons.fire}</div>
+                  <div class="score-card__label">Tibio</div>
+                </div>
+                <div class="score-card" data-score="100">
+                  <div class="score-card__n" style="color: #DC2626; background: transparent;">${Icons.fire}</div>
+                  <div class="score-card__label">Caliente</div>
+                </div>
+              </div>
             </div>
             <div class="form-field">
               <label class="form-field__label">Ciudad</label>
@@ -353,19 +390,21 @@ function avanzarEstadoModal() {
             </div>
           </div>
           <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Nuevo estado</label>
-            <select class="select">
-              <option>Negociación</option>
-              <option>Ganada</option>
-            </select>
-          </div>
-          <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Probabilidad de cierre (%)</label>
-            <input class="input" type="number" min="0" max="100" value="65" placeholder="Ej: 75" />
-          </div>
-          <div class="form-field">
-            <label class="form-field__label">Comentario (opcional)</label>
-            <textarea class="textarea" rows="2" placeholder="Agrega un comentario sobre este cambio de estado..."></textarea>
+            <label class="form-field__label">Probabilidad de cierre</label>
+            <div class="score-selector">
+              <div class="score-card" data-score="33">
+                <div class="score-card__n" style="color: #24388C; background: transparent;">${Icons.droplet}</div>
+                <div class="score-card__label">Frío</div>
+              </div>
+              <div class="score-card is-selected" data-score="66">
+                <div class="score-card__n" style="color: #C7770D; background: transparent;">${Icons.fire}</div>
+                <div class="score-card__label">Tibio</div>
+              </div>
+              <div class="score-card" data-score="100">
+                <div class="score-card__n" style="color: #DC2626; background: transparent;">${Icons.fire}</div>
+                <div class="score-card__label">Caliente</div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -646,7 +685,7 @@ function content() {
         </div>
         <div class="detail-meta__item">
           <span class="detail-meta__label">Probabilidad</span>
-          <span class="detail-meta__value">65%</span>
+          <span class="detail-meta__value" style="color: #C7770D;">Tibio</span>
         </div>
         <div class="detail-meta__item">
           <span class="detail-meta__label">Edad</span>
@@ -771,6 +810,18 @@ function content() {
       ${tabsHTML}
       <div style="display: grid; gap: 16px; grid-template-columns: 1fr 320px;">
         <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+
+  <div class="card">
+    <div class="card__header">
+      <div class="card__title">Descripción</div>
+    </div>
+    <div class="card__body">
+      <div style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.55;">
+        Proyecto de acueducto rural para el municipio de Piedecuesta, Santander. Sistema de conducción de agua potable con tubería PE100 SDR 11 de 4 pulgadas, incluyendo accesorios de electrofusión y válvulas de compuerta. Requiere visita técnica para validación de especificaciones.
+      </div>
+    </div>
+  </div>
+
           ${productosCard}
           ${actividadesCard}
 

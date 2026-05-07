@@ -2,13 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>SEGUIMIENTO Extrucol · Ejecutivo · Leads Kanban</title>
+<title>SEGUIMIENTO Extrucol · Coordinador · Leads Kanban</title>
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/components.css">
 <style>
-  .canvas-title { font: 800 22px 'Roboto'; color: #1A1A1A; margin-bottom: 6px; }
-  .canvas-subtitle { font: 400 14px 'Roboto'; color: #6B6B6B; margin-bottom: 40px; }
-
   .lead-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -43,6 +40,7 @@
     font-size: 11px; font-weight: 700; color: var(--accent);
   }
   .lead-card__age { font-size: 10.5px; color: var(--text-disabled); }
+  .lead-card__asesor { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -59,53 +57,46 @@ function closeModal() {
 
 function toggleFiltros() {
   const panel = document.getElementById('filtrosPanel');
-  if (panel.style.display === 'none') {
-    panel.style.display = 'flex';
-  } else {
-    panel.style.display = 'none';
-  }
+  panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
 }
 
 const leadsData = {
-  NUEVO: { color: '#3B82F6', label: 'Nuevo', badgeClass: 'prospecto', items: [
-    { titulo: 'Solicitud cotización tubería para alcantarillado', empresa: 'RB DE COLOMBIA SA', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 66, age: '1d', avatar: 'DC', color: 3 },
-    { titulo: 'Oferta tubería PE100 para proyecto VIS', empresa: 'INGEOMEGA', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 33, age: '2d', avatar: 'DI', color: 1 },
-    { titulo: 'Cotización tubería 315mm PN10 para vivienda', empresa: 'GAMO INGENIEROS SAS', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 66, age: '0d', avatar: 'GA', color: 5 },
+NUEVO: { color: '#3B82F6', label: 'Nuevo', items: [
+    { titulo: 'Solicitud cotización tubería para alcantarillado', empresa: 'RB DE COLOMBIA SA', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 60, age: '1d', avatar: 'DC', color: 3, asesor: 'P. Martínez' },
+    { titulo: 'Oferta tubería PE100 para proyecto VIS', empresa: 'INGEOMEGA', origen: 'WhatsApp', intereses: ['Tubería PE', 'Accesorios'], score: 40, age: '2d', avatar: 'DI', color: 1, asesor: 'J. Pérez' },
+    { titulo: 'Cotización tubería 315mm PN10 para vivienda', empresa: 'GAMO INGENIEROS SAS', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 60, age: '0d', avatar: 'GA', color: 5, asesor: 'C. Gómez' },
   ]},
-  CONTACTADO: { color: '#A855F7', label: 'Contactado', badgeClass: 'propuesta', items: [
-    { titulo: 'Cotización accesorio PE para Tocancipa', empresa: 'UNION TEMPORAL BALSA 3', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 66, age: '4d', avatar: 'UT', color: 2 },
-    { titulo: 'Oferta tubería 315mm para proyecto VIS', empresa: 'GAMO INGENIEROS', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 33, age: '5d', avatar: 'GM', color: 5 },
+  CONTACTADO: { color: '#A855F7', label: 'Contactado', items: [
+    { titulo: 'Cotización accesorio PE para Tocancipa', empresa: 'UNION TEMPORAL BALSA 3', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 60, age: '4d', avatar: 'UT', color: 2, asesor: 'P. Martínez' },
+    { titulo: 'Oferta tubería 315mm para proyecto VIS', empresa: 'GAMO INGENIEROS', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 40, age: '5d', avatar: 'GM', color: 5, asesor: 'A. Rojas' },
   ]},
-  INTERESADO: { color: '#22C55E', label: 'Interesado', badgeClass: 'calificacion', items: [
-    { titulo: 'Solicitud tubería industrial para planta', empresa: 'SOLUCIONES HIDRAULICAS', origen: 'WhatsApp', intereses: ['Tubería PE', 'Válvulas'], score: 100, age: '5d', avatar: 'SH', color: 4 },
-    { titulo: 'Cotización manifold para estación', empresa: 'INGENIERIA DEL OCCIDENTE', origen: 'Instagram', intereses: ['Accesorios PE'], score: 100, age: '3d', avatar: 'IO', color: 2 },
+  INTERESADO: { color: '#22C55E', label: 'Interesado', items: [
+    { titulo: 'Solicitud tubería industrial para planta', empresa: 'SOLUCIONES HIDRAULICAS', origen: 'WhatsApp', intereses: ['Tubería PE', 'Válvulas'], score: 100, age: '5d', avatar: 'SH', color: 4, asesor: 'C. Gómez' },
+    { titulo: 'Cotización manifold para estación', empresa: 'INGENIERIA DEL OCCIDENTE', origen: 'Instagram', intereses: ['Accesorios PE'], score: 80, age: '3d', avatar: 'IO', color: 2, asesor: 'J. Pérez' },
   ]},
-  DESCALIFICADO: { color: '#EF4444', label: 'No Interesado', badgeClass: 'perdida', items: [
-    { titulo: 'Proyecto alcantarillado EMSERPRE', empresa: 'EMSERPRE', origen: 'Instagram', intereses: ['Tubería PE', 'Accesorios'], score: 33, age: '15d', avatar: 'EM', color: 3 },
-    { titulo: 'Tubería HDPE para San Marcos Sucre', empresa: 'GEOCOR', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 33, age: '20d', avatar: 'GE', color: 6 },
+  DESCALIFICADO: { color: '#EF4444', label: 'No Interesado', items: [
+    { titulo: 'Proyecto alcantarillado EMSERPRE', empresa: 'EMSERPRE', origen: 'Instagram', intereses: ['Tubería PE', 'Accesorios'], score: 20, age: '15d', avatar: 'EM', color: 3, asesor: 'P. Martínez' },
+    { titulo: 'Tubería HDPE para San Marcos Sucre', empresa: 'GEOCOR', origen: 'WhatsApp', intereses: ['Tubería PE'], score: 20, age: '20d', avatar: 'GE', color: 6, asesor: 'A. Rojas' },
   ]},
-  TRASLADADO: { color: '#F39610', label: 'Trasladado a distribuidor', badgeClass: 'negociacion', items: [
-    { titulo: 'Cotización tubería 110mm para acueducto veredal', empresa: 'JUNTA ACCION COMUNAL SAN PEDRO', origen: 'Referido', intereses: ['Tubería PE'], score: 33, age: '10d', distribuidor: 'Poliplas Oriente', avatar: 'JP', color: 4 },
-    { titulo: 'Suministro PE para sistema de riego', empresa: 'AGRO CAMPO VERDE SAS', origen: 'WhatsApp', intereses: ['Riego', 'Accesorios'], score: 66, age: '8d', distribuidor: 'Distrib. Tuberías y Accesorios Ltda', avatar: 'AV', color: 2 },
+  TRASLADADO: { color: '#F39610', label: 'Trasladado a distribuidor', items: [
+    { titulo: 'Cotización tubería 110mm para acueducto veredal', empresa: 'JUNTA ACCION COMUNAL SAN PEDRO', origen: 'Referido', intereses: ['Tubería PE'], score: 33, age: '10d', avatar: 'JP', color: 4, asesor: 'P. Martínez' },
+    { titulo: 'Suministro PE para sistema de riego', empresa: 'AGRO CAMPO VERDE SAS', origen: 'WhatsApp', intereses: ['Riego', 'Accesorios'], score: 66, age: '8d', avatar: 'AV', color: 2, asesor: 'C. Gómez' },
   ]},
 };
-
-const SCORE_LABEL = { 33: 'Frío', 66: 'Tibio', 100: 'Caliente' };
-const SCORE_COLOR = { 33: '#24388C', 66: '#C7770D', 100: '#DC2626' };
 
 function renderLeadCard(l, estadoKey) {
   const esTrasladado = estadoKey === 'TRASLADADO';
   const footerContent = esTrasladado
     ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#C7770D;max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-        ${Icons.truck ?? '🚛'} ${l.distribuidor ?? ''}
+        ${Icons.truck} ${l.distribuidor ?? ''}
        </span>`
     : `<div style="display: flex; align-items: center; gap: 8px;">
         <div class="avatar avatar--xs avatar--color-${l.color}">${l.avatar}</div>
-        <span class="lead-card__score" style="color:${SCORE_COLOR[l.score] ?? '#F39610'}">${Icons.fire} ${SCORE_LABEL[l.score] ?? l.score}</span>
+        <span class="lead-card__score" style="color:${l.score >= 70 ? '#DC2626' : l.score >= 30 ? '#C7770D' : '#24388C'};">${Icons.fire} ${l.score >= 70 ? 'Caliente' : l.score >= 30 ? 'Tibio' : 'Frío'}</span>
        </div>`;
   return `
     <a href="10-lead-detalle.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
-      <div class="lead-card" style="${esTrasladado ? 'border-color:#F0D9A8;background:#FFFBF0;cursor:pointer;' : ''}">
+      <div class="lead-card" style="${esTrasladado ? 'border-color:#F0D9A8;background:#FFFBF0;' : ''}">
         <div style="display: flex; align-items: center; justify-content: space-between;">
           <span class="lead-card__origen">${Icons.globe} ${l.origen}</span>
           ${!esTrasladado ? `<button class="topbar__icon-btn" style="width:24px; height:24px;">${Icons.dots}</button>` : ''}
@@ -126,31 +117,14 @@ function renderLeadCard(l, estadoKey) {
 
 function renderKanbanColumn(estadoKey) {
   const col = leadsData[estadoKey];
+  const esTrasladado = estadoKey === 'TRASLADADO';
   const cards = col.items.map(l => renderLeadCard(l, estadoKey)).join('');
   return `
-    <div class="kanban-col">
+    <div class="kanban-col"${esTrasladado ? ' style="border-left: 2px solid var(--border); padding-left: 12px;"' : ''}>
       <div class="kanban-col__header">
         <span class="kanban-col__dot" style="background:${col.color}"></span>
         <span class="kanban-col__label">${col.label}</span>
-        <span class="kanban-col__count">${col.items.length}</span>
-      </div>
-      <div class="kanban-col__line" style="background:${col.color}"></div>
-      <div class="kanban-col__list">
-        ${cards || `<div class="kanban-col__empty">Sin leads</div>`}
-      </div>
-    </div>
-  `;
-}
-
-function renderKanbanColumnTrasladado() {
-  const col = leadsData['TRASLADADO'];
-  const cards = col.items.map(l => renderLeadCard(l, 'TRASLADADO')).join('');
-  return `
-    <div class="kanban-col" style="border-left: 2px solid var(--border); padding-left: 12px;">
-      <div class="kanban-col__header">
-        <span class="kanban-col__dot" style="background:#F39610"></span>
-        <span class="kanban-col__label">${col.label}</span>
-        <span class="kanban-col__count" style="background:#FFF4E0;color:#C7770D;">${col.items.length}</span>
+        <span class="kanban-col__count"${esTrasladado ? ' style="background:#FFF4E0;color:#C7770D;"' : ''}>${col.items.length}</span>
       </div>
       <div class="kanban-col__line" style="background:${col.color}"></div>
       <div class="kanban-col__list">
@@ -161,25 +135,25 @@ function renderKanbanColumnTrasladado() {
 }
 
 function content() {
-  const total = Object.values(leadsData).reduce((a,b)=>a+b.items.length, 0);
-  const columnasKanban = `<div class="kanban" style="grid-template-columns: repeat(4, 1fr) repeat(1, 1fr);">
-       ${renderKanbanColumn('NUEVO')}
-       ${renderKanbanColumn('CONTACTADO')}
-       ${renderKanbanColumn('INTERESADO')}
-       ${renderKanbanColumn('DESCALIFICADO')}
-       ${renderKanbanColumnTrasladado()}
-     </div>`;
+  const total = Object.values(leadsData).reduce((a,b) => a + b.items.length, 0);
+  const columnasKanban = `<div class="kanban" style="grid-template-columns: repeat(5, 1fr);">
+    ${renderKanbanColumn('NUEVO')}
+    ${renderKanbanColumn('CONTACTADO')}
+    ${renderKanbanColumn('INTERESADO')}
+    ${renderKanbanColumn('DESCALIFICADO')}
+    ${renderKanbanColumn('TRASLADADO')}
+  </div>`;
 
   return `
     <div class="content">
       <div class="page-head">
         <div class="page-head__title-group">
-          <div class="page-head__title">Mis Leads</div>
+          <div class="page-head__title">Leads del equipo</div>
           <div class="page-head__subtitle">${total} leads en seguimiento · 1 sin contactar hace +2 días</div>
         </div>
         <div class="page-head__actions">
           <button class="btn btn--secondary btn--sm" onclick="toggleFiltros()">${Icons.filter} Filtros</button>
-          <a href="09-lead-form.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
+          <a href="11-lead-form.html" style="text-decoration: none; color: inherit; font: inherit; cursor: pointer;">
             <button class="btn btn--primary btn--sm">${Icons.plus} Nuevo lead</button>
           </a>
         </div>
@@ -188,15 +162,22 @@ function content() {
       <div class="filter-bar">
         <div class="input-wrapper" style="flex:1; max-width: 320px;">
           ${Icons.search}
-          <input class="input input--with-icon" placeholder="Buscar por título, empresa, origen...">
+          <input class="input input--with-icon" placeholder="Buscar por título, empresa, asesor...">
         </div>
-        <select class="select" style="max-width: 180px;">
+        <select class="select" style="max-width: 160px;">
+          <option>Todos los asesores</option>
+          <option>P. Martínez</option>
+          <option>J. Pérez</option>
+          <option>C. Gómez</option>
+          <option>A. Rojas</option>
+        </select>
+        <select class="select" style="max-width: 160px;">
           <option>Todos los orígenes</option>
           <option>Instagram</option>
           <option>Facebook</option>
           <option>WhatsApp</option>
         </select>
-        <select class="select" style="max-width: 180px;">
+        <select class="select" style="max-width: 160px;">
           <option>Todos los intereses</option>
           <option>Tubería PE</option>
           <option>Riego</option>
@@ -240,7 +221,7 @@ function content() {
         ${Icons.warning}
         <div>
           <strong>1 lead estancado.</strong> GAMO INGENIEROS SAS sin contactar hace 1 día.
-          El sistema enviará notificación al coordinador si superan 3 días.
+          El sistema enviará notificación si supera 3 días.
         </div>
       </div>
 
@@ -250,8 +231,8 @@ function content() {
 }
 
 document.getElementById('shell').innerHTML = `
-  ${renderSidebar('leads', 'ejecutivo')}
-  <div class="main-area">${renderTopbar({ title: 'Mis Leads' })}${content()}</div>
+  ${renderSidebar('leads', 'coordinador')}
+  <div class="main-area">${renderTopbar({ title: 'Leads del equipo' })}${content()}</div>
 `;
 </script>
 </body>

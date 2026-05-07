@@ -12,6 +12,9 @@
 <script src="../shared/components.js"></script>
 <script>
 function content() {
+  const scoreLabel = s => s >= 70 ? 'Caliente' : s >= 30 ? 'Tibio' : 'Frío';
+  const scoreColor = s => s >= 70 ? '#DC2626' : s >= 30 ? '#C7770D' : '#24388C';
+
   const pipelineData = [
     { estado: 'Prospección', count: 8, valor: '$ 197 M', pct: 16, color: '#3B82F6' },
     { estado: 'Calificación', count: 6, valor: '$ 63 M', pct: 5, color: '#F97316' },
@@ -151,14 +154,14 @@ function content() {
             </thead>
             <tbody>
               ${[
-                { op: 'Cotización No 1393 tubería 110mm RDE 17', emp: 'CIVILE HIDRAULICOS', exec: 'PA', execName: 'Paola', color: 6, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 111 M', prob: '60%', cierre: '30 Sep' },
-                { op: 'Cotización proyecto Imola Park No 1248', emp: 'Promotora Imola Park S.A.S', exec: 'PA', execName: 'Paola', color: 1, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 92 M', prob: '60%', cierre: '15 Oct' },
-                { op: 'Cotización proyecto RCI Seren del Mar', emp: 'FIRELINE', exec: 'PA', execName: 'Paola', color: 2, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 44 M', prob: '80%', cierre: '30 Sep' },
-                { op: 'Oferta proceso Apartadó (licitación)', emp: 'ADOS INGENIERIA', exec: 'DI', execName: 'Diana', color: 4, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 98 M', prob: '60%', cierre: '15 Nov' },
-                { op: 'Tubería 315mm PN10 proyecto VIS Manizales', emp: 'CMM', exec: 'DI', execName: 'Diana', color: 3, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 10 M', prob: '40%', cierre: '30 Nov' },
-                { op: 'Oferta accesorio PE Tocancipa', emp: 'UNION TEMPORAL BALSA 3', exec: 'AL', execName: 'Alvaro', color: 2, estado: 'prospecto', estadoL: 'Prospección', valor: '$ 187 M', prob: '40%', cierre: '15 Dic' },
-                { op: 'Cotización Sabanalarga No 584', emp: 'COL PROYECTOS', exec: 'PA', execName: 'Paola', color: 5, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 48 M', prob: '60%', cierre: '30 Oct' },
-                { op: 'Oferta alcantarillado Quibdó', emp: 'RB DE COLOMBIA SA', exec: 'DI', execName: 'Diana', color: 1, estado: 'ganada', estadoL: 'Ganada', valor: '$ 26 M', prob: '100%', cierre: '27 Feb' },
+                { op: 'Cotización No 1393 tubería 110mm RDE 17', emp: 'CIVILE HIDRAULICOS', exec: 'PA', execName: 'Paola', color: 6, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 111 M', prob: 60, cierre: '30 Sep' },
+                { op: 'Cotización proyecto Imola Park No 1248', emp: 'Promotora Imola Park S.A.S', exec: 'PA', execName: 'Paola', color: 1, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 92 M', prob: 80, cierre: '15 Oct' },
+                { op: 'Cotización proyecto RCI Seren del Mar', emp: 'FIRELINE', exec: 'PA', execName: 'Paola', color: 2, estado: 'negociacion', estadoL: 'Negociación', valor: '$ 44 M', prob: 80, cierre: '30 Sep' },
+                { op: 'Oferta proceso Apartadó (licitación)', emp: 'ADOS INGENIERIA', exec: 'DI', execName: 'Diana', color: 4, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 98 M', prob: 60, cierre: '15 Nov' },
+                { op: 'Tubería 315mm PN10 proyecto VIS Manizales', emp: 'CMM', exec: 'DI', execName: 'Diana', color: 3, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 10 M', prob: 40, cierre: '30 Nov' },
+                { op: 'Oferta accesorio PE Tocancipa', emp: 'UNION TEMPORAL BALSA 3', exec: 'AL', execName: 'Alvaro', color: 2, estado: 'prospecto', estadoL: 'Prospección', valor: '$ 187 M', prob: 40, cierre: '15 Dic' },
+                { op: 'Cotización Sabanalarga No 584', emp: 'COL PROYECTOS', exec: 'PA', execName: 'Paola', color: 5, estado: 'propuesta', estadoL: 'Propuesta', valor: '$ 48 M', prob: 60, cierre: '30 Oct' },
+                { op: 'Oferta alcantarillado Quibdó', emp: 'RB DE COLOMBIA SA', exec: 'DI', execName: 'Diana', color: 1, estado: 'ganada', estadoL: 'Ganada', valor: '$ 26 M', prob: 100, cierre: '27 Feb' },
               ].map(r => `
                 <tr>
                   <td>
@@ -175,12 +178,20 @@ function content() {
                   </td>
                   <td><span class="badge badge--${r.estado}"><span class="dot"></span> ${r.estadoL}</span></td>
                   <td style="font-weight: 700; color: var(--accent);">${r.valor}</td>
-                  <td><span style="font-weight: 600;">${r.prob}</span></td>
+                  <td style="font-weight: 600; color: ${scoreColor(r.prob)}; display: flex; align-items: center; gap: 4px;">${Icons.fire} ${scoreLabel(r.prob)}</td>
                   <td style="color: var(--text-muted);">${r.cierre}</td>
                 </tr>
               `).join('')}
             </tbody>
           </table>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; margin-top: 8px;">
+          <span style="font-size: 12px; color: var(--text-muted);">Mostrando 1-8 de 8 resultados</span>
+          <div style="display: flex; gap: 4px;">
+            <button class="btn btn--ghost btn--sm" disabled style="opacity: 0.4;">${Icons.chevronLeft}</button>
+            <button class="btn btn--primary btn--sm" style="min-width: 32px;">1</button>
+            <button class="btn btn--ghost btn--sm" disabled style="opacity: 0.4;">${Icons.chevronRight}</button>
+          </div>
         </div>
       </div>
     </div>

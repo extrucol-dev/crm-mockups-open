@@ -327,7 +327,10 @@ function dashboardContent() {
     </div>
   `).join('');
 
-  const leadsCalientes = [
+  const SCORE_LABEL = { 33: 'Frío', 66: 'Tibio', 100: 'Caliente' };
+const SCORE_COLOR = { 33: '#24388C', 66: '#C7770D', 100: '#DC2626' };
+
+const leadsCalientes = [
     { name: 'Acueducto Metropolitano', company: 'ACUAMET SA', score: 100, interes: 'Tubería PE100' },
     { name: 'Distriaguas del Caribe', company: 'DAC LTDA', score: 80, interes: 'Sistema de riego' },
     { name: 'Hidrogas del Oriente', company: 'HIDROGAS SA', score: 80, interes: 'Accesorios PE' },
@@ -342,7 +345,7 @@ function dashboardContent() {
       </div>
       <div style="display: flex; align-items: center; gap: 4px;">
         ${Icons.fire}
-        <span style="font-weight: 700; color: var(--accent); font-size: 13px;">${l.score}%</span>
+        <span style="font-weight: 700; color: ${l.score > 70 ? '#DC2626' : '#C7770D'}; font-size: 13px;">${l.score > 70 ? 'Caliente' : 'Tibio'}</span>
       </div>
     </div>
   `).join('');

@@ -137,6 +137,14 @@ document.getElementById('shell').innerHTML = `${renderSidebar('usuarios','admin'
             </tbody>
           </table>
         </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; margin-top: 8px;">
+          <span style="font-size: 12px; color: var(--text-muted);">Mostrando 1-6 de 6 resultados</span>
+          <div style="display: flex; gap: 4px;">
+            <button class="btn btn--ghost btn--sm" disabled style="opacity: 0.4;">${Icons.chevronLeft}</button>
+            <button class="btn btn--primary btn--sm" style="min-width: 32px;">1</button>
+            <button class="btn btn--ghost btn--sm" disabled style="opacity: 0.4;">${Icons.chevronRight}</button>
+          </div>
+        </div>
       </div>
     </div>
   `;

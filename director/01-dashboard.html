@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>SEGUIMIENTO Extrucol · Director · Dashboard Ejecutivo</title>
+<title>SEGUIMIENTO Extrucol · Director · Dashboard</title>
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/components.css">
 <style>
@@ -178,7 +178,7 @@ function content() {
     <div class="content">
       <div class="page-head">
         <div class="page-head__title-group">
-          <div class="page-head__title">Dash board Ejecutivo</div>
+          <div class="page-head__title">Dashboard</div>
           <div class="page-head__subtitle">Visión estratégica del negocio · Actualizado hace 5 min</div>
         </div>
         <div class="page-head__actions">
@@ -295,7 +295,7 @@ function content() {
 document.getElementById('shell').innerHTML = `
   ${renderSidebar('dashboard', 'director')}
   <div class="main-area">
-    ${renderTopbar({ title: 'Dashboard Ejecutivo' })}
+    ${renderTopbar({ title: 'Dashboard' })}
     ${content()}
   </div>
 `;

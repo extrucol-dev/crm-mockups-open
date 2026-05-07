@@ -28,6 +28,31 @@
     display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
   }
   .form-grid-full { grid-column: 1 / -1; }
+  .score-selector { display: flex; gap: 10px; }
+  .score-card {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 14px 8px 10px; border-radius: 10px;
+    border: 2px solid var(--border); cursor: pointer;
+    background: var(--surface); transition: all 200ms;
+    position: relative; overflow: hidden;
+  }
+  .score-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .score-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .score-card.is-selected { border-color: var(--primary); background: var(--primary-bg); }
+  .score-card__n {
+    width: 32px; height: 32px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; margin-bottom: 6px;
+  }
+  .score-card__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .score-card[data-score="33"]::before { background: #93C5FD; }
+  .score-card[data-score="33"] .score-card__n { background: #EEF1FA; color: #24388C; }
+  .score-card[data-score="66"]::before { background: #FCD34D; }
+  .score-card[data-score="66"] .score-card__n { background: #FFF4E0; color: #C7770D; }
+  .score-card[data-score="100"]::before { background: #F87171; }
+  .score-card[data-score="100"] .score-card__n { background: #FEE2E2; color: #DC2626; }
   .modal-overlay {
     position: absolute; inset: 0;
     background: rgba(26,26,26,0.5);
@@ -193,10 +218,22 @@ function content() {
             <label class="form-field__label">Fecha estimada de cierre <span class="req">*</span></label>
             <input class="input" type="date" value="2026-04-25" />
           </div>
-          <div class="form-field">
-            <label class="form-field__label">Probabilidad de cierre (%) <span class="req">*</span></label>
-            <input class="input" type="number" min="0" max="100" value="65" placeholder="0-100" />
-            <span class="form-field__hint">Porcentaje estimado de cierre (0-100)</span>
+          <div class="form-field form-grid-full">
+            <label class="form-field__label">Probabilidad de cierre <span class="req">*</span></label>
+            <div class="score-selector">
+              <div class="score-card" data-score="33">
+                <div class="score-card__n" style="color: #24388C; background: transparent;">${Icons.droplet}</div>
+                <div class="score-card__label">Frío</div>
+              </div>
+              <div class="score-card is-selected" data-score="66">
+                <div class="score-card__n" style="color: #C7770D; background: transparent;">${Icons.fire}</div>
+                <div class="score-card__label">Tibio</div>
+              </div>
+              <div class="score-card" data-score="100">
+                <div class="score-card__n" style="color: #DC2626; background: transparent;">${Icons.fire}</div>
+                <div class="score-card__label">Caliente</div>
+              </div>
+            </div>
           </div>
           <div class="form-field">
             <label class="form-field__label">Ejecutivo <span class="req">*</span></label>
@@ -266,6 +303,13 @@ document.getElementById('shell').innerHTML = `
     ${content()}
   </div>
 `;
+
+document.querySelectorAll('.score-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.score-card').forEach(c => c.classList.remove('is-selected'));
+    card.classList.add('is-selected');
+  });
+});
 </script>
 </body>
 </html>

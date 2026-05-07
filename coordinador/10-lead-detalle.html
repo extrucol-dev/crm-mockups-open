@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SEGUIMIENTO Extrucol · Coordinador · Detalle Lead</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 60px 24px; z-index: 100;
+  }
+  .modal-content {
+    background: var(--surface); border-radius: 12px;
+    max-width: 560px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .modal-header > :first-child { flex-shrink: 0; }
+  .modal-header > :not(:first-child):not(:last-child) { flex: 1; }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px; background: var(--page-bg);
+  }
+  .motivo-option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: all 180ms; margin-bottom: 8px;
+  }
+  .motivo-option:hover { border-color: var(--primary); background: var(--primary-bg); }
+  .motivo-option__radio {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid var(--border-input); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .motivo-option.is-selected--error { border-color: var(--error); background: var(--error-bg); }
+  .motivo-option.is-selected--error .motivo-option__radio { border-color: var(--error); }
+  .motivo-option.is-selected--error .motivo-option__radio::after {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--error);
+  }
+  .score-selector { display: flex; gap: 10px; align-items: stretch; }
+  .score-card {
+    position: relative; flex: 1; min-width: 80px;
+    padding: 10px 8px 8px; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; text-align: center;
+    transition: all 150ms; background: var(--surface);
+  }
+  .score-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; border-radius: 8px 8px 0 0;
+  }
+  .score-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .score-card.is-selected { border-color: var(--primary); background: var(--primary-bg); }
+  .score-card__n { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+  .score-card__label { font-size: 10px; font-weight: 600; color: var(--text-muted); }
+  .score-card[data-score="33"]::before { background: #93C5FD; }
+  .score-card[data-score="66"]::before { background: #FCD34D; }
+  .score-card[data-score="100"]::before { background: #F87171; }
+  .interes-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px; border: 1px solid var(--border);
+    border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 150ms;
+  }
+  .interes-chip:hover { border-color: var(--primary); }
+  .interes-chip.is-selected { border-color: var(--primary); background: var(--primary-bg); color: var(--primary); }
+  .interes-chip.is-selected::before { content: '✓'; font-weight: 700; }
+  .reasignar-avatar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: all 180ms; margin-bottom: 8px;
+  }
+  .reasignar-avatar:hover { border-color: var(--primary); background: var(--primary-bg); }
+  .reasignar-avatar.is-selected { border-color: var(--primary); background: var(--primary-bg); }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+window.modalRoot = document.getElementById('shell');
+
+function openModal(html) { modalRoot.innerHTML += html; }
+function closeModal() {
+  const overlays = document.querySelectorAll('.modal-overlay');
+  if (overlays.length > 0) overlays[overlays.length - 1].remove();
+}
+
+function editarLeadModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content" style="max-width: 560px;">
+        <div class="modal-header">
+          <div class="modal-header__icon modal-header__icon--primary">${Icons.pencil}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Editar lead</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">LEAD-2025-033</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Título del lead <span class="req">*</span></label>
+            <input class="input" value="Cotización proyecto RCI Seren del Mar" />
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Descripción</label>
+            <textarea class="textarea" rows="3">Cliente solicita cotización No. 20250626 para proyecto RCI en Seren del Mar, Cartagena.</textarea>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Ejecutivo asignado</label>
+              <select class="select">
+                <option selected>Paola Martínez</option>
+                <option>Juan Pérez</option>
+                <option>Carolina Gómez</option>
+                <option>Andrés Rojas</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Estado</label>
+              <select class="select">
+                ${renderLeadEstadoSelect('Interesado')}
+              </select>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div class="form-field">
+              <label class="form-field__label">Empresa</label>
+              <input class="input" value="FIRELINE" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Ciudad</label>
+              <select class="select">
+                <option selected>Cartagena</option>
+                <option>Medellín</option><option>Barranquilla</option>
+                <option>Bogotá</option><option>Cali</option><option>Bucaramanga</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Nombre del contacto</label>
+              <input class="input" value="Santiago Triana" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Origen</label>
+              <select class="select">${renderLeadOrigenSelect('whatsapp')}</select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Teléfono</label>
+              <input class="input" value="+57 317 745 9833" />
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Email</label>
+              <input class="input" value="ventas@fireline.com.co" />
+            </div>
+          </div>
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <span class="icon" style="color: var(--primary);">${Icons.fire}</span> Score
+            </div>
+            <div class="score-selector">
+              ${renderLeadScore(100, { compact: true })}
+            </div>
+          </div>
+          <div>
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <span class="icon" style="color: var(--primary);">${Icons.tag}</span> Intereses
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              ${renderLeadInteresChips(['Tubería PE100', 'Accesorios PE'])}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function reasignarModal() {
+  const ejecutivos = [
+    { nombre: 'Paola Martínez', initial: 'PM', color: 2, activos: 8 },
+    { nombre: 'Juan Pérez',     initial: 'JP', color: 1, activos: 5 },
+    { nombre: 'Carolina Gómez', initial: 'CG', color: 4, activos: 6 },
+    { nombre: 'Andrés Rojas',   initial: 'AR', color: 3, activos: 4 },
+  ];
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header__icon modal-header__icon--primary">${Icons.users}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Reasignar ejecutivo</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">LEAD-2025-033 · Actual: Paola Martínez</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          ${ejecutivos.map((e, i) => `
+            <div class="reasignar-avatar ${i === 0 ? 'is-selected' : ''}" onclick="this.closest('.modal-content').querySelectorAll('.reasignar-avatar').forEach(el=>el.classList.remove('is-selected'));this.classList.add('is-selected')">
+              <div class="avatar avatar--sm avatar--color-${e.color}">${e.initial}</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 13.5px;">${e.nombre}</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">${e.activos} leads activos</div>
+              </div>
+              ${i === 0 ? `<span class="badge badge--neutral" style="font-size: 10px;">Actual</span>` : ''}
+            </div>
+          `).join('')}
+          <div class="form-field" style="margin-top: 14px;">
+            <label class="form-field__label">Nota de reasignación</label>
+            <textarea class="textarea" rows="2" placeholder="Motivo o contexto del cambio..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" onclick="closeModal()">${Icons.check} Confirmar reasignación</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function descalificarLeadModal() {
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-header__icon modal-header__icon--error">${Icons.xCircle}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 16px;">Descalificar lead</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">Lead: LEAD-2025-033</div>
+          </div>
+          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
+        </div>
+        <div class="modal-body">
+          <div style="padding: 14px; background: var(--error-bg); border-radius: 8px; margin-bottom: 16px;">
+            <div style="font-weight: 700; color: var(--text-primary);">Cotización proyecto RCI Seren del Mar</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">FIRELINE · Score 100%</div>
+          </div>
+          <div style="font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px;">Motivo de descalificación <span style="color: var(--error);">*</span></div>
+          ${[
+            ['No responde', 'Sin contacto después de múltiples intentos'],
+            ['Presupuesto insuficiente', 'El lead no tiene recursos para comprar'],
+            ['No es el responsable', 'Contactó a alguien sin poder de decisión'],
+            ['Trasladado a distribuidor', 'Lead derivado a red de distribuidores'],
+            ['Lead duplicado', 'Ya existe un lead o cliente para esta empresa'],
+          ].map((m, i) => `
+            <div class="motivo-option ${i === 0 ? 'is-selected--error' : ''}" onclick="selectMotivo(this)">
+              <div class="motivo-option__radio"></div>
+              <div>
+                <div style="font-weight: 600; font-size: 13.5px;">${m[0]}</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">${m[1]}</div>
+              </div>
+            </div>
+          `).join('')}
+          <div class="form-field" style="margin-top: 14px;">
+            <label class="form-field__label">Observaciones</label>
+            <textarea class="textarea" rows="2" placeholder="Detalles adicionales..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
+          <button class="btn btn--primary" style="background: var(--error);" onclick="closeModal()">${Icons.xCircle} Descalificar</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function selectMotivo(el) {
+  document.querySelectorAll('.motivo-option').forEach(e => e.classList.remove('is-selected--error'));
+  el.classList.add('is-selected--error');
+}
+
+function detailContent() {
+  const header = `
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px;">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+        <a href="09-leads-kanban.html" style="color: var(--primary); cursor: pointer;">Leads</a>
+        <span>/</span>
+        <span>LEAD-2025-033</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; gap: 16px;">
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+            <span class="badge badge--calificacion"><span class="dot"></span> Interesado</span>
+            <span class="badge badge--info">${Icons.globe.replace('class="icon"','class="icon icon--xs"')} WhatsApp</span>
+            <span class="badge badge--accent">${Icons.fire.replace('class="icon"','class="icon icon--xs"')} Score 100%</span>
+          </div>
+          <div style="font-size: 22px; font-weight: 800; color: var(--text-primary); line-height: 1.2;">
+            Cotización proyecto RCI Seren del Mar
+          </div>
+          <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+            FIRELINE · Recibido hace 12 días · Asesor: Paola Martínez
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap;">
+          <button class="btn btn--secondary btn--sm" onclick="openModal(editarLeadModal())">${Icons.pencil} Editar</button>
+          <button class="btn btn--secondary btn--sm" onclick="openModal(reasignarModal())">${Icons.users} Reasignar</button>
+          <button class="btn btn--secondary btn--sm" onclick="openModal(descalificarLeadModal())">${Icons.xCircle} Descalificar</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const descripcionHTML = `
+    <div class="card">
+      <div class="card__header">
+        <div class="card__title">Descripción e intereses</div>
+      </div>
+      <div class="card__body">
+        <div style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 16px;">
+          Cliente solicita cotización No. 20250626 para proyecto RCI en Seren del Mar, Cartagena. Enviada información técnica de sello FM.
+        </div>
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Intereses</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Tubería PE100</span>
+            <span class="badge badge--info" style="padding: 6px 12px;">${Icons.tag.replace('class="icon"','class="icon icon--xs"')} Accesorios PE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const historialHTML = `
+    <div class="card">
+      <div class="card__header">
+        <div class="card__title">Historial de estados</div>
+      </div>
+      <div class="card__body">
+        <div class="timeline">
+          <div class="timeline__item">
+            <div class="timeline__dot"></div>
+            <div class="timeline__header">
+              <div class="timeline__title">Interesado</div>
+              <span class="timeline__date">Hace 5 días</span>
+            </div>
+            <div class="timeline__desc">Cliente confirmado, se encuentra en revisión de oferta</div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__dot timeline__dot--muted"></div>
+            <div class="timeline__header">
+              <div class="timeline__title">Contactado</div>
+              <span class="timeline__date">Hace 8 días</span>
+            </div>
+            <div class="timeline__desc">Primera respuesta por WhatsApp, solicita información</div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__dot timeline__dot--muted"></div>
+            <div class="timeline__header">
+              <div class="timeline__title">Nuevo</div>
+              <span class="timeline__date">Hace 12 días</span>
+            </div>
+            <div class="timeline__desc">Lead recibido por WhatsApp desde página web</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const actividadesHTML = `
+    <div class="card">
+      <div class="card__header">
+        <div>
+          <div class="card__title">Actividades</div>
+          <div class="card__subtitle">3 registradas</div>
+        </div>
+        <button class="btn btn--ghost btn--sm">${Icons.plus}</button>
+      </div>
+      <div class="card__body">
+        <div class="timeline">
+          <div class="timeline__item">
+            <div class="timeline__dot timeline__dot--success"></div>
+            <div class="timeline__header">
+              <div class="timeline__title">Envío información técnica Sello FM</div>
+              <span class="timeline__date">Hace 4 días</span>
+            </div>
+            <div class="timeline__desc">Se envió información técnica de sello FM y fichas técnicas</div>
+            <div style="display: flex; gap: 6px; margin-top: 6px;">
+              <span class="badge badge--neutral">${Icons.envelope.replace('class="icon"','class="icon icon--xs"')} Email</span>
+              <span class="badge badge--ganada"><span class="dot"></span> Completada</span>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__dot timeline__dot--success"></div>
+            <div class="timeline__header">
+              <div class="timeline__title">Envío cotización No. 20250626</div>
+              <span class="timeline__date">Hace 8 días</span>
+            </div>
+            <div class="timeline__desc">Cotización enviada para proyecto RCI en Seren del Mar</div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__dot"></div>
+            <div class="timeline__header">
+              <div class="timeline__title">Contacto inicial por WhatsApp</div>
+              <span class="timeline__date">Hace 12 días</span>
+            </div>
+            <div class="timeline__desc">Lead recibido desde WhatsApp, solicita cotización</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const sidePanel = `
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Información de contacto</div>
+        </div>
+        <div class="card__body">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <div class="avatar avatar--color-2">ST</div>
+            <div style="font-weight: 700;">Santiago Triana</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.phone} +57 317 745 9833</a>
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.envelope} ventas@fireline.com.co</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Información</div></div>
+        <div class="card__body">
+          <dl class="detail-info-list">
+            <dt>Origen</dt><dd>WhatsApp</dd>
+            <dt>Empresa</dt><dd>FIRELINE</dd>
+            <dt>Ciudad</dt><dd>Cartagena</dd>
+            <dt>Asesor</dt><dd>Paola Martínez</dd>
+            <dt>Score</dt><dd style="color: var(--accent); font-weight: 700;">100%</dd>
+            <dt>Edad</dt><dd>12 días</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Acciones</div></div>
+        <div class="card__body" style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn btn--secondary btn--block btn--sm" onclick="openModal(reasignarModal())">${Icons.users} Reasignar ejecutivo</button>
+          <button class="btn btn--secondary btn--block" style="color: var(--error); border-color: var(--error-border);" onclick="openModal(descalificarLeadModal())">${Icons.xCircle} Descalificar lead</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return `
+    <div class="content">
+      ${header}
+      <div style="display: grid; gap: 16px; grid-template-columns: 1fr 320px;">
+        <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+          ${descripcionHTML}
+          ${actividadesHTML}
+          ${historialHTML}
+        </div>
+        ${sidePanel}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `${renderSidebar('leads','coordinador')}<div class="main-area">${renderTopbar({breadcrumb:['Leads','Detalle']})}${detailContent()}</div>`;
+
+document.querySelectorAll('.score-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.score-card').forEach(c => c.classList.remove('is-selected'));
+    card.classList.add('is-selected');
+  });
+});
+
+document.querySelectorAll('.interes-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('is-selected'));
+});
+</script>
+</body>
+</html>

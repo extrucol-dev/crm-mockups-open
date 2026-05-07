@@ -181,6 +181,8 @@ function resumenTab() {
 
 function leadsTab() {
   const estadoColors = { 'INTERESADO': 'ganada', 'CONTACTADO': 'propuesta', 'NUEVO': 'prospecto', 'DESCALIFICADO': 'perdida' };
+  const scoreLabel = s => s >= 70 ? 'Caliente' : s >= 30 ? 'Tibio' : 'Frío';
+  const scoreColor = s => s >= 70 ? '#DC2626' : s >= 30 ? '#C7770D' : '#24388C';
   return `
     <div class="card" style="padding: 0;">
       <div class="card__header">
@@ -195,7 +197,7 @@ function leadsTab() {
               <div style="font-size: 12px; color: var(--text-muted);">${l.empresa} · ${l.origen}</div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-              <span style="font-size: 12px; color: var(--accent); font-weight: 700;">${Icons.fire} ${l.score}%</span>
+              <span style="font-size: 12px; color: ${scoreColor(l.score)}; font-weight: 700;">${Icons.fire} ${scoreLabel(l.score)}</span>
               <span class="badge badge--${estadoColors[l.estado]}">${l.estado}</span>
               ${Icons.chevronRight}
             </div>
@@ -224,7 +226,7 @@ function oportunidadesTab() {
             <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
               <div style="text-align: right;">
                 <div style="font-size: 14px; font-weight: 700; color: var(--accent);">${o.valor}</div>
-                <div style="font-size: 11px; color: var(--text-muted);">${o.prob}% prob</div>
+                <div style="font-size: 11px; color: ${o.prob >= 70 ? '#DC2626' : o.prob >= 30 ? '#C7770D' : '#24388C'};">${o.prob >= 70 ? 'Caliente' : o.prob >= 30 ? 'Tibio' : 'Frío'}</div>
               </div>
               <span class="badge badge--${oppEstadoColors[o.estado]}">${o.estado}</span>
               ${Icons.chevronRight}
