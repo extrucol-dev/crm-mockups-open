@@ -306,11 +306,11 @@ function editarOportunidadModal() {
                 <option>Agricultura / Riego</option>
               </select>
             </div>
-            <div class="form-field">
-              <label class="form-field__label">Categoría</label>
-              <div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0;">
-                ${renderCategoriaChips(['Tubería y accesorios'])}
-              </div>
+          </div>
+          <div class="form-field" style="margin-bottom: 14px;">
+            <label class="form-field__label">Categoría</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0;">
+              ${renderCategoriaChips(['Tubería y accesorios'])}
             </div>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
@@ -833,7 +833,7 @@ function content() {
       <div style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 12px;">
         Proyecto de acueducto rural para el municipio de Piedecuesta, Santander. Sistema de conducción de agua potable con tubería PE100 SDR 11 de 4 pulgadas, incluyendo accesorios de electrofusión y válvulas de compuerta. Requiere visita técnica para validación de especificaciones.
       </div>
-      <div style="display: flex; align-items: center; gap: 8px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
         <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">Categoría:</span>
         <span class="badge badge--accent" style="padding: 5px 10px;">${Icons.archive.replace('class="icon"','class="icon icon--xs"')} Tubería y accesorios</span>
       </div>

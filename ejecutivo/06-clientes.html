@@ -124,63 +124,6 @@ function nuevoClienteModal() {
   `;
 }
 
-function agregarContactoModal() {
-  return `
-    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal-content" style="max-width: 520px;">
-        <div class="modal-header">
-          <div>
-            <div style="font-weight: 700; font-size: 16px;">Agregar contacto</div>
-            <div style="font-size: 12.5px; color: var(--text-muted);">Nuevo contacto para la empresa</div>
-          </div>
-          <button class="topbar__icon-btn" onclick="closeModal()">${Icons.close}</button>
-        </div>
-        <div class="modal-body">
-          <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Empresa <span class="req">*</span></label>
-            <select class="select">
-              <option>EMPAS S.A.</option>
-              <option>Tecnoagua SAS</option>
-              <option>Aguas del Valle</option>
-              <option>Ingenio del Cauca</option>
-              <option>Hidrogas del Oriente</option>
-              <option>Constructora Andina</option>
-            </select>
-          </div>
-          <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Nombre completo <span class="req">*</span></label>
-            <input class="input" placeholder="Nombre del contacto" />
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-            <div class="form-field">
-              <label class="form-field__label">Teléfono</label>
-              <input class="input" placeholder="+57 XXX XXX XXXX" />
-            </div>
-            <div class="form-field">
-              <label class="form-field__label">Email</label>
-              <input class="input" type="email" placeholder="contacto@empresa.com" />
-            </div>
-          </div>
-          <div class="form-field" style="margin-bottom: 14px;">
-            <label class="form-field__label">Área / Departamento</label>
-            <input class="input" placeholder="Ej: Compras, Proyectos, Dirección" />
-          </div>
-          <div class="form-field" style="margin-bottom: 6px;">
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
-              <input type="checkbox" style="width: 15px; height: 15px;" />
-              <span>Marcar como contacto principal del cliente</span>
-            </label>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn--secondary" onclick="closeModal()">Cancelar</button>
-          <button class="btn btn--primary" onclick="closeModal()">Agregar contacto</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
 const clientes = [
   { name: 'RB DE COLOMBIA SA', badge: 'ganada', city: 'Quibdó', depto: 'Chocó', registered: '27 Feb 2025', avatar: 'RB', color: 1, recurrente: true },
   { name: 'INGEOMEGA', badge: 'info', city: 'Medellín', depto: 'Antioquia', registered: '15 May 2025', avatar: 'IG', color: 2, recurrente: false },
@@ -224,7 +167,6 @@ function gridContent() {
         </div>
         <div class="page-head__actions">
           <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
-          <button class="btn btn--ghost btn--sm" onclick="openModal(agregarContactoModal())">${Icons.user} Agregar contacto</button>
           <button class="btn btn--primary btn--sm" onclick="openModal(nuevoClienteModal())">${Icons.plus} Nuevo cliente</button>
         </div>
       </div>
