@@ -124,6 +124,14 @@
   .score-card[data-score="66"] .score-card__label { color: #C7770D; }
   .score-card[data-score="100"]::before { background: #F87171; }
   .score-card[data-score="100"] .score-card__label { color: #DC2626; }
+  .interes-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px; border: 1px solid var(--border);
+    border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 150ms;
+  }
+  .interes-chip:hover { border-color: var(--primary); }
+  .interes-chip.is-selected { border-color: var(--primary); background: var(--primary-bg); color: var(--primary); }
+  .interes-chip.is-selected::before { content: '✓'; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -297,6 +305,12 @@ function editarOportunidadModal() {
                 <option>Gas natural</option>
                 <option>Agricultura / Riego</option>
               </select>
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">Categoría</label>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0;">
+                ${renderCategoriaChips(['Tubería y accesorios'])}
+              </div>
             </div>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
@@ -816,8 +830,12 @@ function content() {
       <div class="card__title">Descripción</div>
     </div>
     <div class="card__body">
-      <div style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.55;">
+      <div style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 12px;">
         Proyecto de acueducto rural para el municipio de Piedecuesta, Santander. Sistema de conducción de agua potable con tubería PE100 SDR 11 de 4 pulgadas, incluyendo accesorios de electrofusión y válvulas de compuerta. Requiere visita técnica para validación de especificaciones.
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">Categoría:</span>
+        <span class="badge badge--accent" style="padding: 5px 10px;">${Icons.archive.replace('class="icon"','class="icon icon--xs"')} Tubería y accesorios</span>
       </div>
     </div>
   </div>

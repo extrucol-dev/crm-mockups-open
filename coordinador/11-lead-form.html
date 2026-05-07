@@ -170,6 +170,14 @@ function content() {
         </div>
 
         <div class="form-section">
+          <div class="form-section__title">${Icons.archive} Categoría</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Selecciona la categoría del lead</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            ${renderCategoriaChips([])}
+          </div>
+        </div>
+
+        <div class="form-section">
           <div class="form-section__title">${Icons.fire} Scoring inicial</div>
           <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Calificación prospectiva — ayuda a priorizar el seguimiento</div>
           <div class="score-selector">

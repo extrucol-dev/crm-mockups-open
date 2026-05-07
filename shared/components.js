@@ -296,11 +296,18 @@ const OportunidadCatalog = {
   tipos:    ['Licitación pública', 'Suministro directo', 'Proyecto a medida', 'Contrato marco'],
   sectores: ['Agua potable', 'Gas natural', 'Agricultura / Riego', 'Industria'],
   estados:  ['Prospección', 'Propuesta', 'Negociación'],
+  categorias: ['Servicio técnico y capacitación', 'Laboratorio', 'Tubería y accesorios'],
 };
 
 function renderOportunidadTipoSelect(selected)   { return OportunidadCatalog.tipos   .map(v => `<option ${v === selected ? 'selected' : ''}>${v}</option>`).join(''); }
 function renderOportunidadSectorSelect(selected) { return OportunidadCatalog.sectores.map(v => `<option ${v === selected ? 'selected' : ''}>${v}</option>`).join(''); }
 function renderOportunidadEstadoSelect(selected) { return OportunidadCatalog.estados .map(v => `<option ${v === selected ? 'selected' : ''}>${v}</option>`).join(''); }
+function renderCategoriaChips(selectedLabels = []) {
+  const set = new Set(selectedLabels);
+  return OportunidadCatalog.categorias.map(label => `
+    <span class="interes-chip ${set.has(label) ? 'is-selected' : ''}">${label}</span>
+  `).join('');
+}
 
 /* On DOM ready - auto-inject shared components */
 if (typeof window !== 'undefined') {
@@ -318,4 +325,5 @@ if (typeof window !== 'undefined') {
   window.renderOportunidadTipoSelect = renderOportunidadTipoSelect;
   window.renderOportunidadSectorSelect = renderOportunidadSectorSelect;
   window.renderOportunidadEstadoSelect = renderOportunidadEstadoSelect;
+  window.renderCategoriaChips = renderCategoriaChips;
 }
