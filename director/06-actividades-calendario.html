@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SEGUIMIENTO Extrucol · Director · Calendario de Actividades</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .calendar-header-cell {
+    background: var(--page-bg);
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .calendar-cell {
+    background: var(--surface);
+    min-height: 110px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .calendar-cell--other-month { background: var(--page-bg); }
+  .calendar-cell--other-month .cal-day-num { color: var(--text-muted); opacity: 0.5; }
+  .calendar-cell--today .cal-day-num {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cal-day-num {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+  .cal-events { display: flex; flex-direction: column; gap: 3px; }
+  .cal-event {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: opacity 150ms;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .cal-event:hover { opacity: 0.8; }
+  .cal-event--visita { background: var(--accent-bg); color: #C7770D; border-left: 2px solid var(--accent); }
+  .cal-event--llamada { background: #E8F5EE; color: var(--success); border-left: 2px solid var(--success); }
+  .cal-event--email { background: #F3E8FF; color: #7C3AED; border-left: 2px solid #7C3AED; }
+  .cal-event--reunion { background: var(--primary-bg); color: var(--primary); border-left: 2px solid var(--primary); }
+  .cal-more {
+    font-size: 10px;
+    color: var(--text-muted);
+    padding: 2px 6px;
+    font-weight: 600;
+  }
+  .calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .calendar-nav__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .calendar-nav__btns { display: flex; gap: 6px; }
+  .cal-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; }
+  .cal-dot--visita { background: var(--accent); }
+  .cal-dot--llamada { background: var(--success); }
+  .cal-dot--email { background: #7C3AED; }
+  .cal-dot--reunion { background: var(--primary); }
+  .ejec-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface); font-size: 10px;
+    font-weight: 600; color: var(--text-secondary);
+    cursor: pointer; transition: all 180ms;
+  }
+  .ejec-chip:hover { border-color: var(--primary); }
+  .ejec-chip.is-selected { border-color: var(--primary); background: var(--primary-bg); color: var(--primary); }
+  .ejec-avatar {
+    width: 16px; height: 16px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 800; color: #fff;
+  }
+  .legend-ejec {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--page-bg); border: 1px solid var(--border);
+    font-size: 11px; font-weight: 600; color: var(--text-secondary);
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAY_NAMES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+const ejecutivos = [
+  { id: 'DI', name: 'Diana', color: 1, bgColor: '#DBEAFE' },
+  { id: 'PA', name: 'Paola', color: 2, bgColor: '#FEE2E2' },
+  { id: 'AL', name: 'Álvaro', color: 3, bgColor: '#D1FAE5' },
+  { id: 'GO', name: 'Gonzalo', color: 4, bgColor: '#FEF3C7' },
+  { id: 'AX', name: 'Alexis', color: 5, bgColor: '#EDE9FE' },
+];
+
+const actividades = [
+  { tipo: 'visita', icon: 'mapPin', iconClass: 'visita', titulo: 'Visita - INGEOMEGA Medellín', sub: 'Revisión de especificaciones técnicas', date: '10:30 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 7, ejec: 'PA' },
+  { tipo: 'llamada', icon: 'phone', iconClass: 'llamada', titulo: 'Seguimiento FIRELINE - Cartagena', sub: 'Cliente compró a través de COSERINCO', date: '9:00 AM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 7, ejec: 'PA' },
+  { tipo: 'email', icon: 'envelope', iconClass: 'email', titulo: 'Envío Cotización No. 584 - COL PROYECTOS', sub: 'Cotización actualizada con cambios', date: '3:00 PM', day: 'Hoy', badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 7, ejec: 'DI' },
+  { tipo: 'visita', icon: 'mapPin', iconClass: 'visita', titulo: 'Visita CMM - Manizales', sub: 'Seguimiento a propuesta de accesorios', date: '2:00 PM', day: 'Hoy', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 7, ejec: 'AL' },
+  { tipo: 'reunion', icon: 'users', iconClass: 'reunion', titulo: 'Reunión virtual - Aguas del Valle', sub: 'Presentación portafolio', date: '3:00 PM', day: 'Hoy', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 7, ejec: 'DI' },
+  { tipo: 'llamada', icon: 'phone', iconClass: 'llamada', titulo: 'Seguimiento ADOS Ingeniería - Apartadó', sub: 'Proceso sin adjudicar aún', date: '8:15 AM', day: 'Ayer', badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 6, ejec: 'GO' },
+  { tipo: 'email', icon: 'envelope', iconClass: 'email', titulo: 'Oferta Cotización No. 30987 - CFG Proyectos', sub: 'Seguimiento telefónico', date: '2:00 PM', day: 'Ayer', badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 6, ejec: 'AX' },
+  { tipo: 'visita', icon: 'mapPin', iconClass: 'visita', titulo: 'Visita - EMPAS S.A.', sub: 'Inspección de planta', date: '10:30 AM', day: 'Mañana', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 8, ejec: 'PA' },
+  { tipo: 'llamada', icon: 'phone', iconClass: 'llamada', titulo: 'Seguimiento UT Balsa 3 - Tocancipa', sub: 'Proyecto ya con otro cliente', date: '11:00 AM', day: 'Mañana', badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 8, ejec: 'AL' },
+  { tipo: 'email', icon: 'envelope', iconClass: 'email', titulo: 'Envío Cotización No. 20250626 - FIRELINE', sub: 'Cotización proyecto RCI Seren del Mar', date: '9:30 AM', day: 12, badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 12, ejec: 'PA' },
+  { tipo: 'llamada', icon: 'phone', iconClass: 'llamada', titulo: 'Seguimiento CIVILE Hidráulicos - Magangué', sub: 'Oferta en revisión', date: '4:00 PM', day: 15, badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 15, ejec: 'DI' },
+  { tipo: 'email', icon: 'envelope', iconClass: 'email', titulo: 'Oferta Cotización No. 1248 - Promotora Imola', sub: 'Cotización enviada para proyecto', date: '10:00 AM', day: 18, badge: 'ganada', badgeText: 'Completada', year: 2026, month: 3, day: 18, ejec: 'PA' },
+  { tipo: 'visita', icon: 'mapPin', iconClass: 'visita', titulo: 'Inspección Monstruos JM - La Dorada', sub: 'Revisión de obra', date: '9:00 AM', day: 20, badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 20, ejec: 'GO' },
+  { tipo: 'reunion', icon: 'users', iconClass: 'reunion', titulo: 'Reunión técnica - Acueducto Metálico', sub: 'Revisión de specs con cliente', date: '2:00 PM', day: 22, badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 22, ejec: 'AX' },
+  { tipo: 'email', icon: 'envelope', iconClass: 'email', titulo: 'Envío propuesta técnica - Aguas de Bogotá', sub: 'Documentación completa', date: '11:00 AM', day: 25, badge: 'prospecto', badgeText: 'Agendada', year: 2026, month: 3, day: 25, ejec: 'DI' },
+];
+
+const EJEC_COLORS = {
+  DI: { bg: '#DBEAFE', text: '#1D4ED8', dot: '#3B82F6' },
+  PA: { bg: '#FEE2E2', text: '#DC2626', dot: '#EF4444' },
+  AL: { bg: '#D1FAE5', text: '#059669', dot: '#10B981' },
+  GO: { bg: '#FEF3C7', text: '#D97706', dot: '#F59E0B' },
+  AX: { bg: '#EDE9FE', text: '#7C3AED', dot: '#8B5CF6' },
+};
+
+let currentCalYear = 2026;
+let currentCalMonth = 3;
+let selectedEjecs = new Set(['DI', 'PA', 'AL', 'GO', 'AX']);
+
+function getCalDays(y, m) {
+  const firstDay = new Date(y, m, 1).getDay();
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const daysInPrevMonth = new Date(y, m, 0).getDate();
+  const cells = [];
+  for (let i = firstDay - 1; i >= 0; i--) {
+    cells.push({ day: daysInPrevMonth - i, otherMonth: true, pM: m === 0 ? 11 : m - 1, pY: m === 0 ? y - 1 : y });
+  }
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, otherMonth: false });
+  const remaining = 42 - cells.length;
+  for (let d = 1; d <= remaining; d++) {
+    cells.push({ day: d, otherMonth: true, pM: m === 11 ? 0 : m + 1, pY: m === 11 ? y + 1 : y });
+  }
+  return cells;
+}
+
+function getEventsForCell(y, m, d) {
+  return actividades.filter(a =>
+    a.year === y && a.month === m && a.day === d && selectedEjecs.has(a.ejec)
+  );
+}
+
+function getEjecColor(ejecId) {
+  return EJEC_COLORS[ejecId] || { bg: '#F3F4F6', text: '#6B7280', dot: '#9CA3AF' };
+}
+
+function getEjecInfo(ejecId) {
+  return ejecutivos.find(e => e.id === ejecId) || { name: ejecId, color: 1 };
+}
+
+function calendarContent() {
+  const cells = getCalDays(currentCalYear, currentCalMonth);
+  const today = new Date();
+  const isToday = (y, m, d) => today.getFullYear() === y && today.getMonth() === m && today.getDate() === d;
+
+  let cellHtml = '';
+  cells.forEach(cell => {
+    const ey = cell.otherMonth ? cell.pY : currentCalYear;
+    const em = cell.otherMonth ? cell.pM : currentCalMonth;
+    const events = getEventsForCell(ey, em, cell.day);
+    const todayClass = isToday(ey, em, cell.day) ? 'calendar-cell--today' : '';
+    const otherClass = cell.otherMonth ? 'calendar-cell--other-month' : '';
+
+    let eventsHtml = '';
+    events.slice(0, 4).forEach(ev => {
+      const ejecColor = getEjecColor(ev.ejec);
+      const shortTitle = ev.titulo.length > 24 ? ev.titulo.substring(0, 24) + '…' : ev.titulo;
+      eventsHtml += `<div class="cal-event cal-event--${ev.iconClass}" title="${ev.ejec}: ${ev.titulo}" onclick="location.href='06-actividad-detalle.html'">
+        <span style="width:14px;height:14px;border-radius:50%;background:${ejecColor.dot};display:inline-block;flex-shrink:0;"></span>
+        ${shortTitle}
+      </div>`;
+    });
+    if (events.length > 4) {
+      eventsHtml += `<div class="cal-more">+${events.length - 4} más</div>`;
+    }
+
+    cellHtml += `<div class="calendar-cell ${todayClass} ${otherClass}">
+      <div class="cal-day-num">${cell.day}</div>
+      <div class="cal-events">${eventsHtml}</div>
+    </div>`;
+  });
+
+  const ejecChips = ejecutivos.map(ej => {
+    const isSelected = selectedEjecs.has(ej.id);
+    return `<div class="ejec-chip ${isSelected ? 'is-selected' : ''}" onclick="toggleEjec('${ej.id}')">
+      <span style="width:14px;height:14px;border-radius:50%;background:${getEjecColor(ej.id).dot};display:inline-block;"></span>
+      ${ej.name}
+    </div>`;
+  }).join('');
+
+  const totalActs = actividades.filter(a => selectedEjecs.has(a.ejec)).length;
+
+  return `
+    <div class="content">
+      <div class="page-head">
+        <div class="page-head__title-group">
+          <div class="page-head__title">Calendario de actividades</div>
+          <div class="page-head__subtitle">${totalActs} actividades de ${selectedEjecs.size} ejecutivos · Vista mensual</div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--secondary btn--sm">${Icons.download} Exportar</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+          ${ejecChips}
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; margin-left: auto;">
+          <span class="cal-dot cal-dot--visita"></span><span style="font-size:12px;color:var(--text-muted)">Visita</span>
+          <span class="cal-dot cal-dot--llamada"></span><span style="font-size:12px;color:var(--text-muted)">Llamada</span>
+          <span class="cal-dot cal-dot--email"></span><span style="font-size:12px;color:var(--text-muted)">Email</span>
+          <span class="cal-dot cal-dot--reunion"></span><span style="font-size:12px;color:var(--text-muted)">Reunión</span>
+        </div>
+      </div>
+
+      <div class="calendar-nav">
+        <button class="btn btn--ghost btn--sm" onclick="calNav(-1)">${Icons.chevronLeft} Anterior</button>
+        <div class="calendar-nav__title">${MONTH_NAMES[currentCalMonth]} ${currentCalYear}</div>
+        <button class="btn btn--ghost btn--sm" onclick="calNav(1)">Siguiente ${Icons.chevronRight}</button>
+      </div>
+
+      <div class="calendar-grid">
+        ${DAY_NAMES.map(d => `<div class="calendar-header-cell">${d}</div>`).join('')}
+        ${cellHtml}
+      </div>
+    </div>
+  `;
+}
+
+function toggleEjec(ejecId) {
+  if (selectedEjecs.has(ejecId)) {
+    if (selectedEjecs.size > 1) selectedEjecs.delete(ejecId);
+  } else {
+    selectedEjecs.add(ejecId);
+  }
+  renderMainContent();
+}
+
+function calNav(dir) {
+  currentCalMonth += dir;
+  if (currentCalMonth > 11) { currentCalMonth = 0; currentCalYear++; }
+  if (currentCalMonth < 0) { currentCalMonth = 11; currentCalYear--; }
+  renderMainContent();
+}
+
+function renderMainContent() {
+  const mainArea = document.querySelector('.main-area');
+  if (!mainArea) return;
+  mainArea.innerHTML = renderTopbar({ title: 'Calendario de actividades' }) + calendarContent();
+}
+
+document.getElementById('shell').innerHTML = `${renderSidebar('actividades', 'director')}<div class="main-area">${renderTopbar({ title: 'Calendario de actividades' })}${calendarContent()}</div>`;
+</script>
+</body>
+</html>

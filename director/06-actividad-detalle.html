@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SEGUIMIENTO Extrucol · Director · Detalle Actividad</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .activity-detail-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .activity-detail-header__title {
+    font-size: 22px; font-weight: 800; color: var(--text-primary);
+    letter-spacing: -0.02em; line-height: 1.2;
+  }
+  .activity-detail-header__sub {
+    font-size: 13px; color: var(--text-muted); margin-top: 4px;
+  }
+  .activity-detail-meta {
+    display: flex; gap: 24px; margin-top: 16px;
+    padding-top: 16px; border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .activity-detail-meta__item { display: flex; flex-direction: column; gap: 2px; }
+  .activity-detail-meta__label {
+    font-size: 10.5px; font-weight: 600; color: var(--text-disabled);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .activity-detail-meta__value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .timeline-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .timeline-row:last-child { border-bottom: none; }
+  .timeline-row__dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--primary); margin-top: 5px; flex-shrink: 0;
+  }
+  .timeline-row__dot--muted { background: var(--border); }
+  .ejec-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+  }
+  .ejec-badge__dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" id="shell"></div>
+
+<script src="../shared/components.js"></script>
+<script>
+const ACTIVIDAD = {
+  id: 'ACT-2026-0089',
+  tipo: 'visita',
+  tipoLabel: 'Visita',
+  estado: 'prospecto',
+  estadoLabel: 'Agendada',
+  titulo: 'Visita - INGEOMEGA Medellín',
+  empresa: 'INGEOMEGA',
+  fecha: '7 Abr 2026',
+  hora: '10:30 AM',
+  ejecutivo: 'PA',
+  ejecutivoNombre: 'Paola',
+  resultado: 'Pendiente',
+  notas: 'Revisión de especificaciones técnicas del proyecto de infraestructura.',
+  ubicacion: { lat: 6.2442, lng: -75.5812 },
+  lead: { id: 'LEAD-2026-0142', nombre: 'Cotización proyecto RCI Seren del Mar', empresa: 'INGEOMEGA' },
+  contacto: { nombre: 'Claudia Ríos', telefono: '+57 310 452 8819', email: 'crios@ingeomega.co' },
+  canal: 'Visita',
+  creada: '5 Abr 2026',
+  relacionadaTipo: 'Lead',
+  relacionados: [
+    { tipo: 'email', titulo: 'Envío Cotización No. 584 - COL PROYECTOS', fecha: '7 Abr 2026', estado: 'Completada' },
+    { tipo: 'llamada', titulo: 'Seguimiento FIRELINE - Cartagena', fecha: '7 Abr 2026', estado: 'Completada' },
+    { tipo: 'lead', titulo: 'Lead creado desde WhatsApp', fecha: '26 Jun 2025', estado: 'Completada' },
+  ]
+};
+
+const EJEC_COLORS = {
+  DI: { bg: '#DBEAFE', text: '#1D4ED8', dot: '#3B82F6' },
+  PA: { bg: '#FEE2E2', text: '#DC2626', dot: '#EF4444' },
+  AL: { bg: '#D1FAE5', text: '#059669', dot: '#10B981' },
+  GO: { bg: '#FEF3C7', text: '#D97706', dot: '#F59E0B' },
+  AX: { bg: '#EDE9FE', text: '#7C3AED', dot: '#8B5CF6' },
+};
+
+function getEjecColor(ejecId) {
+  return EJEC_COLORS[ejecId] || { bg: '#F3F4F6', text: '#6B7280', dot: '#9CA3AF' };
+}
+
+function detailContent() {
+  const ejecColor = getEjecColor(ACTIVIDAD.ejecutivo);
+  const tipoIconMap = { visita: Icons.mapPin, llamada: Icons.phone, email: Icons.envelope, reunion: Icons.users };
+  const tipoClassMap = { visita: 'visita', llamada: 'llamada', email: 'email', reunion: 'reunion' };
+  const estadoClassMap = { ganada: 'badge--ganada', prospecto: 'badge--prospecto', neutral: 'badge--neutral' };
+
+  const header = `
+    <div class="activity-detail-header">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+        <a href="06-actividades-calendario.html" style="color: var(--primary); cursor: pointer;">Calendario</a>
+        <span>/</span>
+        <span>${ACTIVIDAD.id}</span>
+      </div>
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+            <span class="badge ${estadoClassMap[ACTIVIDAD.estado]}"><span class="dot"></span> ${ACTIVIDAD.estadoLabel}</span>
+            <span class="badge badge--info">${tipoIconMap[ACTIVIDAD.tipo].replace('class="icon"','class="icon icon--xs"')} ${ACTIVIDAD.tipoLabel}</span>
+            <span class="ejec-badge" style="background:${ejecColor.bg};color:${ejecColor.text};">
+              <span class="ejec-badge__dot" style="background:${ejecColor.dot};"></span>
+              ${ACTIVIDAD.ejecutivoNombre}
+            </span>
+          </div>
+          <div class="activity-detail-header__title">${ACTIVIDAD.titulo}</div>
+          <div class="activity-detail-header__sub">${ACTIVIDAD.empresa} · ${ACTIVIDAD.fecha} · ${ACTIVIDAD.hora}</div>
+        </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+      </div>
+      <div class="activity-detail-meta">
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">Fecha</span>
+          <span class="activity-detail-meta__value">${ACTIVIDAD.fecha}</span>
+        </div>
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">Hora</span>
+          <span class="activity-detail-meta__value">${ACTIVIDAD.hora}</span>
+        </div>
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">Tipo</span>
+          <span class="activity-detail-meta__value">${ACTIVIDAD.tipoLabel}</span>
+        </div>
+        <div class="activity-detail-meta__item">
+          <span class="activity-detail-meta__label">Ejecutivo</span>
+          <span class="activity-detail-meta__value">${ACTIVIDAD.ejecutivoNombre}</span>
+        </div>
+        
+      </div>
+    </div>
+  `;
+
+  const mainContent = `
+    <div style="display: flex; flex-direction: column; gap: 16px; flex: 1; min-width: 0;">
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Datos de la actividad</div>
+        </div>
+        <div class="card__body" style="display: flex; flex-direction: column; gap: 12px;">
+          <dl class="detail-info-list">
+            <dt>Relacionado con</dt>
+            <dd>Lead</dd>
+            <dt>Lead</dt>
+            <dd><a style="color: var(--primary); cursor: pointer;">${ACTIVIDAD.lead.nombre}</a></dd>
+            <dt>Empresa</dt>
+            <dd>${ACTIVIDAD.empresa}</dd>
+            <dt>Notas</dt>
+            <dd>${ACTIVIDAD.notas}</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Resultado</div>
+          <span class="badge badge--prospecto"><span class="dot"></span> Pendiente</span>
+        </div>
+        <div class="card__body">
+          <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+            Actividad agendada, pendiente de ejecución.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div>
+            <div class="card__title">Ubicación</div>
+            <div class="card__subtitle">Lat: ${ACTIVIDAD.ubicacion.lat}°, Lng: ${ACTIVIDAD.ubicacion.lng}°</div>
+          </div>
+          <span class="badge badge--ganada"><span class="dot"></span> GPS</span>
+        </div>
+        <div style="height: 160px; background: var(--page-bg); display: flex; align-items: center; justify-content: center; border-radius: 0 0 12px 12px; color: var(--text-muted); font-size: 13px; flex-direction: column; gap: 8px;">
+          ${Icons.mapPin}
+          <span>Mapa de ubicación</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <div class="card__title">Actividades relacionadas</div>
+        </div>
+        <div class="card__body" style="padding: 12px 16px;">
+          ${ACTIVIDAD.relacionados.map((rel, i) => `
+            <div class="timeline-row">
+              <div class="timeline-row__dot ${i === 2 ? 'timeline-row__dot--muted' : ''}"></div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 13.5px; font-weight: 600; color: var(--text-primary);">${rel.tipo === 'lead' ? 'Lead creado desde WhatsApp' : rel.titulo}</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${rel.fecha} · ${rel.estado}${i === 1 ? ' · LEAD CERRADO' : ''}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  const sidePanel = `
+    <div style="display: flex; flex-direction: column; gap: 12px; width: 300px; flex-shrink: 0;">
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Lead</div></div>
+        <div class="card__body">
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">${ACTIVIDAD.lead.nombre}</div>
+          <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px;">${ACTIVIDAD.lead.empresa} · ${ACTIVIDAD.lead.id}</div>
+          <a href="10-lead-detalle.html" style="text-decoration: none;">
+            <button class="btn btn--secondary btn--sm btn--block">${Icons.arrowRight} Ver lead</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Contacto</div></div>
+        <div class="card__body">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <div class="avatar avatar--color-2">CR</div>
+            <div style="font-weight: 700; font-size: 13.5px;">${ACTIVIDAD.contacto.nombre}</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.phone} ${ACTIVIDAD.contacto.telefono}</a>
+            <a style="color: var(--primary); display: flex; align-items: center; gap: 6px; cursor: pointer;">${Icons.envelope} ${ACTIVIDAD.contacto.email}</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Ejecutivo</div></div>
+        <div class="card__body">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="avatar" style="background:${ejecColor.bg};color:${ejecColor.text};font-weight:800;">PA</div>
+            <div>
+              <div style="font-weight: 700; font-size: 14px; color: var(--text-primary);">${ACTIVIDAD.ejecutivoNombre}</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Ejecutivo Comercial</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Información</div></div>
+        <div class="card__body">
+          <dl class="detail-info-list">
+            <dt>Creada</dt><dd>${ACTIVIDAD.creada}</dd>
+            <dt>Registrada por</dt><dd>${ACTIVIDAD.ejecutivoNombre}</dd>
+            <dt>ID</dt><dd>${ACTIVIDAD.id}</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header"><div class="card__title">Acciones</div></div>
+        <div class="card__body" style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn btn--secondary btn--block">${Icons.plus} Agregar nota</button>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  return `
+    <div class="content">
+      ${header}
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        ${mainContent}
+        ${sidePanel}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('shell').innerHTML = `${renderSidebar('calendario', 'director')}<div class="main-area">${renderTopbar({breadcrumb:['Calendario','Detalle']})}${detailContent()}</div>`;
+</script>
+</body>
+</html>

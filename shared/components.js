@@ -104,6 +104,7 @@ function renderSidebar(activeItem = 'dashboard', role = 'ejecutivo') {
         { id: 'reportes', label: 'Reportes', icon: 'chartPie', route: '06-reportes.html' },
         { id: 'sectores', label: 'Análisis sectores', icon: 'building', route: '03-analisis-sectores.html' },
         { id: 'forecasting', label: 'Forecasting', icon: 'trendingUp', route: '04-forecasting.html' },
+        { id: 'calendario', label: 'Calendario', icon: 'calendar', route: '06-actividades-calendario.html' },
       ]
     },
     coordinador: {
