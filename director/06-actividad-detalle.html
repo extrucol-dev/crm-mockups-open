@@ -95,6 +95,11 @@ function getEjecColor(ejecId) {
   return EJEC_COLORS[ejecId] || { bg: '#F3F4F6', text: '#6B7280', dot: '#9CA3AF' };
 }
 
+function getTipoLabel(tipo) {
+  const labels = { visita: 'Visita', llamada: 'Llamada', email: 'Email', reunion: 'Reunión (Virtual)' };
+  return labels[tipo] || tipo;
+}
+
 function detailContent() {
   const ejecColor = getEjecColor(ACTIVIDAD.ejecutivo);
   const tipoIconMap = { visita: Icons.mapPin, llamada: Icons.phone, email: Icons.envelope, reunion: Icons.users };
