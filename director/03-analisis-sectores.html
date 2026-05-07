@@ -127,6 +127,19 @@
 
 <script src="../shared/components.js"></script>
 <script>
+// Motivos canónicos — mismos textos que los modales de cierre en 04-oportunidad-detalle.html
+const MOTIVOS_GANAR = {
+  'Licitación ganada':    { color: '#24388C', bg: '#EEF1FA' },
+  'Adjudicación directa': { color: '#1A8754', bg: '#DCFCE7' },
+  'Mejor precio':         { color: '#F39610', bg: '#FFF4E0' },
+};
+const MOTIVOS_PERDER = {
+  'Competencia ganó licitación':        { color: '#EF4444', bg: '#FEE2E2' },
+  'Precio no competitivo':              { color: '#C0392B', bg: '#FEE2E2' },
+  'Cliente pospuso decisión':           { color: '#6B7280', bg: '#F3F4F6' },
+  'Requerimientos técnicos no coinciden': { color: '#A855F7', bg: '#F3E8FF' },
+};
+
 const sectores = [
   {
     nombre: 'Agua Potable',
@@ -137,6 +150,15 @@ const sectores = [
     ganadas: 8, ventasAcum: '$ 698 M',
     oppActivas: 12, ticketProm: '$ 58 M',
     conversion: 42, tendencia: '+15',
+    perdidas: 3,
+    motivosGanada: [
+      { motivo: 'Licitación ganada',    count: 5 },
+      { motivo: 'Adjudicación directa', count: 3 },
+    ],
+    motivosPerdida: [
+      { motivo: 'Competencia ganó licitación', count: 2 },
+      { motivo: 'Precio no competitivo',       count: 1 },
+    ],
     topClientes: [
       { name: 'INGEOMEGA', val: '$ 397 M', avatar: 'IN', color: 1 },
       { name: 'CONSORCIO ING SANTA ELENA', val: '$ 152 M', avatar: 'CS', color: 2 },
@@ -152,6 +174,14 @@ const sectores = [
     ganadas: 6, ventasAcum: '$ 398 M',
     oppActivas: 8, ticketProm: '$ 50 M',
     conversion: 38, tendencia: '+8',
+    perdidas: 2,
+    motivosGanada: [
+      { motivo: 'Adjudicación directa', count: 4 },
+      { motivo: 'Mejor precio',         count: 2 },
+    ],
+    motivosPerdida: [
+      { motivo: 'Cliente pospuso decisión', count: 2 },
+    ],
     topClientes: [
       { name: 'CIVILE HIDRAULICOS', val: '$ 111 M', avatar: 'CH', color: 4 },
       { name: 'Promotora Imola Park', val: '$ 92 M', avatar: 'PI', color: 5 },
@@ -167,11 +197,83 @@ const sectores = [
     ganadas: 1, ventasAcum: '$ 14 M',
     oppActivas: 2, ticketProm: '$ 14 M',
     conversion: 30, tendencia: '+5',
+    perdidas: 1,
+    motivosGanada: [
+      { motivo: 'Adjudicación directa', count: 1 },
+    ],
+    motivosPerdida: [
+      { motivo: 'Requerimientos técnicos no coinciden', count: 1 },
+    ],
     topClientes: [
       { name: 'PROYECTOS MULTIPLES', val: '$ 14 M', avatar: 'PM', color: 3 },
     ]
   },
 ];
+
+function renderMotivosCard(titulo, subtitulo, motivosConfig, motivosKey, accentColor) {
+  const totals = {};
+  sectores.forEach(s => {
+    (s[motivosKey] || []).forEach(m => {
+      totals[m.motivo] = (totals[m.motivo] || 0) + m.count;
+    });
+  });
+  const totalCierres = Object.values(totals).reduce((a, b) => a + b, 0);
+  if (totalCierres === 0) return `<div class="card"><div class="card__body" style="color:var(--text-muted);font-size:13px;">Sin datos de cierre</div></div>`;
+  const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+  const maxVal = sorted[0][1];
+  return `
+    <div class="card">
+      <div class="card__header">
+        <div>
+          <div class="card__title">${titulo}</div>
+          <div class="card__subtitle">${subtitulo} · ${totalCierres} cierres registrados</div>
+        </div>
+      </div>
+      <div class="card__body">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+          ${sorted.map(([motivo, count]) => {
+            const cfg = motivosConfig[motivo] || { color: accentColor, bg: '#F5F5F5' };
+            const pct = Math.round(count / totalCierres * 100);
+            const barPct = Math.round(count / maxVal * 100);
+            return `
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                  <div style="display:flex;align-items:center;gap:7px;">
+                    <span style="width:9px;height:9px;border-radius:2px;background:${cfg.color};flex-shrink:0;"></span>
+                    <span style="font-size:12.5px;font-weight:600;color:var(--text-primary);">${motivo}</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:13px;font-weight:700;color:${cfg.color};">${count}</span>
+                    <span style="font-size:11px;color:var(--text-muted);min-width:28px;text-align:right;">${pct}%</span>
+                  </div>
+                </div>
+                <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+                  <div style="height:100%;width:${barPct}%;background:${cfg.color};border-radius:3px;"></div>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:12px;">
+          <div style="font-size:10px;color:var(--text-disabled);text-transform:uppercase;font-weight:600;letter-spacing:0.04em;margin-bottom:8px;">Desglose por sector</div>
+          ${sectores.filter(s => (s[motivosKey] || []).length > 0).map(s => `
+            <div style="margin-bottom:8px;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+                <span style="width:8px;height:8px;border-radius:2px;background:${s.color};flex-shrink:0;"></span>
+                <span style="font-size:11.5px;font-weight:600;color:var(--text-secondary);">${s.nombre}</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;padding-left:14px;">
+                ${(s[motivosKey] || []).map(m => {
+                  const cfg = motivosConfig[m.motivo] || { color: '#6B7280', bg: '#F3F4F6' };
+                  return `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:9999px;background:${cfg.bg};color:${cfg.color};">${m.motivo}&nbsp;<strong>${m.count}</strong></span>`;
+                }).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
 
 function sectorCard(s) {
   return `
@@ -439,6 +541,11 @@ function content() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;margin-bottom:0;">
+        ${renderMotivosCard('✅ ¿Por qué ganamos?', 'Motivos de cierre · oportunidades ganadas', MOTIVOS_GANAR, 'motivosGanada', '#1A8754')}
+        ${renderMotivosCard('❌ ¿Por qué perdemos?', 'Motivos de cierre · oportunidades perdidas', MOTIVOS_PERDER, 'motivosPerdida', '#C0392B')}
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
