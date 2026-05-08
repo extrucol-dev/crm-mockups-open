@@ -146,7 +146,7 @@ const sectores = [
     desc: 'Acueductos municipales y redes de distribución',
     color: '#24388C', bg: '#EEF1FA',
     icon: 'gps',
-    pipeline: 698, pipelineM: '$ 698 M', pct: 40,
+    pipeline: 698, pipelineM: '$ 698 M', pct: 63,
     ganadas: 8, ventasAcum: '$ 698 M',
     oppActivas: 12, ticketProm: '$ 58 M',
     conversion: 42, tendencia: '+15',
@@ -170,7 +170,7 @@ const sectores = [
     desc: 'Proyectos de infraestructura y construcción',
     color: '#22C55E', bg: '#E8F5EE',
     icon: 'building',
-    pipeline: 398, pipelineM: '$ 398 M', pct: 23,
+    pipeline: 398, pipelineM: '$ 398 M', pct: 36,
     ganadas: 6, ventasAcum: '$ 398 M',
     oppActivas: 8, ticketProm: '$ 50 M',
     conversion: 38, tendencia: '+8',
@@ -435,7 +435,7 @@ function content() {
           <div class="stat-card__icon">${Icons.trendingUp}</div>
           <div class="stat-card__label">Sector líder</div>
           <div class="stat-card__value" style="font-size: 20px;">Agua Potable</div>
-          <div class="stat-card__subtext">40% del pipeline total</div>
+          <div class="stat-card__subtext">63% del pipeline total</div>
         </div>
         <div class="stat-card">
           <div class="stat-card__icon">${Icons.sparkles}</div>
@@ -449,25 +449,40 @@ function content() {
         <div class="card__header">
           <div>
             <div class="card__title">Participación en el pipeline</div>
-            <div class="card__subtitle">Distribución proporcional del valor total ($ ${totalPipeline.toLocaleString()} M)</div>
+            <div class="card__subtitle">Distribución proporcional del valor total ($ 1.110 M)</div>
           </div>
         </div>
         <div class="card__body">
           <div class="stacked-bar">
-            ${sectores.map(s => `
-              <div class="stacked-bar__segment" style="background: ${s.color}; flex: ${s.pct};" title="${s.nombre}: ${s.pct}%">
-                ${s.pct}%
-              </div>
-            `).join('')}
+            <div class="stacked-bar__segment" style="background: #24388C; flex: 63;" title="Agua Potable: 63%">
+              <span style="font-size: 12px; font-weight: 800; color: #fff;">63%</span>
+            </div>
+            <div class="stacked-bar__segment" style="background: #22C55E; flex: 36;" title="Construcción: 36%">
+              <span style="font-size: 12px; font-weight: 800; color: #fff;">36%</span>
+            </div>
+            <div class="stacked-bar__segment" style="background: #A855F7; flex: 1;" title="Agro / Riego: 1%">
+              <span style="font-size: 9px; font-weight: 700; color: #fff; padding: 0 2px;">1%</span>
+            </div>
           </div>
           <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 14px;">
-            ${sectores.map(s => `
-              <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px;">
-                <span style="width: 10px; height: 10px; border-radius: 3px; background: ${s.color};"></span>
-                <span style="color: var(--text-secondary); font-weight: 600;">${s.nombre}</span>
-                <span style="color: var(--text-muted);">${s.pipelineM}</span>
-              </div>
-            `).join('')}
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px;">
+              <span style="width: 10px; height: 10px; border-radius: 3px; background: #24388C;"></span>
+              <span style="color: var(--text-secondary); font-weight: 600;">Agua Potable</span>
+              <span style="color: var(--text-muted);">$ 698 M</span>
+              <span style="color: var(--primary); font-weight: 700; font-size: 12px;">63%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px;">
+              <span style="width: 10px; height: 10px; border-radius: 3px; background: #22C55E;"></span>
+              <span style="color: var(--text-secondary); font-weight: 600;">Construcción</span>
+              <span style="color: var(--text-muted);">$ 398 M</span>
+              <span style="color: var(--success); font-weight: 700; font-size: 12px;">36%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px;">
+              <span style="width: 10px; height: 10px; border-radius: 3px; background: #A855F7;"></span>
+              <span style="color: var(--text-secondary); font-weight: 600;">Agro / Riego</span>
+              <span style="color: var(--text-muted);">$ 14 M</span>
+              <span style="color: #A855F7; font-weight: 700; font-size: 12px;">1%</span>
+            </div>
           </div>
         </div>
       </div>
@@ -544,78 +559,8 @@ function content() {
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;margin-bottom:0;">
-        ${renderMotivosCard('✅ ¿Por qué ganamos?', 'Motivos de cierre · oportunidades ganadas', MOTIVOS_GANAR, 'motivosGanada', '#1A8754')}
-        ${renderMotivosCard('❌ ¿Por qué perdemos?', 'Motivos de cierre · oportunidades perdidas', MOTIVOS_PERDER, 'motivosPerdida', '#C0392B')}
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
-        <div class="card">
-          <div class="card__header">
-            <div>
-              <div class="card__title">💡 Insights del período</div>
-              <div class="card__subtitle">Análisis automático basado en datos</div>
-            </div>
-          </div>
-          <div class="card__body" style="display: flex; flex-direction: column; gap: 12px;">
-            <div style="padding: 12px; background: var(--primary-bg); border-left: 3px solid var(--primary); border-radius: 4px;">
-              <div style="font-weight: 700; font-size: 13px; color: var(--primary); margin-bottom: 4px;">◆ Agua Potable lidera</div>
-              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
-                40% del pipeline con INGEOMEGA como cliente clave ($397M). Conversion del 42% supera el promedio del equipo.
-              </div>
-            </div>
-            <div style="padding: 12px; background: #E8F5EE; border-left: 3px solid var(--success); border-radius: 4px;">
-              <div style="font-weight: 700; font-size: 13px; color: var(--success); margin-bottom: 4px;">↗ Construcción en crecimiento</div>
-              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
-                Crecimiento del +8% YoY con 6 oportunidades. CIVILE HIDRAULICOS representa el mayor valor ($111M).
-              </div>
-            </div>
-            <div style="padding: 12px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 4px;">
-              <div style="font-weight: 700; font-size: 13px; color: #C7770D; margin-bottom: 4px;">⚠ Diversificación necesaria</div>
-              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
-                Agro/Riego solo representa 1% del pipeline. Oportunidad de expandir cobertura en este sector.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card__header">
-            <div>
-              <div class="card__title">🎯 Recomendaciones estratégicas</div>
-              <div class="card__subtitle">Acciones sugeridas por sector</div>
-            </div>
-          </div>
-          <div class="card__body">
-            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary); margin-top: 5px; flex-shrink: 0;"></span>
-              <div>
-                <div style="font-weight: 600; font-size: 13px;">Fortalecer Agua Potable</div>
-                <div style="font-size: 12px; color: var(--text-muted);">INGEOMEGA y CONSORCIO SANTA ELENA son prioridad</div>
-              </div>
-            </div>
-            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: #22C55E; margin-top: 5px; flex-shrink: 0;"></span>
-              <div>
-                <div style="font-weight: 600; font-size: 13px;">Expandir Construcción</div>
-                <div style="font-size: 12px; color: var(--text-muted);">CIVILE HIDRAULICOS y Promotora Imola son clave</div>
-              </div>
-            </div>
-            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: #A855F7; margin-top: 5px; flex-shrink: 0;"></span>
-              <div>
-                <div style="font-weight: 600; font-size: 13px;">Desarrollar Agro/Riego</div>
-                <div style="font-size: 12px; color: var(--text-muted);">PROYECTOS MULTIPLES es cliente actual, expandir</div>
-              </div>
-            </div>
-            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 0;">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0;"></span>
-              <div>
-                <div style="font-weight: 600; font-size: 13px;">Equilibrar portfolio</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Reducir dependencia de un solo sector</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        ${renderMotivosCard('¿Por qué ganamos?', 'Motivos de cierre · oportunidades ganadas', MOTIVOS_GANAR, 'motivosGanada', '#1A8754')}
+        ${renderMotivosCard('¿Por qué perdemos?', 'Motivos de cierre · oportunidades perdidas', MOTIVOS_PERDER, 'motivosPerdida', '#C0392B')}
       </div>
     </div>
   `;

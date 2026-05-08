@@ -5,7 +5,10 @@
 <title>SEGUIMIENTO Extrucol · Director · Pipeline Global</title>
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/components.css">
-</head>
+<style>
+  .legend-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12.5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+</style>
 <body>
 <div class="app-shell" id="shell"></div>
 
@@ -71,14 +74,69 @@ function content() {
         </div>
       </div>
 
-      <div class="card" style="margin-bottom: 16px;">
-        <div class="card__header">
-          <div>
-            <div class="card__title">Distribución por estado</div>
-            <div class="card__subtitle">Oportunidades abiertas + cerradas este mes</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Distribución por estado</div>
+              <div class="card__subtitle">Oportunidades abiertas + cerradas este mes</div>
+            </div>
+          </div>
+          <div class="card__body">${rows}</div>
+        </div>
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <div class="card__title">Sectores</div>
+              <div class="card__subtitle">Participación del pipeline</div>
+            </div>
+          </div>
+          <div class="card__body">
+            <div style="display: grid; grid-template-columns: 140px 1fr; gap: 20px; align-items: center;">
+              <div style="position: relative; width: 140px; height: 140px;">
+                <svg viewBox="0 0 42 42" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                  ${(() => {
+                    const sectoresData = [
+                      { color: '#24388C', count: 698 },
+                      { color: '#22C55E', count: 398 },
+                      { color: '#A855F7', count: 14 },
+                    ];
+                    const total = sectoresData.reduce((a,b) => a + b.count, 0);
+                    let offset = 0;
+                    return sectoresData.map(s => {
+                      const pct = (s.count / total) * 100;
+                      const dash = (pct * 100) / 100;
+                      const dashOffset = offset;
+                      offset += dash;
+                      return `<circle cx="21" cy="21" r="15" fill="none" stroke="${s.color}" stroke-width="6" stroke-dasharray="${dash} ${100 - dash}" stroke-dashoffset="${-dashOffset}" />`;
+                    }).join('');
+                  })()}
+                </svg>
+                <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <span style="font-size: 22px; font-weight: 800; color: var(--text-primary);">$1.110</span>
+                  <span style="font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">M total</span>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="legend-item">
+                  <span class="legend-dot" style="background:#24388C;"></span>
+                  <span style="flex: 1; font-weight: 600; color: var(--text-primary);">Agua Potable</span>
+                  <span style="font-weight: 700; color: #24388C;">63%</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot" style="background:#22C55E;"></span>
+                  <span style="flex: 1; font-weight: 600; color: var(--text-primary);">Construcción</span>
+                  <span style="font-weight: 700; color: #22C55E;">36%</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot" style="background:#A855F7;"></span>
+                  <span style="flex: 1; font-weight: 600; color: var(--text-primary);">Agro / Riego</span>
+                  <span style="font-weight: 700; color: #A855F7;">1%</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="card__body">${rows}</div>
       </div>
 
       <div class="card">
